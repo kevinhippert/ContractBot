@@ -1,0 +1,40 @@
+#!/bin/bash
+set -euo pipefail
+
+# Install uv
+export PATH="$PATH:$HOME/.local/bin"
+if [ "$(which uv)" == "" ]; then
+    echo "Installing uv..."
+    curl -LsSf https://astral.sh/uv/install.sh | sh;
+fi
+
+# Install Python and libraries
+echo "Installing Python and library requirements..."
+uv sync
+source .venv/bin/activate
+
+# Install node/npm and serve
+mkdir -p $HOME/bin
+export NODE_VER='node-v22.13.0-linux-x64'
+export PATH="$HOME/bin/$NODE_VER/bin/:$PATH"
+export NODE='https://nodejs.org/dist/v22.13.0/node-v22.13.0-linux-x64.tar.xz'
+if [ "$(which npm)" == "" ]; then
+    wget -q -O- $NODE | tar xJ -C $HOME/bin
+fi
+npm --silent install -g serve
+
+# Start the Node serve process
+echo "Launching the Node server..."
+cd $HOME/BossBot/react
+npm --silent install --production
+npm --silent run build
+# Check for npm install errors
+if [ $? -ne 0 ]; then
+    echo "Error occurred during npm install!"
+    exit 1
+fi
+
+FRONTEND_LOG=$HOME/log/frontend-${TS}.log
+serve -s build -l 3000 > $FRONTEND_LOG 2>&1 & disown >/dev/null 2>&1
+
+
