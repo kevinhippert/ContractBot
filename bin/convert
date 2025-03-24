@@ -1,0 +1,12 @@
+#!/bin/bash
+pdftotext -nopgbrk -eol unix "assets/raw-documents/Bargaining climate language Final.pdf"
+pdftotext -nopgbrk -eol unix "assets/raw-documents/Capital-Volume-I.pdf"
+pdftotext -nopgbrk -eol unix "assets/raw-documents/IT contract language for delivering emails successfully.pdf"
+pdftotext -nopgbrk -eol unix "assets/raw-documents/Next Generation Union Security Toolkit Nov 2022.pdf"
+pdftotext -nopgbrk -eol unix "assets/raw-documents/Property Services' Revised Immigration Model CBA Provisions.pdf"
+pdftotext -nopgbrk -eol unix "assets/raw-documents/Together We Rise Access to New Hires Bargaining Language Toolkit (2023).pdf"
+pdftotext -nopgbrk -eol unix "assets/raw-documents/TWR Racial Justice Template Bargaining Language Toolkit.pdf"
+pdftotext -nopgbrk -eol unix "assets/raw-documents/1199NE Racial Justice and Equity Bargaining Language.pdf"
+pdftotext -nopgbrk -eol unix "assets/raw-documents/bargaining materials and exercises.pdf"
+
+mv assets/raw-documents/*.txt assets/text/

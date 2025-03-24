@@ -5,11 +5,13 @@ Reset ChromaDB and add documents to the database.
 
 from glob import glob
 from hashlib import sha1
+from os.path import basename
 from pathlib import Path
 
 import chromadb
+from tqdm import tqdm
 
-BATCH_SIZE = 1000
+BATCH_SIZE = 100
 
 
 def add_document(
@@ -23,18 +25,18 @@ def add_document(
     sentences = document.replace("\n", " ").split(".")
 
     chunks = set()
+    fname = basename(file_path.removesuffix(".txt"))
     for i in range(len(sentences) - context_sentences):
-        chunks.add(".".join(sentences[i : i + context_sentences]))
+        content = ".".join(sentences[i : i + context_sentences]) + ".\n" + fname
+        chunks.add(content)
     all_chunks = list(chunks)
-    all_ids = [sha1(chunk.encode()).hexdigest() for chunk in chunks]
+    all_ids = [sha1(chunk.encode()).hexdigest() for chunk in all_chunks]
 
-    for n in range(len(chunks) // BATCH_SIZE):
+    for n in tqdm(range(len(chunks) // BATCH_SIZE), desc=fname):
         chunks = all_chunks[n * BATCH_SIZE : (n + 1) * BATCH_SIZE]
         ids = all_ids[n * BATCH_SIZE : (n + 1) * BATCH_SIZE]
         collection.add(documents=chunks, ids=ids)
-        print(".", end="", flush=True)
 
-    print()
     return collection
 
 
@@ -44,7 +46,4 @@ if __name__ == "__main__":
     collection = client.create_collection(name="BossBot")
 
     for document in glob("assets/text/*.txt"):
-        print(f"Adding {document} to the database.")
         collection = add_document(collection, document)
-
-    print(f"Records: {collection.count():,}")

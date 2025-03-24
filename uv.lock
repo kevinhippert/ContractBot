@@ -116,6 +116,7 @@ dependencies = [
     { name = "ipython" },
     { name = "python-dotenv" },
     { name = "requests" },
+    { name = "tqdm" },
     { name = "uvicorn" },
 ]
 
@@ -126,6 +127,7 @@ requires-dist = [
     { name = "ipython" },
     { name = "python-dotenv" },
     { name = "requests" },
+    { name = "tqdm" },
     { name = "uvicorn" },
 ]
 
