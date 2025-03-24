@@ -1,0 +1,29 @@
+#!/usr/bin/env python
+"""
+Find the best matching fragments for a given query.
+"""
+import sys
+
+import chromadb
+
+
+def search_fragments(query: str, n_results: int = 5, collection_name: str = "BossBot"):
+    client = chromadb.PersistentClient()
+    collection = client.get_collection(name=collection_name)
+    results = collection.query(query_texts=[query], n_results=n_results)
+    return results
+
+
+if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        print(f"Usage: python {__file__} <query> [n_results]")
+    query = sys.argv[1]
+    n_results = int(sys.argv[2]) if len(sys.argv) > 2 else 5
+
+    results = search_fragments(query, n_results)
+    docs = (results["documents"] or [[]])[0]  # Index 0 since only one query
+    distances = (results["distances"] or [[]])[0]
+    for distance, doc in zip(distances, docs):
+        print(f"Distance {distance:.2f}")
+        print(doc.strip())
+        print("-----")

@@ -3,8 +3,9 @@ name = "BossBot"
 version = "0.1.0"
 description = "Cutsomized LLM to aid with contract negotiation"
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.12"
 dependencies = [
+    "chromadb",
     "fastapi",
     "ipython",
     "uvicorn",
