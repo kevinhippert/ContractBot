@@ -36,5 +36,3 @@ fi
 
 FRONTEND_LOG=$HOME/log/frontend-${TS}.log
 serve -s build -l 3000 > $FRONTEND_LOG 2>&1 & disown >/dev/null 2>&1
-
-
