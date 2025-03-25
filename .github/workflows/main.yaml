@@ -19,10 +19,6 @@ jobs:
           mkdir -p secrets
           echo "$engines_json" > secrets/engines.json
 
-      - name: Generate certificates
-        run: |
-          bin/make-certs
-
       - name: Deploy to main
         if: github.ref == 'refs/heads/main'
         env:
@@ -31,9 +27,6 @@ jobs:
           rsync -a $PWD $INSTANCE:/home/ec2-user --delete
           ssh -o StrictHostKeyChecking=no $INSTANCE -t 'bash -l -c "
               cd $HOME/BossBot
-              if ./deploy.sh check; then
-                 ./deploy.sh serve
-              else
-                 exit 1
-              fi
+              bin/make-certs
+              ./deploy.sh
           "'
