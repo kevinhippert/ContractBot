@@ -28,9 +28,9 @@ echo "Rotating log files into $HOME/log/archive"
 mkdir -p $HOME/log/archive
 
 # Archive any old logs
-gzip $HOME/log/backend-*.log
-gzip $HOME/log/frontend-*.log
-mv $HOME/log/*.log.gz $HOME/log/archive
+gzip $HOME/log/backend-*.log || true
+gzip $HOME/log/frontend-*.log || true
+mv $HOME/log/*.log.gz $HOME/log/archive || true
 
 # Shut down Node serve if running, or just anything on port 3000
 PID=$(lsof -t -i:3000)
