@@ -35,12 +35,103 @@ received within a configurable timeout period.
 
 ## User Routes
 
-TBD.
+### `POST api/add-query`
 
-In general, some collection of endpoints will submit user queries to the queue
-and display those queued items that have received answers.
+Takes authentication query parameters:
 
-User routes will exist for login/authentication of authorized users.
+- Nonce
+- Hash
+
+Body should look like:
+
+```json
+{
+    "Topic": "DGQIn+5troxI",
+    "Query": "How far can an African swallow fly?",
+    "Modifiers": {
+        "Region": "...",
+        "Category": [],
+        "TBD": "Loosely defined schema for this object"
+    }
+}
+```
+
+Response should look like:
+
+```json
+{
+    "Topic": "DGQIn+5troxI",
+    "Seq": 4,
+    "Timestamp": "2025-03-25T01:02:03"
+}
+```
+
+### `GET api/check-query-topic`
+
+Takes authentication and topic query parameters:
+
+- Nonce
+- Hash
+- Topic (e.g. `&Topic=DGQIn+5troxI`)
+- Seq (e.g. `&Seq=4`)
+
+Return body should look like this if no answer is available:
+
+```json
+{
+    "Topic": "DGQIn+5troxI",
+    "Answer": null
+}
+```
+
+If there is an available answer:
+
+```json
+{
+    "Topic": "DGQIn+5troxI",
+    "Seq": 4,
+    "Answer": ["First paragraph", "Second paragraph"],
+    "Think": ["Thinking about foo", "Thinking about bar"]
+}
+```
+
+This response will "dawdle" a bit if no answer is yet available.  A loop in
+FastAPI will wait one second a few times if no answer is yet ready.  When an
+answer is available, the response will occur immediately.  After a minute or
+two of no answer becoming ready, the unavailable response will be sent.
+
+### `GET /api/login`
+
+Logins (for now) will be handled by a static list of authorized users, with
+names like "User1", "User2", etc.  Authentication of a user will be essentially
+identical to authentication by an inference engine.
+
+As with other authentication, we use a nonce, a shared secret, and create a
+hash.  The query parameters for the route are:
+
+- User
+- Nonce
+- Hash
+
+Responses are simply 200 OK for successful authentication, or 401 Unauthorized.
+
+Suppose we have this information stored on the FastAPI server securely:
+
+| User  | Password         |
+|-------|------------------|
+| User1 | 04EMG47U62bjoyL3 |
+| User2 | MLIyPLaQqCJ6tMqP |
+
+The React frontend will take the username and purported password from the user,
+and compute:
+
+```javascript
+const crypto = require('crypto');
+let shasum = crypto.createHash('sha1');
+let nonce = crypto.randomBytes(16).toStr
+shasum.update(`${user} ${nonce} ${purported_pw}`); 
+let hash = shasum.digest('hex');
+```
 
 ## Inference Engine Authentication
 
@@ -87,6 +178,7 @@ Hash at **every** call to a secured route to avoid replay attacks.
 ## Inference Routes
 
 ### `PUT api/get-new-queries`
+
 
 The body contains the validation block discussed in the authentication section.
 No additional data is required in the body for this route.  Inference engines
