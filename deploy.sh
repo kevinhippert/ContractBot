@@ -28,14 +28,14 @@ echo "Rotating log files into $HOME/log/archive"
 mkdir -p $HOME/log/archive
 
 # Archive any old logs
-# gzip $HOME/log/backend-*.log || true
-# gzip $HOME/log/frontend-*.log || true
-# mv $HOME/log/*.log.gz $HOME/log/archive || true
+gzip $HOME/log/backend-*.log || true
+gzip $HOME/log/frontend-*.log || true
+mv $HOME/log/*.log.gz $HOME/log/archive || true
 
 # Shut down Node serve if running, or just anything on port 3000
+echo "Killing process(es) on port 3000 with PID(s) $PID"
 PID=$(lsof -t -i:3000)
 if [ ! -z "$PID" ]; then
-    echo "Killing process(es) on port 3000 with PID(s) $PID"
     kill -9 "$PID"
 fi
 
