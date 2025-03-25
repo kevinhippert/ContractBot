@@ -23,6 +23,13 @@ if [ "$(which npm)" == "" ]; then
 fi
 npm --silent install -g serve
 
+# Shut down Node serve if running, or just anything on port 3000
+PID=$(lsof -t -i:3000)
+if [ ! -z "$PID" ]; then
+    echo "Killing process(es) on port 3000 with PID(s) $PID"
+    kill -9 $PID
+fi
+
 # Start the Node serve process
 echo "Launching the Node server..."
 cd $HOME/BossBot/react
