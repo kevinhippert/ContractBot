@@ -54,3 +54,6 @@ dmypy.json
 # Ruff stuff:
 .ruff_cache/
 
+# React
+node_modules
+
