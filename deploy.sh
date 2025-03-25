@@ -33,8 +33,8 @@ gzip $HOME/log/frontend-*.log || true
 mv $HOME/log/*.log.gz $HOME/log/archive || true
 
 # Shut down Node serve if running, or just anything on port 3000
-echo "Killing process(es) on port 3000 with PID(s) $PID"
 PID=$(lsof -t -i:3000)
+echo "Killing process(es) on port 3000 with PID(s) $PID"
 if [ ! -z "$PID" ]; then
     kill -9 "$PID"
 fi
