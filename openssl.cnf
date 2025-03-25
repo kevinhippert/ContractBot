@@ -67,11 +67,11 @@ extendedKeyUsage = serverAuth, clientAuth
 basicConstraints = critical, CA:false
 keyUsage = critical,digitalSignature, keyEncipherment
 extendedKeyUsage = serverAuth, clientAuth
-authorityInfoAccess = OCSP;URI:http://ocsp.dbsheetsconnectorlocal:9999
+authorityInfoAccess = OCSP;URI:http://ocsp.bossbotlocal:9999
 subjectAltName = @alt_names
 
 [ alt_names ]
-DNS.1 = dbsheetsconnectorlocal
+DNS.1 = bossbotlocal
 
 [ ocsp_ext ]
 basicConstraints = critical, CA:false
