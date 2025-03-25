@@ -5,6 +5,7 @@ Reset ChromaDB and add documents to the database.
 
 from glob import glob
 from hashlib import sha1
+import os
 from os.path import basename
 from pathlib import Path
 
@@ -41,9 +42,12 @@ def add_document(
 
 
 if __name__ == "__main__":
-    client = chromadb.PersistentClient()
-    client.reset()  # Clear the database before adding new documents
-    collection = client.create_collection(name="BossBot")
+    if os.getenv("ALLOW_RESET") != "TRUE":
+        print("DB re-creation permitted only with environment ALLOW_RESET=TRUE")
+    else:        
+        client = chromadb.PersistentClient()
+        client.reset()  # Clear the database before adding new documents
+        collection = client.create_collection(name="BossBot")
 
-    for document in glob("assets/text/*.txt"):
-        collection = add_document(collection, document)
+        for document in glob("assets/text/*.txt"):
+            collection = add_document(collection, document)
