@@ -27,7 +27,8 @@ npm --silent install -g serve
 echo "Launching the Node server..."
 cd $HOME/BossBot/react
 npm --silent install --production
-npm --silent run build
+npm install vite # TODO: Is this really a sound approach?
+npm run build
 # Check for npm install errors
 if [ $? -ne 0 ]; then
     echo "Error occurred during npm install!"
