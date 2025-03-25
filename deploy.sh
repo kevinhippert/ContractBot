@@ -23,11 +23,20 @@ if [ "$(which npm)" == "" ]; then
 fi
 npm --silent install -g serve
 
+# Rotate logs
+echo "Rotating log files into $HOME/log/archive"
+mkdir -p $HOME/log/archive
+
+# Archive any old logs
+gzip $HOME/log/backend-*.log
+gzip $HOME/log/frontend-*.log
+mv $HOME/log/*.log.gz $HOME/log/archive
+
 # Shut down Node serve if running, or just anything on port 3000
 PID=$(lsof -t -i:3000)
 if [ ! -z "$PID" ]; then
     echo "Killing process(es) on port 3000 with PID(s) $PID"
-    kill -9 $PID
+    kill -9 "$PID"
 fi
 
 # Start the Node serve process
