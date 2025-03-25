@@ -35,5 +35,6 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-FRONTEND_LOG=$HOME/log/frontend-${TS}.log
+mkdir -p $HOME/log
+FRONTEND_LOG=$HOME/log/frontend-$(date +"%Y-%m-%d-%H-%M-%S").log
 serve -s build -l 3000 > $FRONTEND_LOG 2>&1 & disown >/dev/null 2>&1
