@@ -2,6 +2,7 @@
 assets/text/
 assets/raw-documents/
 chroma/
+.queue.db
 
 # Compiled Python files
 __pycache__/

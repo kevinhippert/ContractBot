@@ -36,7 +36,7 @@ mv $HOME/log/*.log.gz $HOME/log/archive || true
 echo "Killing any process(es) on port 3000"
 kill -9 "$(lsof -t -i:3000)" || true
 
-# Start the Node serve process
+# Start the Node server
 echo "Launching the Node server..."
 cd $HOME/BossBot/react
 npm --silent install --production
@@ -49,5 +49,11 @@ if [ $? -ne 0 ]; then
 fi
 
 mkdir -p $HOME/log
-FRONTEND_LOG=$HOME/log/frontend-$(date +"%Y-%m-%d-%H-%M-%S").log
+FRONTEND_LOG="$HOME/log/frontend-$(date +"%Y-%m-%d-%H-%M-%S").log"
 serve -s dist -l 3000 > $FRONTEND_LOG 2>&1 & disown >/dev/null 2>&1
+
+# Start the FastAPI server
+echo "Launching the FastAPI server..."
+cd $HOME/BossBot
+BACKEND_LOG="$HOME/log/backend-$(date +"%Y-%m-%d-%H-%M-%S").log"
+uvicorn app.main:app > $BACKEND_LOG 2>&1 & disown >/dev/null 2>&1
