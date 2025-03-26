@@ -6,7 +6,9 @@ import { useForm, Controller } from "react-hook-form";
 import Categories from "./Categories";
 import QuestionInput from "./QuestionInput";
 import api from "../../api/api";
+import Replies from "./Replies";
 
+// This component basically acts as a giant form, which registers inputs from various child components and handles submissions ond errors
 function MainView() {
   const [serverError, setServerError] = useState(null);
 
@@ -46,6 +48,7 @@ function MainView() {
         </Box>
         <Box>
           <Categories />
+          <Replies />
           <Box>
             {serverError && <Alert severity="error">{serverError}</Alert>}
           </Box>
