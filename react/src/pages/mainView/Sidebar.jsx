@@ -8,8 +8,8 @@ import Divider from "@mui/material/Divider";
 
 export default function Sidebar() {
   return (
-    <Box sx={{ width: "100%", maxWidth: 250, bgcolor: "background.paper" }}>
-      <nav aria-label="secondary mailbox folders">
+    <Box sx={{ maxWidth: "200px" }}>
+      <nav>
         <List>
           <ListItem disablePadding>
             <ListItemButton>

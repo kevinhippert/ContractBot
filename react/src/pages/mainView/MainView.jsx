@@ -2,12 +2,18 @@ import React from "react";
 import Sidebar from "./Sidebar";
 import Form from "./Form";
 import { Typography, Box } from "@mui/material/";
+import Categories from "./Categories";
 
 function MainView() {
   return (
     <Box sx={{ display: "flex" }}>
-      <Sidebar />
-      <Form />
+      <Box>
+        <Sidebar />
+      </Box>
+      <Box>
+        <Categories />
+        <Form />
+      </Box>
     </Box>
   );
 }
