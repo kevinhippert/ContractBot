@@ -8,6 +8,7 @@ from fortune import fortune
 
 from app.models import Query, QueryAck
 from app.utils.access import authenticate
+from app.utils.queues import query_queue
 
 router = APIRouter()
 
@@ -22,6 +23,11 @@ async def add_query(
     """
     Add a new query to the queue.
     """
+    if not User.startswith("Frontend-"):
+        return JSONResponse(
+            status_code=status.HTTP_403_FORBIDDEN,
+            content={"detail": "Only Frontend users can access this endpoint"},
+        )
     if not authenticate(User, Nonce, Hash):
         return JSONResponse(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -35,9 +41,10 @@ async def add_query(
             content={"detail": "Query must be at least 10 characters long"},
         )
 
+    seq, received = query_queue.add_query(Query.Topic, Query.Query)
     ack = QueryAck(
         Topic=Query.Topic,
-        Seq=randint(1, 10),  # FIXME: Random sequence number,
+        Seq=seq,
         Timestamp=received,
     )
 
@@ -47,7 +54,7 @@ async def add_query(
     )
 
 
-@router.get("/api/check-query-topic", tags=["query"])
+@router.get("/api/check-query", tags=["query"])
 async def get_query(
     User: str,
     Nonce: str,
@@ -58,6 +65,11 @@ async def get_query(
     """
     Check if a query with the given topic and sequence number exists.
     """
+    if not User.startswith("Frontend-"):
+        return JSONResponse(
+            status_code=status.HTTP_403_FORBIDDEN,
+            content={"detail": "Only Frontend users can access this endpoint"},
+        )
     if not authenticate(User, Nonce, Hash):
         return JSONResponse(
             status_code=status.HTTP_401_UNAUTHORIZED,

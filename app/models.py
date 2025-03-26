@@ -18,3 +18,9 @@ class Answer(BaseModel):
     Seq: int
     Answer: list[str] | None
     Think: list[str] | None
+
+
+class QueryTodo(BaseModel):
+    Topic: str | None
+    Queries: list[dict[str, str]] | None
+

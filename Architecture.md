@@ -67,7 +67,7 @@ Response should look like:
 }
 ```
 
-### `GET api/check-query-topic`
+### `GET api/check-query`
 
 Takes authentication and topic query parameters:
 
@@ -155,17 +155,11 @@ frontend might have a secure table like:
 | Inference-1  | 7b18d017f89f61cf17d47f92749ea6930a3f1deb |
 | Inference-2  | 03cfd743661f07975fa2f1220c5194cbaff48451 |
 
-Validated inference routes will contain the following information in their
-bodies:
+Validated inference routes will contain the following query parameters:
 
-```json 
-{
-    "Engine": "Inference-1",
-    "Nonce": "PSjUAS82NcDKgwXq",
-    "Hash": "37f5bbd5657e3d69b1cabd81c2b8671e050d05d7",
-    "...": "..."
-}
-```
+- User (e.g. "Inference-1")
+- Nonce (e.g. "PSjUAS82NcDKgwXq")
+- Hash (e.g. "37f5bbd5657e3d69b1cabd81c2b8671e050d05d7")
 
 If the result of hashing the nonce with the shared secret token does not
 produce the hash, then an HTTP 401 status code is returned by the route.  The
@@ -182,7 +176,6 @@ Hash at **every** call to a secured route to avoid replay attacks.
 ## Inference Routes
 
 ### `PUT api/get-new-queries`
-
 
 The body contains the validation block discussed in the authentication section.
 No additional data is required in the body for this route.  Inference engines
@@ -220,8 +213,8 @@ will resemble:
 {
     "Topic": "DGQIn+5troxI",
     "Queries": [
-        [2, "What is the meaning of life?"],
-        [3, "What is your favorite color?"]
+        {"2": "What is the meaning of life?"},
+        {"3": "What is your favorite color?"}
     ]
 }
 ```
@@ -244,9 +237,6 @@ the only query it has received within a topic), it posts the answer in the form:
 
 ```json
 {
-    "Engine": "Inference-1",
-    "Nonce": "M4ah3ltNB4PkE1wg",
-    "Hash": "...",
     "Topic": "DGQIn+5troxI",
     "Seq": 2,
     "Think": [
