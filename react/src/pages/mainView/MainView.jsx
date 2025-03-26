@@ -47,7 +47,7 @@ function MainView() {
           <Sidebar />
         </Box>
         <Box>
-          <Categories />
+          <Categories control={control} />
           <Replies />
           <Box>
             {serverError && <Alert severity="error">{serverError}</Alert>}
