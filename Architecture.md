@@ -39,6 +39,7 @@ received within a configurable timeout period.
 
 Takes authentication query parameters:
 
+- User (e.g. `Frontend-1`)
 - Nonce
 - Hash
 
@@ -70,6 +71,7 @@ Response should look like:
 
 Takes authentication and topic query parameters:
 
+- User (e.g. `Frontend-1`)
 - Nonce
 - Hash
 - Topic (e.g. `&Topic=DGQIn+5troxI`)
@@ -80,7 +82,9 @@ Return body should look like this if no answer is available:
 ```json
 {
     "Topic": "DGQIn+5troxI",
-    "Answer": null
+    "Seq": 4,
+    "Answer": null,
+    "Think": null
 }
 ```
 
@@ -117,10 +121,10 @@ Responses are simply 200 OK for successful authentication, or 401 Unauthorized.
 
 Suppose we have this information stored on the FastAPI server securely:
 
-| User  | Password         |
-|-------|------------------|
-| User1 | 04EMG47U62bjoyL3 |
-| User2 | MLIyPLaQqCJ6tMqP |
+| User   | Password         |
+|--------|------------------|
+| User-1 | 04EMG47U62bjoyL3 |
+| User-2 | MLIyPLaQqCJ6tMqP |
 
 The React frontend will take the username and purported password from the user,
 and compute:

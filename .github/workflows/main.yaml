@@ -17,7 +17,8 @@ jobs:
           engines_json: ${{ secrets.engines_json }}
         run: |
           mkdir -p secrets
-          echo "$engines_json" > secrets/engines.json
+          echo "$credentials_json" > secrets/credentials.json
+          chmod 600 secrets/credentials.json
 
       - name: Deploy to main
         if: github.ref == 'refs/heads/main'

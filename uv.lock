@@ -1,6 +1,6 @@
 version = 1
 revision = 1
-requires-python = "==3.12"
+requires-python = "==3.12.*"
 
 [[package]]
 name = "annotated-types"
@@ -95,6 +95,7 @@ source = { virtual = "." }
 dependencies = [
     { name = "chromadb" },
     { name = "fastapi" },
+    { name = "fortune-python" },
     { name = "ipython" },
     { name = "python-dotenv" },
     { name = "requests" },
@@ -106,6 +107,7 @@ dependencies = [
 requires-dist = [
     { name = "chromadb" },
     { name = "fastapi" },
+    { name = "fortune-python" },
     { name = "ipython" },
     { name = "python-dotenv" },
     { name = "requests" },
@@ -332,6 +334,15 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/e4/30/eb5dce7994fc71a2f685d98ec33cc660c0a5887db5610137e60d8cbc4489/flatbuffers-25.2.10.tar.gz", hash = "sha256:97e451377a41262f8d9bd4295cc836133415cc03d8cb966410a4af92eb00d26e", size = 22170 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/b8/25/155f9f080d5e4bc0082edfda032ea2bc2b8fab3f4d25d46c1e9dd22a1a89/flatbuffers-25.2.10-py2.py3-none-any.whl", hash = "sha256:ebba5f4d5ea615af3f7fd70fc310636fbb2bbd1f566ac0a23d98dd412de50051", size = 30953 },
+]
+
+[[package]]
+name = "fortune-python"
+version = "1.1.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/1b/7b/90647ed1619855c9acc34f7191cb825069d0dbb1c936a020f34b8a86a809/fortune-python-1.1.1.tar.gz", hash = "sha256:1742eb35eb000589546f1b16bccd573a110d848c8edeb6616d2604ca62029197", size = 1079633 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/9d/06/fcaba2f0d0b0639466bc5389df31f970ae22d04dc948a9666d873121137b/fortune_python-1.1.1-py3-none-any.whl", hash = "sha256:8a111112e39ce034afa744f010cc3d6dc7406f6fed21a78116ffdfea26ee53bd", size = 1112122 },
 ]
 
 [[package]]
