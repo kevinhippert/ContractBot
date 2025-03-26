@@ -1,7 +1,7 @@
 import React from "react";
 import { Box, TextField, Button, Alert } from "@mui/material/";
 
-function QuestionInput() {
+function QuestionInput({ register }) {
   return (
     <>
       <TextField
