@@ -34,7 +34,6 @@ function Categories({ control }) {
                   key={category}
                   onClick={() => handleCategoryClick(category)}
                   variant={value.includes(category) ? "contained" : "outlined"} //add visual feedback
-                  style={{ margin: "5px" }}
                 >
                   {category}
                 </Button>
