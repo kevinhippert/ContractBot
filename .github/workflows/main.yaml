@@ -14,7 +14,7 @@ jobs:
 
       - name: Add secrets to repository checkout
         env:
-          engines_json: ${{ secrets.engines_json }}
+          credentials_json: ${{ secrets.credentials_json }}
         run: |
           mkdir -p secrets
           echo "$credentials_json" > secrets/credentials.json
