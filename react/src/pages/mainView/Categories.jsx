@@ -15,8 +15,8 @@ function Categories() {
   return (
     <>
       <Box>
-        {categories.map((category) => (
-          <Button>{category}</Button>
+        {categories.map((category, index) => (
+          <Button key={index}>{category}</Button>
         ))}
       </Box>
     </>

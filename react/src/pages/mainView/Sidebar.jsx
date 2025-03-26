@@ -1,10 +1,14 @@
 import * as React from "react";
-import Box from "@mui/material/Box";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemText from "@mui/material/ListItemText";
-import Divider from "@mui/material/Divider";
+import {
+  Box,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemText,
+  Divider,
+  Button,
+} from "@mui/material/";
+import AddIcon from "@mui/icons-material/Add";
 
 export default function Sidebar() {
   return (
@@ -23,6 +27,10 @@ export default function Sidebar() {
           </ListItem>
         </List>
       </nav>
+      <Button>
+        <AddIcon />
+        new topic
+      </Button>
     </Box>
   );
 }
