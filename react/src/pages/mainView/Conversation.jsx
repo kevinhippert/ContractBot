@@ -1,23 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { Paper, Box } from "@mui/material";
 
-function Conversation({ question, answer, scrollRef }) {
-  const [questions, setQuestions] = useState([]);
-  const [answers, setAnswers] = useState([]);
+function Conversation({ message, scrollRef }) {
+  const [messages, setMessages] = useState([]);
 
   useEffect(() => {
-    if (answer) {
-      setAnswers((prevAnswers) => [...prevAnswers]);
-      answer = null;
+    if (message) {
+      setMessages((prevMessages) => [...prevMessages]);
+      message = null;
     }
-  }, [answer]);
-
-  useEffect(() => {
-    if (question) {
-      setQuestions((prevQuestions) => [...prevQuestions]);
-      question = null;
-    }
-  }, [question]);
+  }, [message]);
 
   return (
     <>

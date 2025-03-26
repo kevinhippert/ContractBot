@@ -7,12 +7,12 @@ import Categories from "./Categories";
 import QuestionInput from "./QuestionInput";
 import api from "../../api/api";
 import Conversation from "./Conversation";
+import { generateNonce } from "../../utils/utils";
 
 // This component basically acts as a giant form, which registers inputs from various child components and handles submissions ond errors
 function MainView() {
   const [serverError, setServerError] = useState(null);
-  const [question, setQuestion] = useState({});
-  const [answer, setAnswer] = useState({});
+  const [message, setMessage] = useState({});
   const { register, control, handleSubmit } = useForm();
 
   // React Query mutation for form submission
@@ -44,7 +44,7 @@ function MainView() {
 
   const onSubmit = (question) => {
     setServerError(null); // Reset server error on new submission
-    setQuestion(question);
+    setMessage(question);
     mutation.mutate(question);
   };
 
@@ -57,7 +57,7 @@ function MainView() {
         </Box> */}
         <Box>
           <Categories control={control} />
-          <Conversation question={question} answer={data} />
+          <Conversation message={message} />
           <Box>
             {serverError && <Alert severity="error">{serverError}</Alert>}
           </Box>
