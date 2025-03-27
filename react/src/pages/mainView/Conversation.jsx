@@ -1,19 +1,23 @@
 import React, { useEffect, useState } from "react";
 import { Paper, Box } from "@mui/material";
 
-function Conversation({ message, scrollRef }) {
-  const [messages, setMessages] = useState([]);
-
+function Conversation({ messages }) {
   useEffect(() => {
-    if (message) {
-      setMessages((prevMessages) => [...prevMessages]);
-      message = null;
-    }
-  }, [message]);
+    console.log(messages);
+  }, [messages]);
 
   return (
     <>
-      <Box>Conversation goes here</Box>
+      {messages.length > 0 && (
+        <>
+          <Box>Conversation goes here</Box>
+          <Box>
+            {messages.map((m, index) => (
+              <Paper key={index}>{m.text[0]}</Paper>
+            ))}
+          </Box>
+        </>
+      )}
     </>
   );
 }

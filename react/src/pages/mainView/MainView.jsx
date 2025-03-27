@@ -12,7 +12,7 @@ import { generateNonce } from "../../utils/utils";
 // This component basically acts as a giant form, which registers inputs from various child components and handles submissions ond errors
 function MainView() {
   const [serverError, setServerError] = useState(null);
-  const [message, setMessage] = useState({});
+  const [messages, setMessages] = useState([]);
   const [queryEnabled, setQueryEnabled] = useState(false);
 
   const { register, control, handleSubmit } = useForm();
@@ -36,22 +36,39 @@ function MainView() {
     },
   });
 
-  const fetchReply = async () => {
-    const res = await api.get(
-      "check-query?User=Frontend-1&Nonce=blah&Hash=foo&Topic=bar&Seq=1"
-    );
-    return res.data;
-  };
-
-  const { data, isLoading, isError } = useQuery({
+  const query = useQuery({
     queryKey: ["reply", "topicId"],
-    queryFn: fetchReply,
+    queryFn: async () => {
+      const res = await api.get(
+        "check-query?User=Frontend-1&Nonce=blah&Hash=foo&Topic=bar&Seq=1"
+      );
+
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        {
+          type: "answer",
+          seq: res.data.Seq,
+          topic: res.data.Topic,
+          text: res.data.Answer,
+        },
+      ]);
+      setQueryEnabled(false);
+      return res.data;
+    },
     enabled: queryEnabled,
   });
 
   const onSubmit = (question) => {
     setServerError(null); // Reset server error on new submission
-    setMessage(question);
+    setMessages((prevMessages) => [
+      ...prevMessages,
+      {
+        type: "question",
+        seq: "not sure",
+        topic: "123ABC",
+        text: [question.question],
+      },
+    ]);
     let formData = {
       Topic: "123ABC",
       Query: question.question,
@@ -59,6 +76,9 @@ function MainView() {
     };
     mutation.mutate(formData);
   };
+
+  if (query.isLoading) return <div>Loading...</div>;
+  if (query.isError) return <div>Error: {query.error.message}</div>;
 
   return (
     <Box>
@@ -69,7 +89,7 @@ function MainView() {
         </Box> */}
         <Box>
           <Categories control={control} />
-          <Conversation message={message} />
+          <Conversation messages={messages} />
           <Box>
             {serverError && <Alert severity="error">{serverError}</Alert>}
           </Box>
