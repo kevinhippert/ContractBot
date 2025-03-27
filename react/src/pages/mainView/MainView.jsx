@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Sidebar from "./Sidebar";
 import { Box, TextField, Button, Alert } from "@mui/material/";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import Categories from "./Categories";
 import QuestionInput from "./QuestionInput";
 import api from "../../api/api";
@@ -15,7 +15,7 @@ function MainView() {
   const [messages, setMessages] = useState([]);
   const [queryEnabled, setQueryEnabled] = useState(false);
 
-  const { register, control, handleSubmit } = useForm();
+  const { register, control, handleSubmit, reset } = useForm();
 
   // React Query mutation for form submission
   const mutation = useMutation({
@@ -75,10 +75,8 @@ function MainView() {
       Modifiers: { Region: null, Category: question.categories },
     };
     mutation.mutate(formData);
+    reset();
   };
-
-  if (query.isLoading) return <div>Loading...</div>;
-  if (query.isError) return <div>Error: {query.error.message}</div>;
 
   return (
     <Box>
@@ -89,7 +87,7 @@ function MainView() {
         </Box> */}
         <Box>
           <Categories control={control} />
-          <Conversation messages={messages} />
+          <Conversation messages={messages} query={query} />
           <Box>
             {serverError && <Alert severity="error">{serverError}</Alert>}
           </Box>
