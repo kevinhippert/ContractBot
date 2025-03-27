@@ -13,17 +13,23 @@ import { generateNonce } from "../../utils/utils";
 function MainView() {
   const [serverError, setServerError] = useState(null);
   const [message, setMessage] = useState({});
+  const [queryEnabled, setQueryEnabled] = useState(false);
+
   const { register, control, handleSubmit } = useForm();
 
   // React Query mutation for form submission
   const mutation = useMutation({
     mutationFn: async (formData) => {
-      return api.post("/add-query/", formData);
+      return api.post(
+        "/add-query?User=Frontend-1&Nonce=bloh&Hash=foo",
+        formData
+      );
     },
     onSuccess: (response) => {
       // `response` is returned from mutationFn
       console.log(response);
-      // make check-query call TODO
+      // make check-query call
+      setQueryEnabled(true);
     },
     onError: (error) => {
       console.log("there was an error and here it is: ", error);
@@ -32,7 +38,7 @@ function MainView() {
 
   const fetchReply = async () => {
     const res = await api.get(
-      "user=frontend-1&nonce=blah&hash=foo&topic=bar&seq=1"
+      "check-query?User=Frontend-1&Nonce=blah&Hash=foo&Topic=bar&Seq=1"
     );
     return res.data;
   };
@@ -40,12 +46,18 @@ function MainView() {
   const { data, isLoading, isError } = useQuery({
     queryKey: ["reply", "topicId"],
     queryFn: fetchReply,
+    enabled: queryEnabled,
   });
 
   const onSubmit = (question) => {
     setServerError(null); // Reset server error on new submission
     setMessage(question);
-    mutation.mutate(question);
+    let formData = {
+      Topic: "123ABC",
+      Query: question.question,
+      Modifiers: { Region: null, Category: question.categories },
+    };
+    mutation.mutate(formData);
   };
 
   return (
