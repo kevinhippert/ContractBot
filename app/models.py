@@ -1,11 +1,10 @@
-from typing import Any
 from pydantic import BaseModel
 
 
 class Query(BaseModel):
-    Topic: Any | None = None
-    Query: Any | None = None
-    Modifiers: Any | None = None
+    Topic: str
+    Query: str
+    Modifiers: dict = {}
 
 
 class QueryAck(BaseModel):
