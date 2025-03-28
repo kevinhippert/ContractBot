@@ -11,11 +11,9 @@ import { generateNonce } from "../../utils/utils";
 
 // This component basically acts as a giant form, which registers inputs from various child components and handles submissions ond errors
 function MainView() {
-  const [serverError, setServerError] = useState(null);
+  const [errorMessage, setErrorMessage] = useState(null);
   const [messages, setMessages] = useState([]);
-  const [queryEnabled, setQueryEnabled] = useState(false);
   const [isQuerying, setIsQuerying] = useState(false);
-
   const { register, control, handleSubmit, setValue } = useForm();
 
   // React Query mutation for form submission
@@ -31,9 +29,9 @@ function MainView() {
       console.log(response);
       // start query
       setIsQuerying(true);
-      queryClient.invalidateQueries(["reply", "topicId"]);
     },
     onError: (error) => {
+      setErrorMessage(error);
       console.log("there was an error and here it is: ", error);
     },
   });
@@ -54,14 +52,13 @@ function MainView() {
         },
       ]);
       setIsQuerying(false);
-      setQueryEnabled(false);
       return res.data;
     },
     enabled: isQuerying,
   });
 
   const onSubmit = (question) => {
-    setServerError(null); // Reset server error on new submission
+    setErrorMessage(null); // Reset server error on new submission
     setMessages((prevMessages) => [
       ...prevMessages,
       {
@@ -77,7 +74,6 @@ function MainView() {
       Modifiers: { Region: null, Category: question.categories },
     };
     mutation.mutate(formData);
-    setQueryEnabled(true);
     setValue("question", "");
   };
 
@@ -92,12 +88,10 @@ function MainView() {
           <Categories control={control} />
           <Conversation
             messages={messages}
-            query={query}
+            errorMessage={errorMessage}
             isQuerying={isQuerying}
           />
-          <Box>
-            {serverError && <Alert severity="error">{serverError}</Alert>}
-          </Box>
+          <Box></Box>
           <QuestionInput register={register} />
         </Box>
       </form>
