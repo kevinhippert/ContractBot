@@ -18,7 +18,7 @@ const generateHash = async (nonce, secretToken) => {
   } else {
     // Node.js environment AKA production
     const { Buffer } = await import("buffer");
-    const crypto = require("crypto");
+    const crypto = await import("crypto");
     hashBuffer = crypto.createHash("sha256").update(Buffer.from(data)).digest();
   }
 
