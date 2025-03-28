@@ -13,14 +13,19 @@ const generateHash = async (nonce, secretToken) => {
 
   let hash;
   if (typeof window !== "undefined" && window.crypto && window.crypto.subtle) {
-    // Browser environment AKA local development
-    hash = await window.crypto.subtle.digest("SHA-256", data);
+    console.log("I'm running in a browser environment!");
+    // Browser environment
+    const hashBuffer = await window.crypto.subtle.digest("SHA-256", data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    hash = hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
   } else {
-    // Node.js environment AKA production
+    // Node.js environment
+    console.log("I'm running on node");
     const crypto = await import("crypto");
     const { Buffer } = await import("buffer");
     hash = crypto.createHash("sha256").update(Buffer.from(data)).digest("hex");
   }
+  console.log("hash: ", hash);
   return hash;
 };
 
