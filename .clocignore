@@ -2,3 +2,6 @@ node_modules
 react/node_modules
 .mypy_cache
 .venv
+.git
+react/.vite
+react/package-lock.json

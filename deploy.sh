@@ -32,6 +32,9 @@ gzip $HOME/log/backend-*.log || true
 gzip $HOME/log/frontend-*.log || true
 mv $HOME/log/*.log.gz $HOME/log/archive || true
 
+# Expose credentials as environment variables
+while read p; do export "$p"; done < $HOME/BossBot/secrets/credentials
+
 # Shut down anything on port 3000
 echo "Killing any process(es) on port 3000"
 kill -9 "$(lsof -t -i:3000)" || true
