@@ -14,10 +14,10 @@ jobs:
 
       - name: Add secrets to repository checkout
         env:
-          credentials_json: ${{ secrets.credentials_json }}
+          credentials: ${{ secrets.credentials }}
         run: |
           mkdir -p secrets
-          echo "$credentials" > secrets/credentials
+          echo "${credentials}" > secrets/credentials
           chmod 600 secrets/credentials
 
       - name: Deploy to main
