@@ -8,12 +8,12 @@ const generateNonce = () => {
 };
 
 const generateHash = async (nonce, secretToken) => {
-  const encoder = new TextEncoder();
-  const data = encoder.encode(nonce + secretToken);
+  // const encoder = new TextEncoder();
+  // const data = encoder.encode(nonce + secretToken);
 
-  const hashBuffer = await window.crypto.subtle.digest("SHA-256", data);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  const hash = hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
+  // const hashBuffer = await window.crypto.subtle.digest("SHA-256", data);
+  // const hashArray = Array.from(new Uint8Array(hashBuffer));
+  // const hash = hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
   // TODO UNHACK
   return "hackedhash123456789";
   return hash;
