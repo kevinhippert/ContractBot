@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Paper, Box } from "@mui/material";
 
-function Conversation({ messages, query }) {
+function Conversation({ messages, query, isQuerying }) {
   useEffect(() => {
     console.log(messages);
   }, [messages]);
@@ -10,7 +10,6 @@ function Conversation({ messages, query }) {
     console.log("query: ", query.isLoading);
   }, [query]);
 
-  if (query.isLoading) return <div>Loading...</div>;
   if (query.isError) return <div>Error: {query.error.message}</div>;
 
   return (
@@ -23,6 +22,7 @@ function Conversation({ messages, query }) {
               <Paper key={index}>{m.text[0]}</Paper>
             ))}
           </Box>
+          {isQuerying && <Paper>Thinking...</Paper>}
         </>
       )}
     </>

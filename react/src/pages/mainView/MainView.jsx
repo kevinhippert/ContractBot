@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Sidebar from "./Sidebar";
-import { Box, TextField, Button, Alert } from "@mui/material/";
+import { Box, Alert } from "@mui/material/";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import Categories from "./Categories";
@@ -14,6 +14,7 @@ function MainView() {
   const [serverError, setServerError] = useState(null);
   const [messages, setMessages] = useState([]);
   const [queryEnabled, setQueryEnabled] = useState(false);
+  const [isQuerying, setIsQuerying] = useState(false);
 
   const { register, control, handleSubmit, setValue } = useForm();
 
@@ -28,8 +29,9 @@ function MainView() {
     onSuccess: (response) => {
       // `response` is returned from mutationFn
       console.log(response);
-      // make check-query call
-      setQueryEnabled(true);
+      // start query
+      setIsQuerying(true);
+      queryClient.invalidateQueries(["reply", "topicId"]);
     },
     onError: (error) => {
       console.log("there was an error and here it is: ", error);
@@ -42,7 +44,6 @@ function MainView() {
       const res = await api.get(
         "check-query?User=Frontend-1&Nonce=blah&Hash=foo&Topic=bar&Seq=1"
       );
-
       setMessages((prevMessages) => [
         ...prevMessages,
         {
@@ -52,10 +53,11 @@ function MainView() {
           text: res.data.Answer,
         },
       ]);
+      setIsQuerying(false);
       setQueryEnabled(false);
       return res.data;
     },
-    enabled: queryEnabled,
+    enabled: isQuerying,
   });
 
   const onSubmit = (question) => {
@@ -74,8 +76,9 @@ function MainView() {
       Query: question.question,
       Modifiers: { Region: null, Category: question.categories },
     };
-    setValue("question", "");
     mutation.mutate(formData);
+    setQueryEnabled(true);
+    setValue("question", "");
   };
 
   return (
@@ -87,7 +90,11 @@ function MainView() {
         </Box> */}
         <Box>
           <Categories control={control} />
-          <Conversation messages={messages} query={query} />
+          <Conversation
+            messages={messages}
+            query={query}
+            isQuerying={isQuerying}
+          />
           <Box>
             {serverError && <Alert severity="error">{serverError}</Alert>}
           </Box>
