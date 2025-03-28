@@ -8,12 +8,20 @@ const generateNonce = () => {
 };
 
 const generateHash = async (nonce, secretToken) => {
-  console.log("nonce: ", nonce);
-  console.log("st: ", secretToken);
   const encoder = new TextEncoder();
   const data = encoder.encode(nonce + secretToken);
-  console.log("data: ", data);
-  const hashBuffer = await window.crypto.subtle.digest("SHA-256", data);
+
+  let hashBuffer;
+  if (typeof window !== "undefined" && window.crypto && window.crypto.subtle) {
+    // Browser environment AKA local development
+    hashBuffer = await window.crypto.subtle.digest("SHA-256", data);
+  } else {
+    // Node.js environment AKA production
+    const { Buffer } = await import("buffer");
+    const crypto = require("crypto");
+    hashBuffer = crypto.createHash("sha256").update(Buffer.from(data)).digest();
+  }
+
   const hashArray = Array.from(new Uint8Array(hashBuffer));
   const hashHex = hashArray
     .map((b) => b.toString(16).padStart(2, "0"))
