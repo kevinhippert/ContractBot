@@ -5,6 +5,7 @@ Reset ChromaDB and add documents to the database.
 
 from glob import glob
 from hashlib import sha1
+import json
 import os
 from os.path import basename
 from pathlib import Path
@@ -15,25 +16,64 @@ from tqdm import tqdm
 BATCH_SIZE = 100
 
 
+def get_metadata(document: Path) -> str:
+    useful_keys = {
+        "city": "City",
+        "cname": "Document Type",
+        "company_name": "Company",
+        "division": "Division",
+        "effective_date": "Effective Date",
+        "employer_name": "Employer",
+        "expiration_date": "Expiration",
+        "local_now": "Local",
+        "membership_size": "Local Size",
+        "non_profit_ind": "Nonprofit (Y/N)",
+        "notes": "Notes",
+        "old_local_name": "Prior Local Number",
+        "pdf_unique_name": "Document Name",
+        "pub_jur_level": "pub_jur_level",  # Not sure of meaning
+        "pub_pri_ind": "pub_pri_ind",  # Not sure of meaning
+        "state": "State",
+        "unit_size": "Unit Size",
+        "upload_time": "Uploaded At",
+    }
+    meta_file = document.with_suffix(".meta")
+    metadata = ""
+    if meta_file.exists():
+        meta_items = []
+        all_meta = json.loads(meta_file.read_text())
+        for k, v in all_meta.items():
+            if k in useful_keys and v:  # Key is useful and has a value
+                meta_items.append(f"{k}: {v}")
+        metadata = "\n".join(meta_items)
+
+    if "Document Name" not in metadata:
+        metadata = f"Document Name: {document.name.removesuffix(".txt")}"
+    return metadata
+
+
 def add_document(
-    collection: chromadb.Collection, file_path: str, context_sentences: int = 3
+    collection: chromadb.Collection, file_path: str, context_sentences: int = 5
 ):
     """
     TODO: A better splitter/chunker is almost surely using LangChain
     https://gist.github.com/tazarov/e66c1d3ae298c424dc4ffc8a9a916a4a
     """
-    document = Path(file_path).read_text()
+    doc_file = Path(file_path)
+    document = doc_file.read_text()
     sentences = document.replace("\n", " ").split(".")
+    metadata = get_metadata(doc_file)
 
     chunks = set()
-    fname = basename(file_path.removesuffix(".txt"))
     for i in range(len(sentences) - context_sentences):
-        content = ".".join(sentences[i : i + context_sentences]) + ".\n" + fname
+        content = ".".join(sentences[i : i + context_sentences]) + ".\n" + metadata
         chunks.add(content)
     all_chunks = list(chunks)
     all_ids = [sha1(chunk.encode()).hexdigest() for chunk in all_chunks]
 
-    for n in tqdm(range(len(chunks) // BATCH_SIZE), desc=fname):
+    for n in tqdm(
+        range(len(chunks) // BATCH_SIZE), desc=doc_file.name.removesuffix(".txt")
+    ):
         chunks = all_chunks[n * BATCH_SIZE : (n + 1) * BATCH_SIZE]
         ids = all_ids[n * BATCH_SIZE : (n + 1) * BATCH_SIZE]
         collection.add(documents=chunks, ids=ids)
@@ -44,7 +84,7 @@ def add_document(
 if __name__ == "__main__":
     if os.getenv("ALLOW_RESET") != "TRUE":
         print("DB re-creation permitted only with environment ALLOW_RESET=TRUE")
-    else:        
+    else:
         client = chromadb.PersistentClient()
         client.reset()  # Clear the database before adding new documents
         collection = client.create_collection(name="BossBot")
