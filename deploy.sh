@@ -32,8 +32,10 @@ gzip $HOME/log/backend-*.log || true
 gzip $HOME/log/frontend-*.log || true
 mv $HOME/log/*.log.gz $HOME/log/archive || true
 
-# Expose credentials as environment variables
+# Expose credentials to React via environment variables
+echo "Set credential environment variables"
 while read p; do export "$p"; done < $HOME/BossBot/secrets/credentials
+rm $HOME/BossBot/secrets/credentials
 
 # Shut down anything on port 3000
 echo "Killing any process(es) on port 3000"

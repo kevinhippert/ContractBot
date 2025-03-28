@@ -39,7 +39,7 @@ received within a configurable timeout period.
 
 Takes authentication query parameters:
 
-- User (e.g. `Frontend-1`)
+- User (e.g. `Frontend_1`)
 - Nonce
 - Hash
 
@@ -71,7 +71,7 @@ Response should look like:
 
 Takes authentication and topic query parameters:
 
-- User (e.g. `Frontend-1`)
+- User (e.g. `Frontend_1`)
 - Nonce
 - Hash
 - Topic (e.g. `&Topic=DGQIn+5troxI`)
@@ -123,8 +123,8 @@ Suppose we have this information stored on the FastAPI server securely:
 
 | User   | Password         |
 |--------|------------------|
-| User-1 | 04EMG47U62bjoyL3 |
-| User-2 | MLIyPLaQqCJ6tMqP |
+| User_1 | 04EMG47U62bjoyL3 |
+| User_2 | MLIyPLaQqCJ6tMqP |
 
 The React frontend will take the username and purported password from the user,
 and compute:
@@ -152,12 +152,12 @@ frontend might have a secure table like:
 
 | Engine       | Tokens                                   |
 |--------------|------------------------------------------|
-| Inference-1  | 7b18d017f89f61cf17d47f92749ea6930a3f1deb |
-| Inference-2  | 03cfd743661f07975fa2f1220c5194cbaff48451 |
+| Inference_1  | 7b18d017f89f61cf17d47f92749ea6930a3f1deb |
+| Inference_2  | 03cfd743661f07975fa2f1220c5194cbaff48451 |
 
 Validated inference routes will contain the following query parameters:
 
-- User (e.g. "Inference-1")
+- User (e.g. "Inference_1")
 - Nonce (e.g. "PSjUAS82NcDKgwXq")
 - Hash (e.g. "37f5bbd5657e3d69b1cabd81c2b8671e050d05d7")
 

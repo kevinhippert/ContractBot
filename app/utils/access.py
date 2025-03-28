@@ -1,4 +1,10 @@
-USERS = ["Frontend-1", "User-1", "User-2", "Inference-1", "Inference-2"]
+import os
+
+USERS = {
+    k: v
+    for k, v in os.environ.items()
+    if k.startswith(("Frontend_", "Inference_", "User_"))
+}
 
 
 def authenticate(user: str, nonce: str, hash: str) -> bool:
@@ -13,5 +19,4 @@ def authenticate(user: str, nonce: str, hash: str) -> bool:
     elif hash.lower() == "bad":
         return False
 
-    return True 
-
+    return True

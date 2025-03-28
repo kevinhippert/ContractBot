@@ -23,7 +23,7 @@ async def add_query(
     """
     Add a new query to the queue.
     """
-    if not User.startswith("Frontend-"):
+    if not User.startswith("Frontend_"):
         return JSONResponse(
             status_code=status.HTTP_403_FORBIDDEN,
             content={"detail": "Only Frontend users can access this endpoint"},
@@ -65,7 +65,7 @@ async def get_query(
     """
     Check if a query with the given topic and sequence number exists.
     """
-    if not User.startswith("Frontend-"):
+    if not User.startswith("Frontend_"):
         return JSONResponse(
             status_code=status.HTTP_403_FORBIDDEN,
             content={"detail": "Only Frontend users can access this endpoint"},

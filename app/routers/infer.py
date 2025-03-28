@@ -18,7 +18,7 @@ async def get_new_queries(
     Nonce: str,
     Hash: str,
 ) -> JSONResponse:
-    if not User.startswith("Inference-"):
+    if not User.startswith("Inference_"):
         return JSONResponse(
             status_code=status.HTTP_403_FORBIDDEN,
             content={"detail": "Only Inference users can access this endpoint"},
@@ -47,7 +47,7 @@ def give_new_answer(
     Hash: str,
     answer: Answer,
 ) -> JSONResponse:
-    if not User.startswith("Inference-"):
+    if not User.startswith("Inference_"):
         return JSONResponse(
             status_code=status.HTTP_403_FORBIDDEN,
             content={"detail": "Only Inference users can access this endpoint"},
