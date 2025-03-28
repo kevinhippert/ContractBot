@@ -48,7 +48,7 @@ def get_metadata(document: Path) -> str:
         metadata = "\n".join(meta_items)
 
     if "Document Name" not in metadata:
-        metadata = f"Document Name: {document.name.removesuffix(".txt")}"
+        metadata += f"\nDocument Name: {document.name.removesuffix(".txt")}"
     return metadata
 
 
@@ -71,9 +71,8 @@ def add_document(
     all_chunks = list(chunks)
     all_ids = [sha1(chunk.encode()).hexdigest() for chunk in all_chunks]
 
-    for n in tqdm(
-        range(len(chunks) // BATCH_SIZE), desc=doc_file.name.removesuffix(".txt")
-    ):
+    desc = doc_file.name.removesuffix(".txt")[:30].ljust(30)
+    for n in tqdm(range(len(chunks) // BATCH_SIZE), desc=desc):
         chunks = all_chunks[n * BATCH_SIZE : (n + 1) * BATCH_SIZE]
         ids = all_ids[n * BATCH_SIZE : (n + 1) * BATCH_SIZE]
         collection.add(documents=chunks, ids=ids)
