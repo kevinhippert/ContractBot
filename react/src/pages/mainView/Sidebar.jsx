@@ -1,4 +1,5 @@
 import * as React from "react";
+import { createTopicId } from "../../utils/utils";
 import {
   Box,
   List,
@@ -11,6 +12,8 @@ import {
 import AddIcon from "@mui/icons-material/Add";
 
 export default function Sidebar() {
+  console.log(createTopicId());
+
   return (
     <Box sx={{ maxWidth: "200px" }}>
       <nav>

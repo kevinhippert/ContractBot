@@ -1,7 +1,8 @@
 import React from "react";
 import { Button, Box } from "@mui/material";
+import { Controller } from "react-hook-form";
 
-function Categories() {
+function Categories({ control }) {
   const categories = [
     "wages",
     "benefits",
@@ -14,11 +15,33 @@ function Categories() {
 
   return (
     <>
-      <Box>
-        {categories.map((category, index) => (
-          <Button key={index}>{category}</Button>
-        ))}
-      </Box>
+      <Controller
+        name="categories"
+        control={control}
+        defaultValue={[]}
+        render={({ field: { onChange, value } }) => {
+          const handleCategoryClick = (category) => {
+            const updatedCategories = value.includes(category)
+              ? value.filter((c) => c !== category)
+              : [...value, category];
+            onChange(updatedCategories);
+          };
+
+          return (
+            <Box>
+              {categories.map((category) => (
+                <Button
+                  key={category}
+                  onClick={() => handleCategoryClick(category)}
+                  variant={value.includes(category) ? "contained" : "outlined"} //add visual feedback
+                >
+                  {category}
+                </Button>
+              ))}
+            </Box>
+          );
+        }}
+      />
     </>
   );
 }
