@@ -1,7 +1,3 @@
-let secretToken = import.meta.env.VITE_Frontend_1;
-// TODO UNHACk
-secretToken = "abc123";
-
 const generateNonce = () => {
   const nonceLength = 16;
   const array = new Uint8Array(nonceLength);
@@ -23,6 +19,10 @@ const generateHash = async (nonce, secretToken) => {
 };
 
 export const createAuthenticationParams = async () => {
+  let secretToken = import.meta.env.VITE_Frontend_1;
+  // TODO UNHACk
+  secretToken = "abc123";
+
   if (!secretToken) {
     throw new Error("secret token is missing");
   }
