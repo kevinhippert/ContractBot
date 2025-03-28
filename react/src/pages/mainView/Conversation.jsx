@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Paper, Box } from "@mui/material";
+import { Paper, Box, Alert } from "@mui/material";
 
 function Conversation({ messages, errorMessage, isQuerying }) {
   useEffect(() => {
@@ -17,7 +17,9 @@ function Conversation({ messages, errorMessage, isQuerying }) {
           </Box>
           {isQuerying && <Paper>Thinking...</Paper>}
           {errorMessage && (
-            <Paper>Whoopsy. {errorMessage.response.data.detail}</Paper>
+            <Alert severity="error">
+              Whoopsy. {errorMessage.response.data.detail}
+            </Alert>
           )}
         </>
       )}

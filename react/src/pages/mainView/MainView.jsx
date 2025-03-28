@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import Sidebar from "./Sidebar";
-import { Box, Alert } from "@mui/material/";
+import { Box } from "@mui/material/";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import Categories from "./Categories";
 import QuestionInput from "./QuestionInput";
 import api from "../../api/api";
 import Conversation from "./Conversation";
-import { generateNonce } from "../../utils/utils";
+import { createAuthenticationParams } from "../../authentication/authentication";
 
 // This component basically acts as a giant form, which registers inputs from various child components and handles submissions ond errors
 function MainView() {
@@ -19,10 +19,13 @@ function MainView() {
   // React Query mutation for form submission
   const mutation = useMutation({
     mutationFn: async (formData) => {
-      return api.post(
-        "/add-query?User=Frontend-1&Nonce=bloh&Hash=foo",
-        formData
-      );
+      try {
+        const authParams = await createAuthenticationParams();
+        const url = `/add-query?${authParams}`;
+        return api.post(url, formData);
+      } catch (error) {
+        console.log("mutation error: ", error);
+      }
     },
     onSuccess: (response) => {
       // `response` is returned from mutationFn
@@ -39,20 +42,24 @@ function MainView() {
   const query = useQuery({
     queryKey: ["reply", "topicId"],
     queryFn: async () => {
-      const res = await api.get(
-        "check-query?User=Frontend-1&Nonce=blah&Hash=foo&Topic=bar&Seq=1"
-      );
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        {
-          type: "answer",
-          seq: res.data.Seq,
-          topic: res.data.Topic,
-          text: res.data.Answer,
-        },
-      ]);
-      setIsQuerying(false);
-      return res.data;
+      try {
+        const authParams = await createAuthenticationParams();
+        const url = `check-query?${authParams}&Topic=123ABC&Seq=1`;
+        const res = await api.get(url);
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          {
+            type: "answer",
+            seq: res.data.Seq,
+            topic: res.data.Topic,
+            text: res.data.Answer,
+          },
+        ]);
+        setIsQuerying(false);
+        return res.data;
+      } catch (error) {
+        console.log("fetch error: ", error);
+      }
     },
     enabled: isQuerying,
   });
