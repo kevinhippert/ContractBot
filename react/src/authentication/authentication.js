@@ -8,8 +8,11 @@ const generateNonce = () => {
 };
 
 const generateHash = async (nonce, secretToken) => {
+  console.log("nonce: ", nonce);
+  console.log("st: ", secretToken);
   const encoder = new TextEncoder();
   const data = encoder.encode(nonce + secretToken);
+  console.log("data: ", data);
   const hashBuffer = await window.crypto.subtle.digest("SHA-256", data);
   const hashArray = Array.from(new Uint8Array(hashBuffer));
   const hashHex = hashArray
