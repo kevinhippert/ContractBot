@@ -1,4 +1,6 @@
 const secretToken = import.meta.env.VITE_Frontend_1;
+// TODO UNHACk
+secretToken = "abc123";
 
 const generateNonce = () => {
   const nonceLength = 16;
