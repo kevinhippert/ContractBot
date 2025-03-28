@@ -11,22 +11,16 @@ const generateHash = async (nonce, secretToken) => {
   const encoder = new TextEncoder();
   const data = encoder.encode(nonce + secretToken);
 
-  let hashBuffer;
+  let hash;
   if (typeof window !== "undefined" && window.crypto && window.crypto.subtle) {
     // Browser environment AKA local development
-    hashBuffer = await window.crypto.subtle.digest("SHA-256", data);
+    hash = await window.crypto.subtle.digest("SHA-256", data);
   } else {
     // Node.js environment AKA production
-    const { Buffer } = await import("buffer");
     const crypto = await import("crypto");
-    hashBuffer = crypto.createHash("sha256").update(Buffer.from(data)).digest();
+    hash = crypto.createHash("sha256", data).digest(hex);
   }
-
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  const hashHex = hashArray
-    .map((b) => b.toString(16).padStart(2, "0"))
-    .join("");
-  return hashHex;
+  return hash;
 };
 
 export const createAuthenticationParams = async () => {
