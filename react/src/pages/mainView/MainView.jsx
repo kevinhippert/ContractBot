@@ -15,7 +15,7 @@ function MainView() {
   const [messages, setMessages] = useState([]);
   const [queryEnabled, setQueryEnabled] = useState(false);
 
-  const { register, control, handleSubmit, reset } = useForm();
+  const { register, control, handleSubmit, setValue } = useForm();
 
   // React Query mutation for form submission
   const mutation = useMutation({
@@ -74,8 +74,8 @@ function MainView() {
       Query: question.question,
       Modifiers: { Region: null, Category: question.categories },
     };
+    setValue("question", "");
     mutation.mutate(formData);
-    reset();
   };
 
   return (
