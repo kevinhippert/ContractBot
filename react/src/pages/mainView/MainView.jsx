@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Sidebar from "./Sidebar";
-import { Box } from "@mui/material/";
+import { Box, Container } from "@mui/material/";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import Categories from "./Categories";
@@ -85,12 +85,18 @@ function MainView() {
   };
 
   return (
-    <Box>
+    <Container
+      sx={{
+        marginTop: "20px",
+        "&.MuiContainer-root": {
+          padding: 0,
+        },
+      }}
+    >
       <form style={{ display: "flex" }} onSubmit={handleSubmit(onSubmit)}>
-        {/* Let's start with just one conversation */}
-        {/* <Box>
+        <Box sx={{ width: "200px" }}>
           <Sidebar />
-        </Box> */}
+        </Box>
         <Box>
           <Categories control={control} />
           <Conversation
@@ -98,11 +104,10 @@ function MainView() {
             errorMessage={errorMessage}
             isQuerying={isQuerying}
           />
-          <Box></Box>
-          <QuestionInput register={register} />
+          <QuestionInput register={register} style={{ marginTop: "10px" }} />
         </Box>
       </form>
-    </Box>
+    </Container>
   );
 }
 

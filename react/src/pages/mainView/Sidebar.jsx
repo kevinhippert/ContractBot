@@ -15,7 +15,7 @@ export default function Sidebar() {
   console.log(createTopicId());
 
   return (
-    <Box sx={{ maxWidth: "200px" }}>
+    <Box>
       <nav>
         <List>
           <ListItem disablePadding>
