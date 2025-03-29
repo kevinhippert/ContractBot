@@ -108,7 +108,7 @@ def add_document(
     "--num-docs",
     type=int,
     default=sys.maxsize,
-    help="Limit processing to N files (incl already processed)",
+    help="Limit processing to N files",
 )
 @click.option(
     "-p",
@@ -136,14 +136,19 @@ def main(reset, filelist, collection, num_docs, pattern):  # type: ignore
         except:
             collection = client.get_collection(name=collection)
 
-        for document, ndx in zip(files, range(num_docs)):
+        i = 0
+        for document in files:
+            i += 1
             if document.startswith("[DONE]"):
                 print(f"Existing document {document.removeprefix('[DONE] ')}")
+                num_docs += 1  # Add one to get to desired newly processed
                 continue
             collection = add_document(collection, document)
             # Mark each completed file back to the filelist
-            files[ndx] = f"[DONE] {files[ndx]}"
+            files[i-1] = f"[DONE] {files[i-1]}"
             Path(filelist).write_text("\n".join(files))
+            if i >= num_docs:
+                break
 
 
 if __name__ == "__main__":
