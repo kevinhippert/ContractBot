@@ -10,8 +10,9 @@ dependencies = [
     "fastapi",
     "fortune-python",
     "ipython",
-    "uvicorn",
+    "onnxruntime",
     "python-dotenv",
     "requests",
     "tqdm",
+    "uvicorn",
 ]

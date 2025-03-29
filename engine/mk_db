@@ -58,9 +58,21 @@ def get_metadata(document: Path) -> str:
 
 
 def add_document(
-    collection: chromadb.Collection, file_path: str, context_sentences: int = 5
+    collection: chromadb.Collection,
+    file_path: str,
+    context_sentences: int = 5,
+    context_increment: int = 2,
 ):
     """
+    Chunk each full document into "paragraph" pieces.  A paragraph is
+    simply several "sentences" (defined by ending periods) with overlap
+    between adjacent chunks.
+
+    Vectorize each chunk and add it to the vector DB collection.
+
+    The chunks are deduplicated by creating a set of them, hence the order
+    in which they are processed is indeterminate within a document.
+
     TODO: A better splitter/chunker is almost surely using LangChain
     https://gist.github.com/tazarov/e66c1d3ae298c424dc4ffc8a9a916a4a
     """
@@ -70,7 +82,7 @@ def add_document(
     metadata = get_metadata(doc_file)
 
     chunks = set()
-    for i in range(len(sentences) - context_sentences):
+    for i in range(0, len(sentences) - context_sentences, context_increment):
         paragraph = ".".join(sentences[i : i + context_sentences])
         content = metadata + "\n.....\n" + paragraph
         chunks.add(content)
@@ -104,6 +116,12 @@ def add_document(
     help="Name of collection to create (default 'BossBot')",
 )
 @click.option(
+    "-m",
+    "--cosine",
+    is_flag=True,
+    help="Use cosine similarity metric not squared L2 norm",
+)
+@click.option(
     "-n",
     "--num-docs",
     type=int,
@@ -116,7 +134,7 @@ def add_document(
     type=str,
     help="Generate 'documents.cfg' from glob pattern",
 )
-def main(reset, filelist, collection, num_docs, pattern):  # type: ignore
+def main(reset, filelist, collection, num_docs, pattern, cosine):  # type: ignore
     client = chromadb.PersistentClient()
     if reset:
         if os.getenv("ALLOW_RESET") != "TRUE":
@@ -132,8 +150,18 @@ def main(reset, filelist, collection, num_docs, pattern):  # type: ignore
     if filelist:
         files = Path(filelist).read_text().splitlines()
         try:
-            collection = client.create_collection(name=collection)
+            if cosine:
+                collection = client.create_collection(
+                    name=collection, metadata={"hnsw:space": "cosine"}
+                )
+            else:
+                # Euclidian distance (the default)
+                collection = client.create_collection(
+                    name=collection, metadata={"hnsw:space": "l2"}
+                )
         except:
+            if cosine:
+                print("Using existing collection, cosine metric argument ignored")
             collection = client.get_collection(name=collection)
 
         i = 0
@@ -145,7 +173,7 @@ def main(reset, filelist, collection, num_docs, pattern):  # type: ignore
                 continue
             collection = add_document(collection, document)
             # Mark each completed file back to the filelist
-            files[i-1] = f"[DONE] {files[i-1]}"
+            files[i - 1] = f"[DONE] {files[i-1]}"
             Path(filelist).write_text("\n".join(files))
             if i >= num_docs:
                 break
