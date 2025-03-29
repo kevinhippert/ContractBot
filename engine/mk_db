@@ -10,11 +10,12 @@ import os
 from pathlib import Path
 import sys
 
-
 import chromadb
+import click
 from tqdm import tqdm
 
 BATCH_SIZE = 100
+CONTEXT_SETTINGS = dict(help_option_names=["-h", "-?", "--help"])
 
 
 def get_metadata(document: Path) -> str:
@@ -42,7 +43,7 @@ def get_metadata(document: Path) -> str:
         "Topics": "Topics",
     }
     meta_file = document.with_suffix(".meta")
-    metadata = ""
+    metadata: str = ""
     if meta_file.exists():
         meta_items = []
         all_meta = json.loads(meta_file.read_text())
@@ -85,14 +86,65 @@ def add_document(
     return collection
 
 
-if __name__ == "__main__":
-    if os.getenv("ALLOW_RESET") != "TRUE":
-        print("DB re-creation permitted only with environment ALLOW_RESET=TRUE")
-    else:
-        num_docs = int(sys.argv[1]) if len(sys.argv) > 1 else sys.maxsize
-        client = chromadb.PersistentClient()
-        client.reset()  # Clear the database before adding new documents
-        collection = client.create_collection(name="BossBot")
+@click.command(context_settings=CONTEXT_SETTINGS)
+@click.option(
+    "-x", "--reset", is_flag=True, help="Reset the vector database of document chunks"
+)
+@click.option(
+    "-f",
+    "--filelist",
+    type=str,
+    help="File with list of files to process, one per line",
+)
+@click.option(
+    "-c",
+    "--collection",
+    type=str,
+    default="BossBot",
+    help="Name of collection to create (default 'BossBot')",
+)
+@click.option(
+    "-n",
+    "--num-docs",
+    type=int,
+    default=sys.maxsize,
+    help="Limit processing to N files (incl already processed)",
+)
+@click.option(
+    "-p",
+    "--pattern",
+    type=str,
+    help="Generate 'documents.cfg' from glob pattern",
+)
+def main(reset, filelist, collection, num_docs, pattern):  # type: ignore
+    client = chromadb.PersistentClient()
+    if reset:
+        if os.getenv("ALLOW_RESET") != "TRUE":
+            print("DB re-creation permitted only with environment ALLOW_RESET=TRUE")
+            sys.exit(-1)
+        client.reset()  # Clear the database
 
-        for document, _stop in zip(glob("assets/text/*.txt"), range(num_docs)):
+    if glob and not filelist:
+        files = glob(pattern)
+        filelist: str = "documents.cfg"
+        Path("documents.cfg").write_text("\n".join(files))
+
+    if filelist:
+        files = Path(filelist).read_text().splitlines()
+        try:
+            collection = client.create_collection(name=collection)
+        except:
+            collection = client.get_collection(name=collection)
+
+        for document, ndx in zip(files, range(num_docs)):
+            if document.startswith("[DONE]"):
+                print(f"Existing document {document.removeprefix('[DONE] ')}")
+                continue
             collection = add_document(collection, document)
+            # Mark each completed file back to the filelist
+            files[ndx] = f"[DONE] {files[ndx]}"
+            Path(filelist).write_text("\n".join(files))
+
+
+if __name__ == "__main__":
+    main()

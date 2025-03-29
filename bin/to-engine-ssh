@@ -2,7 +2,6 @@
 rsync -av -e "ssh -p443" . \
     bossbot@70.105.237.83:/Users/bossbot/BossBot/ \
     --delete \
-    --exclude 'chroma*' \
     --exclude '.git/*' \
     --exclude 'assets/raw-documents/*' \
     --exclude '.venv/*' \
