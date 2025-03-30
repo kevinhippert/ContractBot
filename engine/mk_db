@@ -9,6 +9,7 @@ import json
 import os
 from pathlib import Path
 import sys
+from time import time
 
 import chromadb
 import click
@@ -62,7 +63,7 @@ def add_document(
     file_path: str,
     context_sentences: int = 5,
     context_increment: int = 2,
-):
+) -> tuple[chromadb.Collection, int]:
     """
     Chunk each full document into "paragraph" pieces.  A paragraph is
     simply several "sentences" (defined by ending periods) with overlap
@@ -76,6 +77,7 @@ def add_document(
     TODO: A better splitter/chunker is almost surely using LangChain
     https://gist.github.com/tazarov/e66c1d3ae298c424dc4ffc8a9a916a4a
     """
+    n_chunks = 0
     doc_file = Path(file_path)
     document = doc_file.read_text()
     sentences = document.replace("\n", " ").split(".")
@@ -94,8 +96,9 @@ def add_document(
         chunks = all_chunks[n * BATCH_SIZE : (n + 1) * BATCH_SIZE]
         ids = all_ids[n * BATCH_SIZE : (n + 1) * BATCH_SIZE]
         collection.add(documents=chunks, ids=ids)
+        n_chunks += len(chunks)
 
-    return collection
+    return collection, n_chunks
 
 
 @click.command(context_settings=CONTEXT_SETTINGS)
@@ -134,8 +137,19 @@ def add_document(
     type=str,
     help="Generate 'documents.cfg' from glob pattern",
 )
-def main(reset, filelist, collection, num_docs, pattern, cosine):  # type: ignore
+def main(
+    reset: bool,
+    filelist: str,
+    collection: str,
+    num_docs: int,
+    pattern: str,
+    cosine: bool,
+) -> tuple[int, int]:
     client = chromadb.PersistentClient()
+    n_chunks = 0
+    n_processed = 0
+    start = time()
+
     if reset:
         if os.getenv("ALLOW_RESET") != "TRUE":
             print("DB re-creation permitted only with environment ALLOW_RESET=TRUE")
@@ -144,25 +158,26 @@ def main(reset, filelist, collection, num_docs, pattern, cosine):  # type: ignor
 
     if glob and not filelist:
         files = glob(pattern)
-        filelist: str = "documents.cfg"
+        _filelist: str = "documents.cfg"
         Path("documents.cfg").write_text("\n".join(files))
 
     if filelist:
+        _filelist = filelist
         files = Path(filelist).read_text().splitlines()
         try:
             if cosine:
-                collection = client.create_collection(
+                collection_obj = client.create_collection(
                     name=collection, metadata={"hnsw:space": "cosine"}
                 )
             else:
                 # Euclidian distance (the default)
-                collection = client.create_collection(
+                collection_obj = client.create_collection(
                     name=collection, metadata={"hnsw:space": "l2"}
                 )
         except:
             if cosine:
                 print("Using existing collection, cosine metric argument ignored")
-            collection = client.get_collection(name=collection)
+            collection_obj = client.get_collection(name=collection)
 
         i = 0
         for document in files:
@@ -171,12 +186,20 @@ def main(reset, filelist, collection, num_docs, pattern, cosine):  # type: ignor
                 print(f"Existing document {document.removeprefix('[DONE] ')}")
                 num_docs += 1  # Add one to get to desired newly processed
                 continue
-            collection = add_document(collection, document)
+            collection_obj, count = add_document(collection_obj, document)
+            n_chunks += count
+            n_processed += 1
             # Mark each completed file back to the filelist
             files[i - 1] = f"[DONE] {files[i-1]}"
-            Path(filelist).write_text("\n".join(files))
+            Path(_filelist).write_text("\n".join(files))
             if i >= num_docs:
                 break
+
+    print(
+        f"Processed {n_chunks} chunks from {n_processed} documents "
+        f"in {time()-start:,.0f} seconds"
+    )
+    return n_chunks, n_processed
 
 
 if __name__ == "__main__":
