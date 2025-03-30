@@ -19,6 +19,24 @@ BATCH_SIZE = 100
 CONTEXT_SETTINGS = dict(help_option_names=["-h", "-?", "--help"])
 
 
+def collection_info(client):
+    for c in client.list_collections():
+        collection_obj = client.get_collection(c)
+        metric = collection_obj.configuration_json["hnsw_configuration"]["space"]
+        count = collection_obj.count()
+        print(f"{c}: {count:,} vectors, using {metric} metric")
+
+
+def collection_delete(client, collection):
+    confirm = input("Do you really want to delete? [type name of collection again] ")
+    if confirm == collection:
+        try:
+            client.delete_collection(confirm)
+            print(f"The collection {confirm} was deleted")
+        except ValueError:
+            print(f"The collection {confirm} does not exist")
+
+
 def get_metadata(document: Path) -> str:
     useful_keys = {
         "city": "City",
@@ -51,7 +69,7 @@ def get_metadata(document: Path) -> str:
         for k, v in all_meta.items():
             if k in useful_keys and v:  # Key is useful and has a value
                 meta_items.append(f"{useful_keys[k]}: {v.removesuffix('.pdf')}")
-        metadata = "\n".join(meta_items)
+        metadata = "\n".join(meta_items)  # type: ignore
 
     if "Document Name" not in metadata:
         metadata += f"\nDocument Name: {document.name.removesuffix(".txt")}"
@@ -117,13 +135,22 @@ def add_document(
     help="Name of collection to create (default 'BossBot')",
 )
 @click.option(
-    "-m",
+    "-l",
+    "--list-collections",
+    is_flag=True,
+    help="List the existing collections and their sizes",
+)
+@click.option(
+    "--delete-collection",
+    is_flag=True,
+    help="Delete a collection (requires confirmation)",
+)
+@click.option(
     "--cosine",
     is_flag=True,
     help="Use cosine similarity metric not squared L2 norm",
 )
 @click.option(
-    "-i",
     "--inner",
     is_flag=True,
     help="Use inner product metric not squared L2 norm",
@@ -146,12 +173,14 @@ def main(
     reset: bool,
     filelist: str,
     collection: str,
+    list_collections: bool,
+    delete_collection: bool,
     cosine: bool,
     inner: bool,
     num_docs: int,
     pattern: str,
     verbose: bool,
-) -> int:
+) -> int | None:
     client = chromadb.PersistentClient()
     n_processed = 0
     start = time()
@@ -162,22 +191,31 @@ def main(
             sys.exit(-1)
         client.reset()  # Clear the database
 
+    if list_collections:
+        collection_info(client)
+        sys.exit(0)
+    elif delete_collection:
+        collection_delete(client, collection)
+        sys.exit(0)
+
+    _filelist = filelist
     if pattern and not filelist:
         files = glob(pattern)
         _filelist: str = "documents.cfg"
         Path("documents.cfg").write_text("\n".join(files))
 
-    if not filelist:
+    if not _filelist:
         print(f"Run {Path(__file__).name} --help for options")
     else:
-        _filelist = filelist
-        files = Path(filelist).read_text().splitlines()
+        files = Path(_filelist).read_text().splitlines()
         try:
             if cosine:
+                print("WARNING: cosine is not supported by default embedding")
                 collection_obj = client.create_collection(
                     name=collection, metadata={"hnsw:space": "cosine"}
                 )
             elif inner:
+                print("WARNING: inner-product is not supported by default embedding")
                 collection_obj = client.create_collection(
                     name=collection, metadata={"hnsw:space": "inner"}
                 )
