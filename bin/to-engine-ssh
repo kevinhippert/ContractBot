@@ -1,5 +1,5 @@
 #!/bin/bash
-rsync -av --progress -e "ssh -p443" . \
+rsync -aWv --progress -e "ssh -p443" . \
     bossbot@70.105.237.83:/Users/bossbot/BossBot/ \
     --delete \
     --exclude '.git/*' \
