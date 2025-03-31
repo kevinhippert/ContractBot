@@ -5,30 +5,18 @@ from time import sleep
 
 import requests
 
-EXAMPLE_RESPONSE = {
-    "Topic": "DGQIn+5troxI",
-    "Seq": 2,
-    "Think": [
-        "That’s a great question.",
-        "Many philosophers have asked that.",
-        "Duke Ellington seems relevant.",
-    ],
-    "Answer": ["It don’t mean a thing if you ain’t got that swing."],
-}
+from engine.answers import ask
 
 
 def give_answer(engine: str, token: str, topic: str, seq: int, queries: list[str]):
     for _query in queries:
         nonce = make_nonce(16)
         hash = sha1(f"{nonce} {token}".encode()).hexdigest()
-        think = EXAMPLE_RESPONSE["Think"]  # TODO: Call the actual LLM
-        answer = EXAMPLE_RESPONSE["Answer"]  # TODO: Call the actual LLM
+        think, answer = ask(_query, topic, seq)
         response = requests.post(
-            "http://bossbot.org/api/give-new-answer",
+            "https://bossbot.org/api/give-new-answer",
+            params={"Engine": engine, "Nonce": nonce, "Hash": hash},
             json={
-                "Engine": engine,
-                "Nonce": nonce,
-                "Hash": hash,
                 "Topic": topic,
                 "Seq": seq,
                 "Think": think,

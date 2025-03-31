@@ -9,6 +9,7 @@ dependencies = [
     "click",
     "fastapi",
     "fortune-python",
+    "gunicorn",
     "ipython",
     "onnxruntime",
     "python-dotenv",

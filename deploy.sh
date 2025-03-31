@@ -60,4 +60,14 @@ serve -s dist -l 3000 > $FRONTEND_LOG 2>&1 & disown >/dev/null 2>&1
 echo "Launching the FastAPI server..."
 cd $HOME/BossBot
 BACKEND_LOG="$HOME/log/backend-$(date +"%Y-%m-%d-%H-%M-%S").log"
-uvicorn app.main:app > $BACKEND_LOG 2>&1 & disown >/dev/null 2>&1
+uv run python -m gunicorn \
+    --timeout 0 \
+    --workers $(($(nproc)+1)) \
+    --max-requests 40 \
+    -k uvicorn.workers.UvicornWorker app.main:app \
+    --access-logfile - \
+    --error-logfile - \
+    --bind 0.0.0.0:8443 \
+    --keyfile temp/server.key \
+    --certfile temp/server.crt \
+    > $BACKEND_LOG 2>&1 & disown >/dev/null 2>&1
