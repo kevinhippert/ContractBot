@@ -1,8 +1,13 @@
+#!/usr/bin/env python
+from contextlib import redirect_stderr
+import io
 import os
 from subprocess import run
 import sqlite3
 import sys
 from textwrap import wrap
+
+import chromadb
 
 
 class Answers:
@@ -31,22 +36,30 @@ class Answers:
 
     def add_answer(
         self, topic: str, query: str, answer: list[str], think: list[str]
-    ) -> None:
+    ) -> int:
         _answer = "§".join(answer or [])
         _think = "§".join(think or [])
         self.cursor.execute(
             "SELECT max(Seq) FROM answers WHERE Topic =?",
             (topic,),
         )
-        seq = self.cursor.fetchone()[0] + 1 if self.cursor.fetchone() else 1
+        row = self.cursor.fetchone()
+        seq = 1 if row[0] is None else row[0] + 1
         self.cursor.execute(
             "INSERT INTO answers (Topic, Seq, Query, Answer, Think) VALUES (?,?,?,?,?)",
             (topic, seq, query, _answer, _think),
         )
         self.conn.commit()
+        return seq
 
-    def get_context(self, topic: str, seq: int) -> str:
-        pass
+    def get_context(self, topic: str) -> str:
+        self.cursor.execute(
+            "SELECT Answer FROM answers WHERE Topic =? ORDER BY Seq ASC",
+            (topic,),
+        )
+        rows = self.cursor.fetchall()
+        context = "\n\n".join(row[0] for row in rows)
+        return context
 
 
 answers_db = Answers()
@@ -64,10 +77,21 @@ EXAMPLE_RESPONSE = {
 MODEL = os.getenv("BOSSBOT_MODEL")
 
 
-def RAG(query: str, topic: str, seq: int) -> str:
-    # TODO: RAG stuff here
-    _context = topic, seq
-    return query
+def get_rag(query: str, n_results: int = 50, collection_name: str = "BossBot") -> str:
+    client = chromadb.PersistentClient()
+    collection = client.get_collection(name=collection_name)
+    with redirect_stderr(io.StringIO()) as _stderr:
+        results = collection.query(query_texts=[query], n_results=n_results)
+
+    # Only "paragraphs" that match, not the header metadata
+    docs = (results.get("documents") or ["\n.....\n"])[0]
+    chunks = "\n\n".join(d.split("\n.....\n")[1] for d in docs)
+    return f"Context documents for the query:\n\n{chunks}"
+
+
+def get_context(topic: str) -> str:
+    context = answers_db.get_context(topic)  # Get context for the topic, if any
+    return f"Context prior answers in this topic:\n\n{context}"
 
 
 def parse_response(response: str) -> tuple[list[str], list[str]]:
@@ -80,11 +104,13 @@ def parse_response(response: str) -> tuple[list[str], list[str]]:
     return think, answer
 
 
-def ask(query: str, topic: str, seq: int, fake=False) -> tuple[list[str], list[str]]:
+def ask(query: str, topic: str, fake=False) -> tuple[list[str], list[str], int]:
     if fake or not MODEL:
-        return EXAMPLE_RESPONSE["Think"], EXAMPLE_RESPONSE["Answer"]
+        return EXAMPLE_RESPONSE["Think"], EXAMPLE_RESPONSE["Answer"], 0
 
-    enhanced_query = RAG(query, topic, seq)
+    context = get_context(topic)
+    rag_docs = get_rag(query)
+    enhanced_query = f"{context}\n\n{rag_docs}\n\n{query}"
 
     # E.g. `ollama run deepseek-r1:32b "What is the meaning of life?"`
     result = run(
@@ -92,13 +118,13 @@ def ask(query: str, topic: str, seq: int, fake=False) -> tuple[list[str], list[s
     )
     if result.returncode != 0:
         print("Failed to run OLLama")
-        return [], []
+        return [], [], 0
 
     think, answer = parse_response(result.stdout)
     # Store the answer in the database for future reference
-    answers_db.add_answer(topic, seq, query, answer, think)
+    seq = answers_db.add_answer(topic, query, answer, think)
 
-    return think, answer
+    return think, answer, seq
 
 
 if __name__ == "__main__":
@@ -108,16 +134,16 @@ if __name__ == "__main__":
 
     query = sys.argv[1]
     topic = sys.argv[2]
-    seq = int(sys.argv[3])
+    verbose = os.getenv("BOSSBOT_VERBOSE")
 
-    think, answer = ask(query, topic, seq)
-    print(f"Topic: {topic}")
-    print(f"Seq: {seq}")
-    print("Think:")
-    for t in think:
-        for line in wrap(t):
-            print(f"  {line}")
-        print()
+    think, answer, seq = ask(query, topic)
+    print(f"Topic: {topic} [{seq}]")
+    if verbose:
+        print("Think:")
+        for t in think:
+            for line in wrap(t):
+                print(f"  {line}")
+            print()
     print("Answer:")
     for a in answer:
         for line in wrap(a):

@@ -2,15 +2,17 @@
 """
 Find the best matching fragments for a given query.
 """
+from contextlib import redirect_stderr
+import io
 import sys
 
 import chromadb
 
-
 def search_fragments(query: str, n_results: int = 5, collection_name: str = "BossBot"):
     client = chromadb.PersistentClient()
     collection = client.get_collection(name=collection_name)
-    results = collection.query(query_texts=[query], n_results=n_results)
+    with redirect_stderr(io.StringIO()) as _f:
+        results = collection.query(query_texts=[query], n_results=n_results)
     return results
 
 

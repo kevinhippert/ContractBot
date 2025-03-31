@@ -1,0 +1,4 @@
+#!/bin/bash
+ps ax | grep gunicorn | grep -v grep | cut -c-8,30-88
+ps ax | grep 'node'  | grep -v grep | cut -c-8,30-
+
