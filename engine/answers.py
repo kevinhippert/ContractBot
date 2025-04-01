@@ -122,6 +122,9 @@ def ask(query: str, topic: str, fake=False) -> tuple[list[str], list[str], int]:
 
     think, answer = parse_response(result.stdout)
     # Store the answer in the database for future reference
+    # NOTE: the sequence produced by the engine is not guaranteed to be the 
+    #   same as the sequence created by the frontend.  In normal operation, 
+    #   they should match, but it is not enforced.
     seq = answers_db.add_answer(topic, query, answer, think)
 
     return think, answer, seq

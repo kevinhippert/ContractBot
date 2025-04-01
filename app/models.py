@@ -14,6 +14,7 @@ class QueryAck(BaseModel):
 
 
 class Answer(BaseModel):
+    Query: str
     Topic: str
     Seq: int
     Answer: list[str] | None

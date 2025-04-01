@@ -35,6 +35,17 @@ received within a configurable timeout period.
 
 ## User Routes
 
+Routes in the current version require user authentication, but specifically _do
+not_ explicitly distinguish users.  That is, while the React UI should generate
+globally distinct topic strings to distinguish topics, no mechanism enforces
+that an added or checked query using the same topic identifier "belongs" to the
+same user.
+
+Future versions are _likely_ to add tighter "user binding" of topics. However,
+we can envision scenarios in which sharing topic threads among users is a
+perfectly reasonable workflow.  Hence the alpha version simply does not commit
+as to what such sharing—if any—is desirable.
+
 ### `POST api/add-query`
 
 Takes authentication query parameters:
@@ -150,24 +161,24 @@ maintaining a secure mapping from authorized inference engines to secret tokens
 shared between the inference engines and the frontend.  For example, the
 frontend might have a secure table like:
 
-| Engine       | Tokens                                   |
-|--------------|------------------------------------------|
-| Inference_1  | 7b18d017f89f61cf17d47f92749ea6930a3f1deb |
-| Inference_2  | 03cfd743661f07975fa2f1220c5194cbaff48451 |
+| Engine       | Tokens              |
+|--------------|---------------------|
+| Inference_1  | 7b18d017f89f61cf17d |
+| Inference_2  | 03cfd743661f07975fa |
 
 Validated inference routes will contain the following query parameters:
 
 - User (e.g. "Inference_1")
 - Nonce (e.g. "PSjUAS82NcDKgwXq")
-- Hash (e.g. "37f5bbd5657e3d69b1cabd81c2b8671e050d05d7")
+- Hash (e.g. "3f71f8a88e09b52f7ff6c73aa96826558b302d32")
 
 If the result of hashing the nonce with the shared secret token does not
 produce the hash, then an HTTP 401 status code is returned by the route.  The
 example shown will validate successfully:[^2]
 
 ```bash
-sha1sum <(echo "$Nonce $Token")
-37f5bbd5657e3d69b1cabd81c2b8671e050d05d7
+sha1sum <(echo "$Engine $Nonce $Token")
+3f71f8a88e09b52f7ff6c73aa96826558b302d32
 ```
 
 All inference engines **must** generate a new Nonce, and a corresponding new
@@ -237,6 +248,7 @@ the only query it has received within a topic), it posts the answer in the form:
 
 ```json
 {
+    "Query": "What is the meaning of life?",
     "Topic": "DGQIn+5troxI",
     "Seq": 2,
     "Think": [
@@ -247,6 +259,11 @@ the only query it has received within a topic), it posts the answer in the form:
     "Answer": ["It don’t mean a thing if you ain’t got that swing."]
 }
 ```
+
+Note that the sequence produced by the engine is not guaranteed to be the same
+as the sequence created by the frontend.  In normal operation, they should
+match, but it is not enforced.  The frontend _may decide_ to compare the
+underlying query to check this alignment.
 
 Since chain-of-thought models provide self-injection of prompt elaborations, we
 can include the “Think” key in the response that the frontend may wish to
