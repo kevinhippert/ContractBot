@@ -1,4 +1,6 @@
 // TODO: Probably load from environment variable or similar
+const userName = "Frontend_1";
+
 const generateNonce = () => {
   const nonceLength = 16;
   const array = new Uint8Array(nonceLength);
@@ -18,19 +20,14 @@ const generateHash = async (userName, nonce, secretToken) => {
 };
 
 export const createAuthenticationParams = async () => {
-  // TODO: Is there a clean way not to hardcode userName
-  const userName = "Frontend_1";
-  console.log(`XXX userName: ${userName}`);
-  let envVars = import.meta.env;  
-  console.log(`XXX envVars: ${Object.keys(envVars)}`);
-  let secretToken = import.meta.env.VITE_Frontend_1;
+  let secretToken = import.meta.env[`VITE_${userName}`];
   if (!secretToken) {
     throw new Error("Secret token is missing");
   }
 
   const nonce = generateNonce();
   const hash = await generateHash(userName, nonce, secretToken);
-  return URLSearchParams({
+  return new URLSearchParams({
     User: userName,
     Nonce: nonce,
     Hash: hash,
