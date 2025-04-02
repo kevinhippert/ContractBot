@@ -62,8 +62,8 @@ cd $HOME/BossBot
 BACKEND_LOG="$HOME/log/backend-$(date +"%Y-%m-%d-%H-%M-%S").log"
 uv run python -m gunicorn \
     --timeout 0 \
-    --workers $(($(nproc)+1)) \
-    --max-requests 40 \
+    --workers 3 \
+    --max-requests 100 \
     -k uvicorn.workers.UvicornWorker app.main:app \
     --access-logfile - \
     --error-logfile - \

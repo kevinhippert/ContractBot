@@ -4,6 +4,7 @@ assets/raw-documents/
 chroma/
 .queue.db
 .answers.db
+temp/
 
 # Compiled Python files
 __pycache__/

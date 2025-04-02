@@ -186,7 +186,7 @@ Hash at **every** call to a secured route to avoid replay attacks.
 
 ## Inference Routes
 
-### `PUT api/get-new-queries`
+### `GET api/get-new-queries`
 
 The body contains the validation block discussed in the authentication section.
 No additional data is required in the body for this route.  Inference engines
@@ -200,7 +200,7 @@ before returning a response (but return immediately if some exist).  For
 example (in pseudo-code):
 
 ```python
-for _ in range(100):
+for _ in range(100)::
     if queries := find_queries():
         return queries
         sleep(1)

@@ -12,7 +12,7 @@ router = APIRouter()
 RETRIES = 100
 
 
-@router.put("/api/get-new-queries", tags=["infer"])
+@router.get("/api/get-new-queries", tags=["infer"])
 async def get_new_queries(
     User: str,
     Nonce: str,

@@ -111,6 +111,8 @@ def ask(query: str, topic: str, fake=False) -> tuple[list[str], list[str], int]:
     context = get_context(topic)
     rag_docs = get_rag(query)
     enhanced_query = f"{context}\n\n{rag_docs}\n\n{query}"
+    # Remove null bytes for safety (but how the sneak in is unclear)
+    enhanced_query = enhanced_query.replace("\x00", " ") 
 
     # E.g. `ollama run deepseek-r1:32b "What is the meaning of life?"`
     result = run(
