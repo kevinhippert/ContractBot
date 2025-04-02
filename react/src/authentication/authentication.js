@@ -1,41 +1,34 @@
+// TODO: Probably load from environment variable or similar
+const user = "Frontend_1";
+
 const generateNonce = () => {
   const nonceLength = 16;
   const array = new Uint8Array(nonceLength);
   window.crypto.getRandomValues(array);
   return Array.from(array)
-    .map((b) => b.toString(16).padStart(2, "0"))
+    .map((b) => b.toString(nonceLength).padStart(2, "0"))
     .join("");
 };
 
-const generateHash = async (nonce, secretToken) => {
-  // const encoder = new TextEncoder();
-  // const data = encoder.encode(nonce + secretToken);
-
-  // const hashBuffer = await window.crypto.subtle.digest("SHA-256", data);
-  // const hashArray = Array.from(new Uint8Array(hashBuffer));
-  // const hash = hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
-  // TODO UNHACK
-  return "hackedhash123456789";
+const generateHash = async (user, nonce, secret) => {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(`${user} ${nonce} ${secret}`);
+  const hashBuffer = await window.crypto.subtle.digest("SHA-1", data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  const hash = hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
   return hash;
 };
 
 export const createAuthenticationParams = async () => {
-  let secretToken = import.meta.env.VITE_Frontend_1;
-  // TODO UNHACk
-  secretToken = "abc123";
-
-  if (!secretToken) {
+  let secret = eval(`import.meta.env.VITE_${user}`);
+  if (!secret) {
     throw new Error("secret token is missing");
   }
-
   const nonce = generateNonce();
-  const hash = await generateHash(nonce, secretToken);
-
-  const authParams = new URLSearchParams({
-    User: "Frontend_1",
+  const hash = await generateHash(user, nonce, secret);
+  return URLSearchParams({
+    User: user,
     Nonce: nonce,
     Hash: hash,
   }).toString();
-
-  return authParams;
 };
