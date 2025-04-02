@@ -20,6 +20,9 @@ const generateHash = async (userName, nonce, secretToken) => {
 export const createAuthenticationParams = async () => {
   // TODO: Is there a clean way not to hardcode userName
   const userName = "Frontend_1";
+  console.log(`XXX userName: ${userName}`);
+  let envVars = import.meta.env;  
+  console.log(`XXX envVars: ${envVars}`);
   let secretToken = import.meta.env.VITE_Frontend_1;
   if (!secretToken) {
     throw new Error("Secret token is missing");
