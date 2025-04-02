@@ -2,7 +2,7 @@
 const userName = "Frontend_1";
 
 const generateNonce = () => {
-  const nonceLength = 16;
+  const nonceLength = 8;
   const array = new Uint8Array(nonceLength);
   window.crypto.getRandomValues(array);
   return Array.from(array)
@@ -11,23 +11,21 @@ const generateNonce = () => {
 };
 
 const generateHash = async (userName, nonce, secretToken) => {
-  const encoder = new TextEncoder();
-  const data = encoder.encode(`${userName} ${nonce} ${secretToken}`);
-  console.log("Data to hash:", data);
-  const hashBuffer = await window.crypto.subtle.digest("SHA-1", data);
+  const dataString = `${userName} ${nonce} ${secretToken}`;
+  const data = (new TextEncoder()).encode(dataString);
+  const hashBuffer = await window.crypto.subtle.digest("SHA-256", data);
   const hashArray = Array.from(new Uint8Array(hashBuffer));
-  const hash = hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
-  return hash;
+  const hexDigest = hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
+  return hexDigest;
 };
 
 export const createAuthenticationParams = async () => {
-  let secretToken = import.meta.env[`VITE_${userName}`];
-  if (!secretToken) {
-    throw new Error("Secret token is missing");
+  let secret = import.meta.env[`VITE_${userName}`];
+  if (!secret) {
+    throw new Error("Secret token/password is missing");
   }
-
   const nonce = generateNonce();
-  const hash = await generateHash(userName, nonce, secretToken);
+  const hash = await generateHash(userName, nonce, secret);
   return new URLSearchParams({
     User: userName,
     Nonce: nonce,

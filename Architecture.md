@@ -177,8 +177,8 @@ produce the hash, then an HTTP 401 status code is returned by the route.  The
 example shown will validate successfully:[^2]
 
 ```bash
-sha1sum <(echo "$Engine $Nonce $Token")
-3f71f8a88e09b52f7ff6c73aa96826558b302d32
+echo -n "$Engine $Nonce $Token" | sha1sum
+7c5ed0a4c01ff5c0f84544464bdfe706928d4381 -
 ```
 
 All inference engines **must** generate a new Nonce, and a corresponding new
