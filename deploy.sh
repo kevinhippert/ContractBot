@@ -44,7 +44,7 @@ done
 
 # Shut down anything on port 3000
 echo "Killing any process(es) on port 8443"
-for pin in $(lsof -t -i:8443); do
+for pid in $(lsof -t -i:8443); do
     kill -9 $pid || true
 done
 
