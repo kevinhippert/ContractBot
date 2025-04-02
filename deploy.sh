@@ -39,13 +39,13 @@ while read p; do export "$p"; done < $HOME/BossBot/secrets/credentials
 # Shut down anything on port 3000
 echo "Killing any process(es) on port 3000"
 for pid in $(lsof -t -i:3000); do
-    kill -9 $pid
+    kill -9 $pid || true
 done
 
 # Shut down anything on port 3000
 echo "Killing any process(es) on port 8443"
 for pin in $(lsof -t -i:8443); do
-    kill -9 $pid
+    kill -9 $pid || true
 done
 
 # Start the Node server
