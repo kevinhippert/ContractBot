@@ -1,11 +1,7 @@
-import os
+from pathlib import Path
 
-USERS = {
-    k: v
-    for k, v in os.environ.items()
-    if k.startswith(("Frontend_", "Inference_", "User_"))
-}
-
+_users = Path("secrets/credentials").read_text().strip()
+USERS = dict(l.split("=") for l in _users.splitlines())
 
 def authenticate(user: str, nonce: str, hash: str) -> bool:
     """
