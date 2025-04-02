@@ -40,6 +40,10 @@ while read p; do export "$p"; done < $HOME/BossBot/secrets/credentials
 echo "Killing any process(es) on port 3000"
 kill -9 "$(lsof -t -i:3000)" || true
 
+# Shut down anything on port 3000
+echo "Killing any process(es) on port 8443"
+kill -9 "$(lsof -t -i:8443)" || true
+
 # Start the Node server
 echo "Launching the Node server..."
 cd $HOME/BossBot/react
