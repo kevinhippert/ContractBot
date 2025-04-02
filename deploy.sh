@@ -47,7 +47,7 @@ done
 # Expose credentials to React via environment variables
 echo "Set credential environment variables"
 while read p; do export "$p"; done < $HOME/BossBot/secrets/credentials
-grep Frontend_ $HOME/BossBot/secrets/credentials > $HOME/BossBot/react/.env
+grep Frontend_ $HOME/BossBot/secrets/credentials | sed 's/^/VITE_/' > $HOME/BossBot/react/.env
 
 # Start the Node server
 echo "Launching the Node server..."
@@ -60,7 +60,6 @@ if [ $? -ne 0 ]; then
     echo "Error occurred during npm install!"
     exit 1
 fi
-
 mkdir -p $HOME/log
 FRONTEND_LOG="$HOME/log/frontend-$(date +"%Y-%m-%d-%H-%M-%S").log"
 serve -s dist -l 3000 > $FRONTEND_LOG 2>&1 & disown >/dev/null 2>&1
