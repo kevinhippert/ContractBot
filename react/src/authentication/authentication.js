@@ -13,6 +13,7 @@ const generateNonce = () => {
 const generateHash = async (userName, nonce, secretToken) => {
   const encoder = new TextEncoder();
   const data = encoder.encode(`${userName} ${nonce} ${secretToken}`);
+  console.log("Data to hash:", data);
   const hashBuffer = await window.crypto.subtle.digest("SHA-1", data);
   const hashArray = Array.from(new Uint8Array(hashBuffer));
   const hash = hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
