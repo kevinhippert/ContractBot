@@ -46,7 +46,6 @@ done
 
 # Expose credentials to React via environment variables
 echo "Set credential environment variables"
-while read p; do export "$p"; done < $HOME/BossBot/secrets/credentials
 grep Frontend_ $HOME/BossBot/secrets/credentials | sed 's/^/VITE_/' > $HOME/BossBot/react/.env
 
 # Start the Node server
