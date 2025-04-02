@@ -20,7 +20,8 @@ const generateHash = async (user, nonce, secret) => {
 };
 
 export const createAuthenticationParams = async () => {
-  let secret = eval(`import.meta.env.VITE_${user}`);
+  // TODO: Is there a clean way not to hardcode user
+  let secret = import.meta.env.VITE_Frontend_1;
   if (!secret) {
     throw new Error("secret token is missing");
   }
