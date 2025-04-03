@@ -48,13 +48,14 @@ function MainView() {
         const seq = 1; // Start from 1 for the first question
         const url = `check-query?${authParams}&Topic=${topic}&Seq=${seq}`;
         const res = await api.get(url);
+        console.log(res.data);  // XXX
         setMessages((prevMessages) => [
           ...prevMessages,
           {
             type: "answer",
             seq: res.data.Seq,
             topic: res.data.Topic,
-            text: res.data.Answer.join("\n"),
+            text: res.data.Answer,
           },
         ]);
         setIsQuerying(false);
