@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from collections import namedtuple
 from contextlib import redirect_stderr
 import io
 import os
@@ -8,6 +9,8 @@ import sys
 from textwrap import wrap
 
 import chromadb
+
+Result = namedtuple("Result", "doc distance")
 
 
 class Answers:
@@ -77,14 +80,42 @@ EXAMPLE_RESPONSE = {
 MODEL = os.getenv("BOSSBOT_MODEL")
 
 
-def get_rag(query: str, n_results: int = 50, collection_name: str = "BossBot") -> str:
+def search_fragments(
+    query: str,
+    n_results: int = 5,
+    max_distance: float = 1.0,
+    collection_name: str = "BossBot",
+):
     client = chromadb.PersistentClient()
     collection = client.get_collection(name=collection_name)
-    with redirect_stderr(io.StringIO()) as _stderr:
-        results = collection.query(query_texts=[query], n_results=n_results)
+    with redirect_stderr(io.StringIO()) as _f:
+        matches = collection.query(query_texts=[query], n_results=n_results)
 
+    results = []
+    docs = (matches["documents"] or [[]])[0]  # Index 0 since only one query
+    distances = (matches["distances"] or [[]])[0]
+    for distance, doc in zip(distances, docs):
+        # Results are returned by ascending distance
+        if distance > max_distance:
+            break
+        results.append(Result(doc, distance))
+    return results
+
+
+def get_rag(
+    query: str,
+    n_results: int = 50,
+    max_distance: float = 1.0,
+    collection_name: str = "BossBot",
+) -> str:
+    results = search_fragments(
+        query,
+        n_results=n_results,
+        max_distance=max_distance,
+        collection_name=collection_name,
+    )
     # Only "paragraphs" that match, not the header metadata
-    docs = (results.get("documents") or ["\n.....\n"])[0]
+    docs = [result.doc for result in results]
     chunks = "\n\n".join(d.split("\n.....\n")[1] for d in docs)
     return f"Context documents for the query:\n\n{chunks}"
 
@@ -106,13 +137,13 @@ def parse_response(response: str) -> tuple[list[str], list[str]]:
 
 def ask(query: str, topic: str, fake=False) -> tuple[list[str], list[str], int]:
     if fake or not MODEL:
-        return EXAMPLE_RESPONSE["Think"], EXAMPLE_RESPONSE["Answer"], 0
+        return EXAMPLE_RESPONSE["Think"], EXAMPLE_RESPONSE["Answer"], 0  # type: ignore
 
     context = get_context(topic)
     rag_docs = get_rag(query)
     enhanced_query = f"{context}\n\n{rag_docs}\n\n{query}"
     # Remove null bytes for safety (but how the sneak in is unclear)
-    enhanced_query = enhanced_query.replace("\x00", " ") 
+    enhanced_query = enhanced_query.replace("\x00", " ")
 
     # E.g. `ollama run deepseek-r1:32b "What is the meaning of life?"`
     result = run(
@@ -124,8 +155,8 @@ def ask(query: str, topic: str, fake=False) -> tuple[list[str], list[str], int]:
 
     think, answer = parse_response(result.stdout)
     # Store the answer in the database for future reference
-    # NOTE: the sequence produced by the engine is not guaranteed to be the 
-    #   same as the sequence created by the frontend.  In normal operation, 
+    # NOTE: the sequence produced by the engine is not guaranteed to be the
+    #   same as the sequence created by the frontend.  In normal operation,
     #   they should match, but it is not enforced.
     seq = answers_db.add_answer(topic, query, answer, think)
 
