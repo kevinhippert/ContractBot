@@ -48,9 +48,9 @@ function MainView() {
         const seq = 1; // Start from 1 for the first question
         const url = `check-query?${authParams}&Topic=${topic}&Seq=${seq}`;
         const res = await api.get(url);
-        console.log(res.data);  // XXX
+        console.log(res.data.Answer);  // XXX
         let answer = "";
-        for (para of res.data.Answer) {
+        for (const para of res.data.Answer) {
             answer += para + "\n";
         }
         console.log("Answer: ", answer); // XXX
