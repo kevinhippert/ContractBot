@@ -46,7 +46,7 @@ function MainView() {
         const authParams = await createAuthenticationParams();
         const topic = "123ABC"; // createTopicId();
         const seq = 1; // Start from 1 for the first question
-        const url = `check-query?${authParams}&Topic=${topic}Seq=${seq}`;
+        const url = `check-query?${authParams}&Topic=${topic}&Seq=${seq}`;
         const res = await api.get(url);
         setMessages((prevMessages) => [
           ...prevMessages,

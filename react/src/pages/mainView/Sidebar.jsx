@@ -12,7 +12,8 @@ import {
 import AddIcon from "@mui/icons-material/Add";
 
 export default function Sidebar() {
-  console.log(createTopicId());
+  topicOne = createTopicId();
+  topicTwo = createTopicId();
 
   return (
     <Box>
@@ -20,12 +21,12 @@ export default function Sidebar() {
         <List>
           <ListItem disablePadding>
             <ListItemButton>
-              <ListItemText primary="Topic 1" />
+              <ListItemText primary="{topicOne}" />
             </ListItemButton>
           </ListItem>
           <ListItem disablePadding>
             <ListItemButton component="a" href="#simple-list">
-              <ListItemText primary="Topic 2" />
+              <ListItemText primary="{topicTwo}" />
             </ListItemButton>
           </ListItem>
         </List>
