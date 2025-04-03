@@ -15,7 +15,7 @@ export default function Sidebar() {
   const topicOne = createTopicId();
   const topicTwo = createTopicId();
 
-  return (
+  const sidebarHtml = (
     <Box>
       <nav>
         <List>
@@ -37,4 +37,5 @@ export default function Sidebar() {
       </Button>
     </Box>
   );
+  return sidebarHtml;
 }
