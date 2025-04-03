@@ -48,20 +48,20 @@ function MainView() {
         const seq = 1; // Start from 1 for the first question
         const url = `check-query?${authParams}&Topic=${topic}&Seq=${seq}`;
         const res = await api.get(url);
-        res.data.joinedAnswer = "";
-        for (const para of res.data.Answer) {
-            res.data.joinedAnswer += para + " ";
-        }
-        console.log("Answer: ", res.data.joinedAnswer); // XXX
-        setMessages((prevMessages) => [
-          ...prevMessages,
-          {
-            type: "answer",
-            seq: res.data.Seq,
-            topic: res.data.Topic,
-            text: res.data.joinedAnswer
-          },
-        ]);
+        setMessages((prevMessages) => {
+          let text = "";
+          for (const para of res.data.Answer) { text += para + "\n"; }
+          console.log("Answer: ", text); // XXX
+          return [
+            ...prevMessages,
+            {
+              type: "answer",
+              seq: res.data.Seq,
+              topic: res.data.Topic,
+              text: text
+            },
+          ]
+        });
         setIsQuerying(false);
         return res.data;
       } catch (error) {
