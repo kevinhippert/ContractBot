@@ -12,8 +12,8 @@ import {
 import AddIcon from "@mui/icons-material/Add";
 
 export default function Sidebar() {
-  topicOne = createTopicId();
-  topicTwo = createTopicId();
+  const topicOne = createTopicId();
+  const topicTwo = createTopicId();
 
   return (
     <Box>
