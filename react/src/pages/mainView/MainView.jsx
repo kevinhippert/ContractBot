@@ -49,13 +49,15 @@ function MainView() {
         const url = `check-query?${authParams}&Topic=${topic}&Seq=${seq}`;
         const res = await api.get(url);
         console.log(res.data);  // XXX
+        const answer = res.data.Answer.join("\n");
+        console.log("Answer: ", answer); // XXX
         setMessages((prevMessages) => [
           ...prevMessages,
           {
             type: "answer",
             seq: res.data.Seq,
             topic: res.data.Topic,
-            text: res.data.Answer,
+            text: answer,
           },
         ]);
         setIsQuerying(false);
