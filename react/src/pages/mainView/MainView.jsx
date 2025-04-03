@@ -9,7 +9,8 @@ import api from "../../api/api";
 import Conversation from "./Conversation";
 import { createAuthenticationParams } from "../../authentication/authentication";
 
-// This component basically acts as a giant form, which registers inputs from various child components and handles submissions ond errors
+// This component basically acts as a giant form, which registers inputs from various child
+// components and handles submissions ond errors
 function MainView() {
   const [errorMessage, setErrorMessage] = useState(null);
   const [messages, setMessages] = useState([]);
@@ -48,20 +49,15 @@ function MainView() {
         const seq = 1; // Start from 1 for the first question
         const url = `check-query?${authParams}&Topic=${topic}&Seq=${seq}`;
         const res = await api.get(url);
-        setMessages((prevMessages) => {
-          let text = "";
-          for (const para of res.data.Answer) { text += para + "\n"; }
-          console.log("Answer: ", text); // XXX
-          return [
-            ...prevMessages,
-            {
-              type: "answer",
-              seq: res.data.Seq,
-              topic: res.data.Topic,
-              text: text
-            },
-          ]
-        });
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          {
+            type: "answer",
+            seq: res.data.Seq,
+            topic: res.data.Topic,
+            text: res.data.Answer,
+          },
+        ]);
         setIsQuerying(false);
         return res.data;
       } catch (error) {
@@ -111,7 +107,7 @@ function MainView() {
             errorMessage={errorMessage}
             isQuerying={isQuerying}
           />
-          <QuestionInput register={register} style={{ marginTop: "10px" }} />
+          <QuestionInput register={register} style={{ paddingTop: "10px", marginTop: "10px" }} />
         </Box>
       </form>
     </Container>
