@@ -2,8 +2,8 @@ from hashlib import sha256
 from pathlib import Path
 
 _users = Path("secrets/credentials").read_text().strip()
-USERS = dict(l.split("=") for l in _users.splitlines())
-Path("secrets/credentials").unlink()  # Delete after loading
+USERS = dict(line.split("=") for line in _users.splitlines())
+
 
 def authenticate(user: str, nonce: str, hash: str) -> bool:
     """

@@ -17,3 +17,17 @@ dependencies = [
     "tqdm",
     "uvicorn",
 ]
+[dependency-groups]
+dev = [
+    "faker>=30.8.2",
+    "flake8==6.0.0",
+    "mypy>=1.13.0",
+    "pre-commit>=4.0.1",
+    "pytest >=8.3.3",
+    "pytest-cov>=6.0.0",
+    "pytest-dependency>=0.6.0",
+    "seedir>=0.5.0",
+]
+[tool.ruff]
+# Allow lines to 88 chars (Black compatible).
+line-length = 88
