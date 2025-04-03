@@ -12,8 +12,9 @@ import {
 import AddIcon from "@mui/icons-material/Add";
 
 export default function Sidebar() {
-  const topicOne = createTopicId();
-  const topicTwo = createTopicId();
+  // TODO: How to get these into the template?
+  const topicOne = {"primary": createTopicId()};
+  const topicTwo = {"primary": createTopicId()};
 
   const sidebarHtml = (
     <Box>
@@ -21,12 +22,12 @@ export default function Sidebar() {
         <List>
           <ListItem disablePadding>
             <ListItemButton>
-              <ListItemText primary="{topicOne}" />
+              <ListItemText {...topicOne} />
             </ListItemButton>
           </ListItem>
           <ListItem disablePadding>
             <ListItemButton component="a" href="#simple-list">
-              <ListItemText primary="{topicTwo}" />
+              <ListItemText {...topicTwo} />
             </ListItemButton>
           </ListItem>
         </List>

@@ -54,7 +54,7 @@ function MainView() {
             type: "answer",
             seq: res.data.Seq,
             topic: res.data.Topic,
-            text: res.data.Answer,
+            text: res.data.Answer.join("\n"),
           },
         ]);
         setIsQuerying(false);
