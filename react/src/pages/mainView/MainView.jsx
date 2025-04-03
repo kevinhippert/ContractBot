@@ -48,9 +48,9 @@ function MainView() {
         const seq = 1; // Start from 1 for the first question
         const url = `check-query?${authParams}&Topic=${topic}&Seq=${seq}`;
         const res = await api.get(url);
-        let res.data.joinedAnswer = "";
+        res.data.joinedAnswer = "";
         for (const para of res.data.Answer) {
-            res.data.joinedAnswer += para + "\n";
+            res.data.joinedAnswer += para + " ";
         }
         console.log("Answer: ", res.data.joinedAnswer); // XXX
         setMessages((prevMessages) => [
