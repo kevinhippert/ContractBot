@@ -44,9 +44,9 @@ function MainView() {
     queryFn: async () => {
       try {
         const authParams = await createAuthenticationParams();
-        const topicId = createTopicId();
+        const topic = "123ABC"; // createTopicId();
         const seq = 1; // Start from 1 for the first question
-        const url = `check-query?${authParams}&Topic=${topicId}Seq=${seq}`;
+        const url = `check-query?${authParams}&Topic=${topic}Seq=${seq}`;
         const res = await api.get(url);
         setMessages((prevMessages) => [
           ...prevMessages,
