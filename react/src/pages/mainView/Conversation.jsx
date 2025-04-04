@@ -11,17 +11,17 @@ function Conversation({ messages, errorMessage, isQuerying }) {
       {messages.length > 0 && (
         <>
           <Box>
-            {messages.map((m, index) => (
-              {m.type === "question" && (
+            {messages.map((m, index) => {
+              {m.type === "question" &&
                 <Paper key={index} style={{ background: "lightgray" }}>
                   {m.text.join("\n")}
-                </Paper>)}
-              {m.type === "answer" && (
+                </Paper>}
+              {m.type === "answer" &&
                 <Paper key={index} style={{ background: "lightblue" }}>
                   {m.text.join("\n")}
                 </Paper>
-              )}
-            )}
+              }
+            }
             <br/>
           </Box>
           {isQuerying && <Paper>Thinking...</Paper>}
