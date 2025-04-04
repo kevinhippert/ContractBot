@@ -11,6 +11,24 @@ from textwrap import wrap
 import chromadb
 
 Result = namedtuple("Result", "doc distance")
+INTRODUCTION = """
+Please assist us in exploring union contract negotiations.
+
+The first part of the query below provides context from previous answers given
+within this topic.  The prior answers section is prefixed with a line reading
+only "PRIOR ANSWERS:"
+
+The second part of the query consists of paragraphs taken from relevant
+documents. These paragraphs are selected using RAG (retrieval augmented
+generation).  The RAG section is prefixed with a line reading only
+"RELEVANT DOCUMENTS:"
+
+The new query that we are trying to answer is prefixed with a line reading
+only "QUERY:".
+
+If the header "RELEVANT DOCUMENTS:" is absent, the query will concern general
+knowlege rather than be specific to union contract negotiations.
+"""
 
 
 class Answers:
@@ -117,12 +135,12 @@ def get_rag(
     # Only "paragraphs" that match, not the header metadata
     docs = [result.doc for result in results]
     chunks = "\n\n".join(d.split("\n.....\n")[1] for d in docs)
-    return f"Context documents for the query:\n\n{chunks}"
+    return f"RELEVANT DOCUMENTS:\n\n{chunks}"
 
 
 def get_context(topic: str) -> str:
     context = answers_db.get_context(topic)  # Get context for the topic, if any
-    return f"Context prior answers in this topic:\n\n{context}"
+    return f"PRIOR ANSWERS:\n{context}"
 
 
 def parse_response(response: str) -> tuple[list[str], list[str]]:
@@ -135,19 +153,42 @@ def parse_response(response: str) -> tuple[list[str], list[str]]:
     return think, answer
 
 
-def ask(query: str, topic: str, fake=False) -> tuple[list[str], list[str], int]:
-    if fake or not MODEL:
+def ask(
+    query: str,
+    topic: str,
+    model: str | None = MODEL,
+    no_rag: bool = False,
+    no_context: bool = False,
+    fake: bool = False,
+    introduction: str = INTRODUCTION,
+) -> tuple[list[str], list[str], int]:
+    if fake or not model:
         return EXAMPLE_RESPONSE["Think"], EXAMPLE_RESPONSE["Answer"], 0  # type: ignore
 
-    context = get_context(topic)
-    rag_docs = get_rag(query)
-    enhanced_query = f"{context}\n\n{rag_docs}\n\n{query}"
-    # Remove null bytes for safety (but how the sneak in is unclear)
+    if no_context:
+        context = ""
+    else:
+        context = get_context(topic)
+    if no_rag:
+        rag_docs = ""
+    else:
+        rag_docs = get_rag(query)
+
+    query = f"QUERY:\n{query}"
+    if len(context) > 200_000:
+        # This topic has aquired many prior answers.  Age out the oldest answers
+        # from the overall context. Keep approximately 50,000 tokens from prior
+        # answers (assume a token is approx 4 characters)
+        context = f"PRIOR ANSWERS:\n{context[-200_000:]}"
+
+    # Remove null bytes for safety (how they sneak in is unclear)
+    div = "\n\n"
+    enhanced_query = div.join([introduction, context, rag_docs, query])
     enhanced_query = enhanced_query.replace("\x00", " ")
 
     # E.g. `ollama run deepseek-r1:32b "What is the meaning of life?"`
     result = run(
-        ["ollama", "run", MODEL, enhanced_query], capture_output=True, text=True
+        ["ollama", "run", model, enhanced_query], capture_output=True, text=True
     )
     if result.returncode != 0:
         print("Failed to run OLLama")
@@ -168,9 +209,9 @@ if __name__ == "__main__":
         print("Usage: python answers.py <query> <topic>")
         sys.exit(1)
 
+    verbose = os.getenv("BOSSBOT_VERBOSE")
     query = sys.argv[1]
     topic = sys.argv[2]
-    verbose = os.getenv("BOSSBOT_VERBOSE")
 
     think, answer, seq = ask(query, topic)
     print(f"Topic: {topic} [{seq}]")

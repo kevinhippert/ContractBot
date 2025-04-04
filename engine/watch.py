@@ -1,3 +1,4 @@
+from datetime import datetime
 from hashlib import sha1
 import os
 from secrets import token_urlsafe as make_nonce
@@ -12,9 +13,9 @@ def give_answer(engine: str, token: str, topic: str, seq: int, queries: list[str
     for _query in queries:
         nonce = make_nonce(16)
         hash = sha1(f"{nonce} {token}".encode()).hexdigest()
-        think, answer = ask(_query, topic, seq)
+        think, answer, seq = ask(_query, topic)
         response = requests.post(
-            "https://bossbot.org/api/give-new-answer",
+            "https://api.bossbot.org/api/give-new-answer",
             params={"Engine": engine, "Nonce": nonce, "Hash": hash},
             json={
                 "Topic": topic,
@@ -40,8 +41,11 @@ def poll_queries(engine, token):
 
     elif response.status_code == 200:
         data = response.json()
-        if data["Topic"] == None:
-            print("No new queries available")
+        if data["Topic"] is None:
+            print(
+                f"{datetime.now().isoformat(timespec="seconds")} "
+                "No new queries available"
+            )
         else:
             topic = data["Topic"]
             seq = data["Seq"]
@@ -50,10 +54,18 @@ def poll_queries(engine, token):
 
 
 if __name__ == "__main__":
-    for key in ["BOSSBOT_ENGINE_NAME", "BOSSBOT_ENGINE_TOKEN"]:
+    missing = False
+    for key in [
+        "BOSSBOT_ENGINE_NAME",
+        "BOSSBOT_ENGINE_TOKEN",
+        "BOSSBOT_MODEL",
+        "TOKENIZER_PARALLELISM",
+    ]:
         if not os.getenv(key):
             print(f"Missing environment variable: {key}")
-            exit(1)
+            missing = True
+    if missing:
+        exit(1)
 
     engine = os.getenv("BOSSBOT_ENGINE_NAME")
     token = os.getenv("BOSSBOT_ENGINE_TOKEN")
