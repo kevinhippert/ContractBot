@@ -22,7 +22,6 @@ function Conversation({ messages, errorMessage, isQuerying }) {
                 </Paper>
               }
             }
-            <br/>
           </Box>
           {isQuerying && <Paper>Thinking...</Paper>}
           {errorMessage && (
