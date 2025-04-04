@@ -107,7 +107,7 @@ function MainView() {
             errorMessage={errorMessage}
             isQuerying={isQuerying}
           />
-          <QuestionInput register={register} style={{ paddingTop: "10px", marginTop: "10px" }} />
+          <QuestionInput register={register} style={{ marginTop: "10px" }} />
         </Box>
       </form>
     </Container>
