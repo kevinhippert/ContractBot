@@ -16,7 +16,6 @@ function Conversation({ messages, errorMessage, isQuerying }) {
                   style={{ background: m.type === "question"? "#f2f2f2" : "#ffe6ff" }}>
                   {m.text.join("\n")}
                 </Paper>
-                <br/>
               ))}
           </Box>
           {isQuerying && <Paper>Thinking...</Paper>}
