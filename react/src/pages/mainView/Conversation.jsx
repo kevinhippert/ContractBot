@@ -13,11 +13,9 @@ function Conversation({ messages, errorMessage, isQuerying }) {
           <Box>
             {messages.map((m, index) => (
                 <Paper key={index}
-                  style={
-                    { background: m.type === "question"? "#fcfcfc" : "#eee6ff" },
-                    margin="5px"
-                    >
-                  }>
+                  style={{
+                    background: m.type === "question"? "#fcfcfc" : "#eee6ff",
+                    margin="5px" }}>
                   {m.text.join("\n")}
                 </Paper>
               ))}
