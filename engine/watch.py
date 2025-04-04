@@ -12,8 +12,9 @@ from engine.answers import ask
 def give_answer(engine: str, token: str, topic: str, seq: int, queries: list[str]):
     for _query in queries:
         nonce = make_nonce(16)
-        hash = sha1(f"{nonce} {token}".encode()).hexdigest()
-        think, answer, seq = ask(_query, topic)
+        hash = sha1(f"{engine} {nonce} {token}".encode()).hexdigest()
+        # FIXME: Only disable RAG until we can get secure login working
+        think, answer, seq = ask(_query, topic, no_rag=True)
         response = requests.post(
             "https://api.bossbot.org/api/give-new-answer",
             params={"Engine": engine, "Nonce": nonce, "Hash": hash},
@@ -28,24 +29,21 @@ def give_answer(engine: str, token: str, topic: str, seq: int, queries: list[str
             print("Failed to post query answer")
 
 
-def poll_queries(engine, token):
+def poll_queries(engine: str, token: str) -> None:
     nonce = make_nonce(16)
-    hash = sha1(f"{nonce} {token}".encode()).hexdigest()
+    hash = sha1(f"{engine} {nonce} {token}".encode()).hexdigest()
     response = requests.put(
         "http://bossbot.org/api/get-new-queries",
         data={"Engine": engine, "Nonce": nonce, "Hash": hash},
     )
+    now = datetime.now().isoformat(timespec="seconds")
     if response.status_code == 401:
-        print("Authentication failed")
-        exit(1)
+        print(f"{now} Authentication failed")
 
     elif response.status_code == 200:
         data = response.json()
         if data["Topic"] is None:
-            print(
-                f"{datetime.now().isoformat(timespec="seconds")} "
-                "No new queries available"
-            )
+            print(f"{now} No new queries available")
         else:
             topic = data["Topic"]
             seq = data["Seq"]
@@ -67,8 +65,8 @@ if __name__ == "__main__":
     if missing:
         exit(1)
 
-    engine = os.getenv("BOSSBOT_ENGINE_NAME")
-    token = os.getenv("BOSSBOT_ENGINE_TOKEN")
+    engine = os.getenv("BOSSBOT_ENGINE_NAME", "")
+    token = os.getenv("BOSSBOT_ENGINE_TOKEN", "")
     while True:
         poll_queries(engine=engine, token=token)
         sleep(1)
