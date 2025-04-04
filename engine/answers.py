@@ -1,16 +1,13 @@
-#!/usr/bin/env python
 from collections import namedtuple
 from contextlib import redirect_stderr
 import io
 import os
 from subprocess import run
 import sqlite3
-import sys
-from textwrap import wrap
 
 import chromadb
 
-Result = namedtuple("Result", "doc distance")
+Result = namedtuple("Result", ["doc", "distance"])
 INTRODUCTION = """
 Please assist us in exploring union contract negotiations.
 
@@ -202,27 +199,3 @@ def ask(
     seq = answers_db.add_answer(topic, query, answer, think)
 
     return think, answer, seq
-
-
-if __name__ == "__main__":
-    if len(sys.argv) != 3:
-        print("Usage: python answers.py <query> <topic>")
-        sys.exit(1)
-
-    verbose = os.getenv("BOSSBOT_VERBOSE")
-    query = sys.argv[1]
-    topic = sys.argv[2]
-
-    think, answer, seq = ask(query, topic)
-    print(f"Topic: {topic} [{seq}]")
-    if verbose:
-        print("Think:")
-        for t in think:
-            for line in wrap(t):
-                print(f"  {line}")
-            print()
-    print("Answer:")
-    for a in answer:
-        for line in wrap(a):
-            print(f"  {line}")
-        print()

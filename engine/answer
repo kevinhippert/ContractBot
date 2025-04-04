@@ -1,0 +1,29 @@
+#!/usr/bin/env python
+import os
+import sys
+from textwrap import wrap
+
+from engine.answers import ask
+
+if __name__ == "__main__":
+    if len(sys.argv) != 3:
+        print("Usage: python answers.py <query> <topic>")
+        sys.exit(1)
+
+    verbose = os.getenv("BOSSBOT_VERBOSE")
+    query = sys.argv[1]
+    topic = sys.argv[2]
+
+    think, answer, seq = ask(query, topic)
+    print(f"Topic: {topic} [{seq}]")
+    if verbose:
+        print("Think:")
+        for t in think:
+            for line in wrap(t):
+                print(f"  {line}")
+            print()
+    print("Answer:")
+    for a in answer:
+        for line in wrap(a):
+            print(f"  {line}")
+        print()

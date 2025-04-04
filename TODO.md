@@ -30,14 +30,15 @@
 
 ## Inference Engine(s)
 
-[X] Vectorizing tool for raw documents (`mk_db`)
+[X] Command-line tool `mk_db` for vectorizing raw documents.
 [X] `Answer` class in `answers.py` to provide access to storage of queries,
     topics, answers, etc.
+[X] Command-line tool `search` to show RAG content identified matching queries.
 [X] `ask()` to inject RAG and history context, then call a model specified by
-    environment variable `BOSSBOT_MODEL`.
-[X] Command-line tool `answer.py` to provide developer access to equivalent
+    environment variable `BOSSBOT_MODEL`.  In `answers.py`.
+[X] Command-line tool `answer` to provide developer access to equivalent
     results as API, using the `ask()` function.
-[?] Runner `watch.py` that will poll for questions and produce answers, calling
+[?] Runner `watch` that will poll for questions and produce answers, calling
     appropriate APIs. Probably working, but not tested yet.
 
 
