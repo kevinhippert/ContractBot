@@ -102,12 +102,14 @@ function MainView() {
         </Box>
         <Box>
           <Categories control={control} />
+          <br/>
           <Conversation
             messages={messages}
             errorMessage={errorMessage}
             isQuerying={isQuerying}
           />
-          <QuestionInput register={register} style={{ marginTop: "10px" }} />
+          <br/>
+          <QuestionInput register={register} style={{ width: "80%", marginTop: "10px" }} />
         </Box>
       </form>
     </Container>

@@ -12,8 +12,16 @@ function Conversation({ messages, errorMessage, isQuerying }) {
         <>
           <Box>
             {messages.map((m, index) => (
-              <Paper key={index}>{m.text.join("\n")}</Paper>
-            ))}
+              {message.type === "question" && (
+                <Paper key={index} style={{ background: "lightgray" }}>
+                  {m.text.join("\n")}
+                </Paper>)}
+              {message.type === "answer" && (
+                <Paper key={index} style={{ background: "lightblue" }}>
+                  {m.text.join("\n")}
+                </Paper>
+              )}
+            )}
             <br/>
           </Box>
           {isQuerying && <Paper>Thinking...</Paper>}
