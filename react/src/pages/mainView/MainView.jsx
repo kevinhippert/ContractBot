@@ -109,7 +109,7 @@ function MainView() {
             isQuerying={isQuerying}
           />
           <br/>
-          <QuestionInput register={register} style={{ width: "80%", marginTop: "10px" }} />
+          <QuestionInput register={register} />
         </Box>
       </form>
     </Container>

@@ -6,25 +6,17 @@ function Conversation({ messages, errorMessage, isQuerying }) {
     console.log(messages);
   }, [messages]);
 
-//              {m.type === "question" &&
-//                <Paper key={index} style={{ background: "lightgray" }}>
-//                  {m.text.join("\n")}
-//                </Paper>}
-//              {m.type === "answer" &&
-//                <Paper key={index} style={{ background: "lightblue" }}>
-//                  {m.text.join("\n")}
-//                </Paper>
-//              }
-//            }
   return (
     <>
       {messages.length > 0 && (
         <>
           <Box>
             {messages.map((m, index) => (
-                <Paper key={index} style={{ background: m.type === "question"? "lightgray" : "lightblue" }}>
+                <Paper key={index}
+                  style={{ background: m.type === "question"? "#f2f2f2" : "#ffe6ff" }}>
                   {m.text.join("\n")}
                 </Paper>
+                <br/>
               ))}
           </Box>
           {isQuerying && <Paper>Thinking...</Paper>}

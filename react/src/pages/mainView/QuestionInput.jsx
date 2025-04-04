@@ -7,6 +7,7 @@ function QuestionInput({ register }) {
       <TextField
         label="Ask your question"
         variant="outlined"
+        style={{ width: "80%", marginTop: "10px" }}
         {...register("question")}
       />
     </>

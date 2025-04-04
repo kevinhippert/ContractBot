@@ -44,7 +44,7 @@ for pid in $(lsof -t -i:8443); do
     kill -9 $pid || true
 done
 
-# Expose credentials to React via environment variables
+# Expose credentials to React .env
 echo "Set credential environment variables"
 grep Frontend_ $HOME/BossBot/secrets/credentials | sed 's/^/VITE_/' > $HOME/BossBot/react/.env
 
