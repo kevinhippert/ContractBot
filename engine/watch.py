@@ -1,8 +1,6 @@
 from datetime import datetime
 from hashlib import sha1
-import os
 from secrets import token_urlsafe as make_nonce
-from time import sleep
 
 import requests
 
@@ -49,24 +47,3 @@ def poll_queries(engine: str, token: str) -> None:
             seq = data["Seq"]
             queries = data["Queries"]
             give_answer(engine, token, topic, seq, queries)
-
-
-if __name__ == "__main__":
-    missing = False
-    for key in [
-        "BOSSBOT_ENGINE_NAME",
-        "BOSSBOT_ENGINE_TOKEN",
-        "BOSSBOT_MODEL",
-        "TOKENIZER_PARALLELISM",
-    ]:
-        if not os.getenv(key):
-            print(f"Missing environment variable: {key}")
-            missing = True
-    if missing:
-        exit(1)
-
-    engine = os.getenv("BOSSBOT_ENGINE_NAME", "")
-    token = os.getenv("BOSSBOT_ENGINE_TOKEN", "")
-    while True:
-        poll_queries(engine=engine, token=token)
-        sleep(1)

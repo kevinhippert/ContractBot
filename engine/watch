@@ -1,0 +1,25 @@
+#!/usr/bin/env python
+import os
+from time import sleep
+
+from engine.watch import poll_queries
+
+if __name__ == "__main__":
+    missing = False
+    for key in [
+        "BOSSBOT_ENGINE_NAME",
+        "BOSSBOT_ENGINE_TOKEN",
+        "BOSSBOT_MODEL",
+        "TOKENIZER_PARALLELISM",
+    ]:
+        if not os.getenv(key):
+            print(f"Missing environment variable: {key}")
+            missing = True
+    if missing:
+        exit(1)
+
+    engine = os.getenv("BOSSBOT_ENGINE_NAME", "")
+    token = os.getenv("BOSSBOT_ENGINE_TOKEN", "")
+    while True:
+        poll_queries(engine=engine, token=token)
+        sleep(1)

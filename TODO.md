@@ -4,27 +4,24 @@
 
 [X] Create a repository (SEIU/BossBot)
 [X] Create an instance for BossBot UI to run on.
-[X] DNS stuff for https://bossbot.org.
+[X] DNS stuff for https://bossbot.org and https://api.bossbot.org.
 [X] AWS stuff with load balancer, port forwarding, etc.
-    (with much help from Nick)
 [X] Deployment script to launch Gunicorn and React servers
 
 ## React/UI
 
-[ ] Chat interface.  Sort-of done. Something is there, but needs to be prettier.
+[ ] Chat interface.  Sort-of done. Needs to be prettier.
 [ ] Login screen with authentication.
 [X] Authentication of `api/add-query` and `api/check-query`
 [ ] Category tags (conceptually in place, but need to decide specifics).
 [ ] Topic creation and switching (wireframe exists, not functionality).
 
-
 ## Gunicorn/FastAPI Server
 
-[ ] Authentication mechanism (designed and distributed with GitHub secrets,
-    but not implemented currently).
+[X] Authentication mechanism.
 [X] `POST api/add-query` correctly writes to `query_queue`.
 [ ] `GET api/check-query` (dummy form returns fortune messages).
-[ ] `GET api/login` (exists in dummy form for development).
+[X] `GET api/login`.
 [X] `GET api/get-new-queries`
 [?] `POST api/give-new-answer` (probably working, but not tested yet).
 
@@ -40,7 +37,6 @@
     results as API, using the `ask()` function.
 [?] Runner `watch` that will poll for questions and produce answers, calling
     appropriate APIs. Probably working, but not tested yet.
-
 
 # Notes
 
