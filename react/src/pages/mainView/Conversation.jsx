@@ -15,7 +15,7 @@ function Conversation({ messages, errorMessage, isQuerying }) {
                 <Paper key={index}
                   style={{
                     background: m.type === "question"? "#fcfcfc" : "#eee6ff",
-                    margin="5px" }}>
+                    marginTop: "5px" }}>
                   {m.text.join("\n")}
                 </Paper>
               ))}
