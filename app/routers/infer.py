@@ -34,7 +34,9 @@ async def get_new_queries(
     for _ in range(RETRIES):
         if query_todo := query_queue.find_queries():
             queries = query_todo.Queries or []  # [{Seq: (Query, Model)}] mappings
-            seqs = [seq for seq, _ in queries]  # List of only Seqs
+            seqs = []
+            for q in queries:
+                seqs.extend(list(q))  # Only one Seq key in each dict
             query_queue.mark_pending(topic=query_todo.Topic or "", seqs=seqs)
             return JSONResponse(
                 status_code=status.HTTP_200_OK, content=query_todo.model_dump()
