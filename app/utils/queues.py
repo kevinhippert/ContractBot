@@ -67,10 +67,13 @@ class QueryQueue:
         return QueryTodo(Topic=topic, Queries=queries)
 
     def mark_pending(self, topic: str, seqs: list[int]) -> None:
-        self.cursor.execute(
-            "UPDATE queries SET Status ='Pending' WHERE Topic =? AND Seq IN ?",
-            (topic, seqs),
-        )
+        for seq in seqs:
+            # NOTE: For unknown reasons, the `Seq IN ?` form doesn't work
+            # There won't be more than a couple seqs, so this if fine.
+            self.cursor.execute(
+                "UPDATE queries SET Status='Pending' WHERE Topic =? AND Seq =?",
+                (topic, seq),
+            )
         self.conn.commit()
 
     def update_answer(self, answer: Answer) -> None:

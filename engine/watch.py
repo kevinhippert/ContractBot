@@ -40,6 +40,7 @@ def poll_queries(engine: str, token: str) -> None:
 
     elif response.status_code == 200:
         data = response.json()
+        print(data)  # FIXME: What echoing to terminal do we want?
         if data["Topic"] is None:
             print(f"{now} No new queries available")
         else:
