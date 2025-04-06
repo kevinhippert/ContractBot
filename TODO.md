@@ -7,6 +7,7 @@
 [X] DNS stuff for https://bossbot.org and https://api.bossbot.org.
 [X] AWS stuff with load balancer, port forwarding, etc.
 [X] Deployment script to launch Gunicorn and React servers
+[?] Each redeployment removes old `.queue.db` (is this good or bad?)
 
 ## React/UI
 
