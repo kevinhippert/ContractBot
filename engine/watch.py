@@ -31,9 +31,10 @@ def poll_queries(engine: str, token: str) -> None:
     nonce = make_nonce(16)
     hash = sha1(f"{engine} {nonce} {token}".encode()).hexdigest()
     response = requests.put(
-        "http://bossbot.org/api/get-new-queries",
+        "http://api.bossbot.org/api/get-new-queries",
         data={"Engine": engine, "Nonce": nonce, "Hash": hash},
     )
+    print("XXX", response.text)
     now = datetime.now().isoformat(timespec="seconds")
     if response.status_code == 401:
         print(f"{now} Authentication failed")

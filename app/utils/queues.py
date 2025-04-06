@@ -18,7 +18,7 @@ class QueryQueue:
                 Status TEXT NOT NULL DEFAULT 'Open',
                 Answer TEXT,
                 Think TEXT,
-                Model TEXT NOT NULL DEFAULT 'default',
+                Model TEXT NOT NULL DEFAULT 'default'
             )
             """
         )
