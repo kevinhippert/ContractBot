@@ -1,6 +1,6 @@
 import sqlite3
 
-from app.models import Answer, QueryTodo
+from app.models import Answer, MODELS, QueryTodo
 
 
 class QueryQueue:
@@ -17,7 +17,8 @@ class QueryQueue:
                 Query TEXT NOT NULL,
                 Status TEXT NOT NULL DEFAULT 'Open',
                 Answer TEXT,
-                Think TEXT
+                Think TEXT,
+                Model TEXT NOT NULL DEFAULT 'default',
             )
             """
         )
@@ -29,7 +30,10 @@ class QueryQueue:
         )
         self.conn.commit()
 
-    def add_query(self, topic: str, query: str) -> tuple[int, str]:
+    def add_query(self, topic: str, query: str, model: str) -> tuple[int, str]:
+        # Dereference alias names for Ollama models
+        model = MODELS.get(model) or MODELS["default"]
+
         self.cursor.execute(
             "SELECT Seq FROM queries WHERE Topic =? ORDER BY Seq DESC LIMIT 1", (topic,)
         )
@@ -38,8 +42,8 @@ class QueryQueue:
             seq = last_seq[0] + 1
 
         self.cursor.execute(
-            "INSERT INTO queries (Topic, Seq, Query) VALUES (?,?,?)",
-            (topic, seq, query),
+            "INSERT INTO queries (Topic, Seq, Query, Model) VALUES (?,?,?,?)",
+            (topic, seq, query, model),
         )
         self.cursor.execute(
             "SELECT Timestamp FROM queries WHERE Topic =? AND Seq =?", (topic, seq)
@@ -48,19 +52,19 @@ class QueryQueue:
         self.conn.commit()
         return seq, received
 
-    def find_queries(self) -> dict:
+    def find_queries(self) -> QueryTodo | None:
         self.cursor.execute(
-            "SELECT Topic, Seq, Query FROM queries WHERE Status = 'Open'"
+            "SELECT Topic, Seq, Query, Model FROM queries WHERE Status = 'Open'"
         )
         rows = self.cursor.fetchall()
         if not rows:
-            todo = QueryTodo(Topic=None, Queries=None)
-            return todo.model_dump()
+            return None
 
+        # First topic, ignore other topics for this call
         topic = rows[0][0]
-        queries = [{row[1]: row[2]} for row in rows if row[0] == topic]
-        todo = QueryTodo(Topic=topic, Queries=queries)
-        return todo.model_dump()
+        # Map Seq -> (Query, Model) for each item in the first topic found
+        queries = [{row[1]: (row[2], row[3])} for row in rows if row[0] == topic]
+        return QueryTodo(Topic=topic, Queries=queries)
 
     def mark_pending(self, topic: str, seqs: list[int]) -> None:
         self.cursor.execute(

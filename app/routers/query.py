@@ -41,7 +41,8 @@ async def add_query(
             content={"detail": "Query must be at least 10 characters long"},
         )
 
-    seq, received = query_queue.add_query(Query.Topic, Query.Query)
+    # TODO: Should utilize Query.Modifiers to enhance Query.Query
+    seq, received = query_queue.add_query(Query.Topic, Query.Query, Query.Model)
     ack = QueryAck(
         Topic=Query.Topic,
         Seq=seq,

@@ -23,7 +23,7 @@ with a few examples:
 | R4FHJu8+hl1n | 2025-03-22T13:47:22 | 2   | What is their name?                 | Pending |
 
 Any topic with one or more rows with Open status are eligible to be answered by
-an inference engine.  
+an inference engine.
 
 Although we only anticipated standing up one initial inference engine, in
 principle we could create multiple such machines to service requests in a
@@ -64,9 +64,13 @@ Body should look like:
         "Region": "...",
         "Category": [],
         "TBD": "Loosely defined schema for this object"
-    }
+    },
+    "Model": "default"
 }
 ```
+
+Models are one of a few permitted values.  If an unrecognized string is
+provided, the Inference Engine will fall back to "default".
 
 Response should look like:
 
@@ -144,7 +148,7 @@ and compute:
 const crypto = require('crypto');
 let shasum = crypto.createHash('sha1');
 let nonce = crypto.randomBytes(16).toStr
-shasum.update(`${user} ${nonce} ${purported_pw}`); 
+shasum.update(`${user} ${nonce} ${purported_pw}`);
 let hash = shasum.digest('hex');
 ```
 

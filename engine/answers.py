@@ -1,9 +1,9 @@
 from collections import namedtuple
 from contextlib import redirect_stderr
 import io
-import os
 from subprocess import run
 import sqlite3
+from time import monotonic
 
 import chromadb
 
@@ -40,7 +40,9 @@ class Answers:
                 Timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
                 Query TEXT NOT NULL,
                 Answer TEXT,
-                Think TEXT
+                Think TEXT,
+                Model TEXT NOT NULL DEFAULT 'default',
+                Seconds INTEGER NOT NULL DEFAULT 0
             )
             """
         )
@@ -53,7 +55,13 @@ class Answers:
         self.conn.commit()
 
     def add_answer(
-        self, topic: str, query: str, answer: list[str], think: list[str]
+        self,
+        topic: str,
+        query: str,
+        answer: list[str],
+        think: list[str],
+        model: str,
+        seconds: int = 0,
     ) -> int:
         _answer = "§".join(answer or [])
         _think = "§".join(think or [])
@@ -64,8 +72,9 @@ class Answers:
         row = self.cursor.fetchone()
         seq = 1 if row[0] is None else row[0] + 1
         self.cursor.execute(
-            "INSERT INTO answers (Topic, Seq, Query, Answer, Think) VALUES (?,?,?,?,?)",
-            (topic, seq, query, _answer, _think),
+            "INSERT INTO answers (Topic, Seq, Query, Answer, Think, Model, Seconds) "
+            "VALUES (?,?,?,?,?,?,?)",
+            (topic, seq, query, _answer, _think, model, seconds),
         )
         self.conn.commit()
         return seq
@@ -92,7 +101,6 @@ EXAMPLE_RESPONSE = {
     ],
     "Answer": ["It don’t mean a thing if you ain’t got that swing."],
 }
-MODEL = os.getenv("BOSSBOT_MODEL")
 
 
 def search_fragments(
@@ -153,15 +161,20 @@ def parse_response(response: str) -> tuple[list[str], list[str]]:
 def ask(
     query: str,
     topic: str,
-    model: str | None = MODEL,
+    model: str,
     no_rag: bool = False,
     no_context: bool = False,
-    fake: bool = False,
     introduction: str = INTRODUCTION,
-) -> tuple[list[str], list[str], int]:
-    if fake or not model:
-        return EXAMPLE_RESPONSE["Think"], EXAMPLE_RESPONSE["Answer"], 0  # type: ignore
+) -> tuple[list[str], list[str], int, int]:
+    if not model:
+        # Mypy complaint is odd:
+        #    tuple[object, object, int, int],
+        #    expected "tuple[list[str],list[str], int, int]
+        think = EXAMPLE_RESPONSE["Think"]
+        answer = EXAMPLE_RESPONSE["Answer"]
+        return think, answer, 0, 0  # type: ignore
 
+    start = monotonic()
     if no_context:
         context = ""
     else:
@@ -189,13 +202,14 @@ def ask(
     )
     if result.returncode != 0:
         print("Failed to run OLLama")
-        return [], [], 0
+        return [], [], 0, 0
 
     think, answer = parse_response(result.stdout)
     # Store the answer in the database for future reference
     # NOTE: the sequence produced by the engine is not guaranteed to be the
     #   same as the sequence created by the frontend.  In normal operation,
     #   they should match, but it is not enforced.
-    seq = answers_db.add_answer(topic, query, answer, think)
+    seconds = int(monotonic() - start)
+    seq = answers_db.add_answer(topic, query, answer, think, model, seconds)
 
-    return think, answer, seq
+    return think, answer, seq, seconds

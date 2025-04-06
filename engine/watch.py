@@ -12,7 +12,7 @@ def give_answer(engine: str, token: str, topic: str, seq: int, queries: list[str
         nonce = make_nonce(16)
         hash = sha1(f"{engine} {nonce} {token}".encode()).hexdigest()
         # FIXME: Only disable RAG until we can get secure login working
-        think, answer, seq = ask(_query, topic, no_rag=True)
+        think, answer, seq, _seconds = ask(_query, topic, model="default", no_rag=True)
         response = requests.post(
             "https://api.bossbot.org/api/give-new-answer",
             params={"Engine": engine, "Nonce": nonce, "Hash": hash},

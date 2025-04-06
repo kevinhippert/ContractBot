@@ -6,4 +6,6 @@ rsync -aWv --progress -e "ssh -p443" . \
     --exclude 'assets/raw-documents' \
     --exclude '.venv' \
     --exclude '*__pycache__*' \
-    --exclude '.ruff_cache'
+    --exclude '.ruff_cache' \
+    --exclude '.answers.db' \
+    --exclude '.queue.db'
