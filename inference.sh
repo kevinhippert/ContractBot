@@ -15,7 +15,7 @@ MODELS="
     deepseek-r1:32b
     deepseek-r1-70b
     gemma3:27b
-    qwq:latest
+    qwq
 "
 for model in $MODELS; do
     ollama pull $model
@@ -27,6 +27,11 @@ if pgrep ollama >/dev/null; then
 else
     ollama serve
 fi
+
+# Archive the answer database and old logs
+mkdir -p $HOME/archives
+cp -v .answers.db $HOME/archive/$(date +"%Y-%m-%d-%H-%M-%S)-answers.db
+mv -v $HOME/log/* $HOME/archive/
 
 # Setup the log file
 mkdir -p $HOME/log
@@ -41,4 +46,4 @@ else
 fi
 echo "Starting Inference Watcher..."
 source .venv/bin/activate
-nohup engine/watch 2>$INFERENCE_LOG &
+nohup engine/watch 2>>$INFERENCE_LOG &
