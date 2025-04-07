@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { createTopicId } from "../../utils/utils";
-import { useTopic } from "../../contexts/TopicContext";
+import { createInitialTopic, useTopic } from "../../contexts/TopicContext";
 import {
   Box,
   List,
@@ -16,6 +16,14 @@ export default function Sidebar() {
   const [topics, setTopics] = useState([]);
   // [{topicId: "abc123", topicName: "What is life?", isCurrent: true, seq: 2}, ...]
   const { currentTopic, updateCurrentTopic } = useTopic();
+
+  useEffect(() => {
+    if (topics.length === 0) {
+      const initialTopic = createInitialTopic();
+      setTopics([initialTopic]);
+      updateCurrentTopic(initialTopic);
+    }
+  }, [topics, updateCurrentTopic]);
 
   const createNewTopic = () => {
     let newTopicId = createTopicId();

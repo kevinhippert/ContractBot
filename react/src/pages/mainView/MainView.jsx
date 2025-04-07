@@ -3,7 +3,7 @@ import Sidebar from "./Sidebar";
 import { useTopic } from "../../contexts/TopicContext";
 import { Box, Container } from "@mui/material/";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { set, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import Categories from "./Categories";
 import QuestionInput from "./QuestionInput";
 import api from "../../api/api";
@@ -53,7 +53,7 @@ function MainView() {
     queryFn: async () => {
       try {
         const authParams = await createAuthenticationParams();
-        const topic = currentTopic.topicId; // createTopicId();
+        const topic = currentTopic.topicId;
         const seq = currentTopic.seq;
         const url = `check-query?${authParams}&Topic=${topic}&Seq=${seq}`;
         const res = await api.get(url);
