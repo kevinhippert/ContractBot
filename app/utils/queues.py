@@ -90,6 +90,7 @@ class QueryQueue:
             WHERE Topic =? AND Seq =?
         """
         self.cursor.execute(sql, (_answer, think, topic, seq))
+        self.conn.commit()
 
     def find_answer(self, topic: str, seq: int) -> Answer | None:
         self.cursor.execute(
