@@ -30,6 +30,9 @@ class QueryQueue:
         )
         self.conn.commit()
 
+    def __del__(self):
+        self.conn.close()
+
     def add_query(self, topic: str, query: str, model: str) -> tuple[int, str]:
         # Dereference alias names for Ollama models
         model = MODELS.get(model) or MODELS["default"]
@@ -87,6 +90,3 @@ class QueryQueue:
             "WHERE Topic =? AND Seq =?",
             (_answer, think, topic, seq),
         )
-
-
-query_queue = QueryQueue()

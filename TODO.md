@@ -20,7 +20,7 @@
 ## Gunicorn/FastAPI Server
 
 [X] Authentication mechanism.
-[X] `POST api/add-query` correctly writes to `query_queue`.
+[X] `POST api/add-query` correctly writes to `QueryQueue`.
 [ ] `GET api/check-query` (dummy form returns fortune messages).
 [X] `GET api/login`.
 [X] `GET api/get-new-queries`

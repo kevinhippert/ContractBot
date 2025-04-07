@@ -5,7 +5,7 @@ from fastapi.responses import JSONResponse
 
 from app.models import Answer, QueryTodo
 from app.utils.access import authenticate
-from app.utils.queues import query_queue
+from app.utils.queues import QueryQueue
 
 router = APIRouter()
 
@@ -32,12 +32,12 @@ async def get_new_queries(
         )
 
     for _ in range(RETRIES):
-        if query_todo := query_queue.find_queries():
+        if query_todo := QueryQueue().find_queries():
             queries = query_todo.Queries or []  # [{Seq: (Query, Model)}] mappings
             seqs = []
             for q in queries:
                 seqs.extend(list(q))  # Only one Seq key in each dict
-            query_queue.mark_pending(topic=query_todo.Topic or "", seqs=seqs)
+            QueryQueue().mark_pending(topic=query_todo.Topic or "", seqs=seqs)
             return JSONResponse(
                 status_code=status.HTTP_200_OK, content=query_todo.model_dump()
             )
@@ -66,5 +66,5 @@ def give_new_answer(
             content={"detail": "Authentication failed"},
         )
 
-    query_queue.update_answer(answer)
+    QueryQueue().update_answer(answer)
     return JSONResponse(status_code=status.HTTP_200_OK, content={"status": "OK"})
