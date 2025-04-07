@@ -12,6 +12,8 @@ import { createAuthenticationParams } from "../../authentication/authentication"
 // This component basically acts as a giant form, which registers inputs from various child
 // components and handles submissions ond errors
 function MainView() {
+  const [seq, setSeq] = useState(1);
+  const [questions, setQuestions] = useState([]);
   const [errorMessage, setErrorMessage] = useState(null);
   const [messages, setMessages] = useState([]);
   const [isQuerying, setIsQuerying] = useState(false);
@@ -46,7 +48,7 @@ function MainView() {
       try {
         const authParams = await createAuthenticationParams();
         const topic = "123ABC"; // createTopicId();
-        const seq = 1; // Start from 1 for the first question
+        const seq = seq; // Start from 1 for the first question
         const url = `check-query?${authParams}&Topic=${topic}&Seq=${seq}`;
         const res = await api.get(url);
         setMessages((prevMessages) => [
@@ -59,6 +61,7 @@ function MainView() {
           },
         ]);
         setIsQuerying(false);
+        setSeq(seq + 1);
         return res.data;
       } catch (error) {
         console.log("fetch error: ", error);
