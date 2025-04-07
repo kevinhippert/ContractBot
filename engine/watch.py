@@ -1,6 +1,7 @@
 from datetime import datetime
 from hashlib import sha256
 from secrets import token_urlsafe as make_nonce
+from sys import stderr
 
 import requests
 
@@ -32,9 +33,9 @@ def give_answer(
     )
     now = datetime.now().isoformat(timespec="seconds")
     if response.status_code == 200:
-        print(f"{now} Posted query answer for {topic}[{seq}]")
+        print(f"{now} Posted query answer for {topic}[{seq}]", file=stderr)
     else:
-        print(f"{now} Failed to post query answer for {topic}[{seq}]")
+        print(f"{now} Failed to post query answer for {topic}[{seq}]", file=stderr)
 
 
 def poll_queries(engine: str, token: str) -> None:
@@ -46,13 +47,13 @@ def poll_queries(engine: str, token: str) -> None:
     )
     now = datetime.now().isoformat(timespec="seconds")
     if response.status_code == 401:
-        print(f"{now} Authentication failed")
+        print(f"{now} Authentication failed", file=stderr)
 
     elif response.status_code == 200:
         data = response.json()
-        print(f"{now} {data}")
+        print(f"{now} {data}", file=stderr)
         if data["Topic"] is None:
-            print(f"{now} No new queries available")
+            print(f"{now} No new queries available", file=stderr)
         else:
             topic = data["Topic"]
             for Q in data["Queries"]:

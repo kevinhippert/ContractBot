@@ -57,7 +57,7 @@ npm run build
 # Check for npm install errors
 if [ $? -ne 0 ]; then
     echo "Error occurred during npm install!"
-    exit 1
+ zR   exit 1
 fi
 mkdir -p $HOME/log
 FRONTEND_LOG="$HOME/log/frontend-$(date +"%Y-%m-%d-%H-%M-%S").log"

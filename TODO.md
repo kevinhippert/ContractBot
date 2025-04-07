@@ -9,6 +9,7 @@
 - [X] Deployment script to launch Gunicorn and React servers
 - [?] Each redeployment removes old `.queue.db` (is this good or bad?)
 - [X] Create `Frontend_2` user for local development.
+- [?] Calico access to Inference Engine via SSH?
 
 ## React/UI
 
