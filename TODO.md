@@ -8,6 +8,7 @@
 - [X] AWS stuff with load balancer, port forwarding, etc.
 - [X] Deployment script to launch Gunicorn and React servers
 - [?] Each redeployment removes old `.queue.db` (is this good or bad?)
+- [X] Create `Frontend_2` user for local development.
 
 ## React/UI
 
