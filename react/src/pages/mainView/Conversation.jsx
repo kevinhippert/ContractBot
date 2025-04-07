@@ -12,19 +12,20 @@ function Conversation({ messages, errorMessage, isQuerying }) {
         <>
           <Box>
             {messages.map((m, index) => (
-                <Paper key={index}
-                  style={{
-                    background: m.type === "question"? "#fcfcfc" : "#eee6ff",
-                    marginTop: "5px" }}>
-                  {m.text.join("\n")}
-                </Paper>
-              ))}
+              <Paper
+                key={index}
+                style={{
+                  background: m.type === "question" ? "#fcfcfc" : "#eee6ff",
+                  marginTop: "5px",
+                }}
+              >
+                {m.text.join("\n")}
+              </Paper>
+            ))}
           </Box>
           {isQuerying && <Paper>Thinking...</Paper>}
           {errorMessage && (
-            <Alert severity="error">
-              Whoopsy. {errorMessage.response.data.detail}
-            </Alert>
+            <Alert severity="error">Whoopsy. {errorMessage}</Alert>
           )}
         </>
       )}

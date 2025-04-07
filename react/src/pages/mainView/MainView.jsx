@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Sidebar from "./Sidebar";
 import { Box, Container } from "@mui/material/";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useForm } from "react-hook-form";
+import { set, useForm } from "react-hook-form";
 import Categories from "./Categories";
 import QuestionInput from "./QuestionInput";
 import api from "../../api/api";
@@ -13,11 +13,15 @@ import { createAuthenticationParams } from "../../authentication/authentication"
 // components and handles submissions ond errors
 function MainView() {
   const [seq, setSeq] = useState(1);
-  const [questions, setQuestions] = useState([]);
+  const [currentTopic, setCurrentTopic] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
   const [messages, setMessages] = useState([]);
   const [isQuerying, setIsQuerying] = useState(false);
   const { register, control, handleSubmit, setValue } = useForm();
+
+  useEffect(() => {
+    console.log(currentTopic);
+  }, [currentTopic]);
 
   // React Query mutation for form submission
   const mutation = useMutation({
@@ -37,7 +41,8 @@ function MainView() {
       setIsQuerying(true);
     },
     onError: (error) => {
-      setErrorMessage(error);
+      setIsQuerying(false);
+      setErrorMessage(error.response.data.detail);
       console.log("there was an error and here it is: ", error);
     },
   });
@@ -63,6 +68,8 @@ function MainView() {
         setIsQuerying(false);
         return res.data;
       } catch (error) {
+        setIsQuerying(false);
+        setErrorMessage("Cannot fetch Answer");
         console.log("fetch error: ", error);
       }
     },
@@ -100,17 +107,17 @@ function MainView() {
     >
       <form style={{ display: "flex" }} onSubmit={handleSubmit(onSubmit)}>
         <Box sx={{ width: "200px" }}>
-          <Sidebar />
+          <Sidebar setCurrentTopic={setCurrentTopic} />
         </Box>
         <Box>
           <Categories control={control} />
-          <br/>
+          <br />
           <Conversation
             messages={messages}
             errorMessage={errorMessage}
             isQuerying={isQuerying}
           />
-          <br/>
+          <br />
           <QuestionInput register={register} />
         </Box>
       </form>

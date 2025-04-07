@@ -1,5 +1,5 @@
 // TODO: Probably load from environment variable or similar
-const userName = "Frontend_1";
+const userName = "Frontend_2";
 
 const generateNonce = () => {
   const nonceLength = 8;
@@ -12,10 +12,12 @@ const generateNonce = () => {
 
 const generateHash = async (userName, nonce, secretToken) => {
   const dataString = `${userName} ${nonce} ${secretToken}`;
-  const data = (new TextEncoder()).encode(dataString);
+  const data = new TextEncoder().encode(dataString);
   const hashBuffer = await window.crypto.subtle.digest("SHA-256", data);
   const hashArray = Array.from(new Uint8Array(hashBuffer));
-  const hexDigest = hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
+  const hexDigest = hashArray
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
   return hexDigest;
 };
 
