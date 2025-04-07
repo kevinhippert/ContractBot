@@ -7,24 +7,32 @@ import requests
 from engine.answers import ask
 
 
-def give_answer(engine: str, token: str, topic: str, seq: int, queries: list[str]):
-    for _query in queries:
-        nonce = make_nonce(16)
-        hash = sha256(f"{engine} {nonce} {token}".encode()).hexdigest()
-        # FIXME: Only disable RAG until we can get secure login working
-        think, answer, seq, _seconds = ask(_query, topic, model="default", no_rag=True)
-        response = requests.post(
-            "https://api.bossbot.org/api/give-new-answer",
-            params={"User": engine, "Nonce": nonce, "Hash": hash},
-            json={
-                "Topic": topic,
-                "Seq": seq,
-                "Think": think,
-                "Answer": answer,
-            },
-        )
-        if response.status_code != 200:
-            print("Failed to post query answer")
+def give_answer(
+    engine: str,
+    token: str,
+    topic: str,
+    seq: int,
+    query: str,
+    model: str = "default",
+) -> None:
+    nonce = make_nonce(16)
+    hash = sha256(f"{engine} {nonce} {token}".encode()).hexdigest()
+    # FIXME: Only disable RAG until we can get secure login working
+    think, answer, seq, _seconds = ask(query, topic, model=model, no_rag=True)
+    print("XXX", answer[:100])
+    response = requests.post(
+        "https://api.bossbot.org/api/give-new-answer",
+        params={"User": engine, "Nonce": nonce, "Hash": hash},
+        json={
+            "Query": query,
+            "Topic": topic,
+            "Seq": seq,
+            "Think": think,
+            "Answer": answer,
+        },
+    )
+    if response.status_code != 200:
+        print("Failed to post query answer")
 
 
 def poll_queries(engine: str, token: str) -> None:
@@ -45,6 +53,6 @@ def poll_queries(engine: str, token: str) -> None:
             print(f"{now} No new queries available")
         else:
             topic = data["Topic"]
-            seq = data["Seq"]
-            queries = data["Queries"]
-            give_answer(engine, token, topic, seq, queries)
+            for Q in data["Queries"]:
+                seq, (query, model) = Q.popitem()
+                give_answer(engine, token, topic, seq, query, model)

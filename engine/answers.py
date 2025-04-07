@@ -7,6 +7,8 @@ from time import monotonic
 
 import chromadb
 
+from app.models import MODELS
+
 Result = namedtuple("Result", ["doc", "distance"])
 INTRODUCTION = """
 Please assist us in exploring union contract negotiations.
@@ -175,16 +177,12 @@ def ask(
         return think, answer, 0, 0  # type: ignore
 
     start = monotonic()
-    if no_context:
-        context = ""
-    else:
-        context = get_context(topic)
-    if no_rag:
-        rag_docs = ""
-    else:
-        rag_docs = get_rag(query)
-
+    # If invalid or alias given for model, use default
     query = f"QUERY:\n{query}"
+    model = MODELS.get(model) or MODELS["default"]
+    context = "" if no_context else get_context(topic)
+    rag_docs = "" if no_rag else get_rag(query)
+
     if len(context) > 200_000:
         # This topic has aquired many prior answers.  Age out the oldest answers
         # from the overall context. Keep approximately 50,000 tokens from prior
