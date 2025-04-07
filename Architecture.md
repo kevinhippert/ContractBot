@@ -117,7 +117,7 @@ If there is an available answer:
 This response will "dawdle" a bit if no answer is yet available.  A loop in
 FastAPI will wait one second a few times if no answer is yet ready.  When an
 answer is available, the response will occur immediately.  After a minute or
-two of no answer becoming ready, the unavailable response will be sent.
+so of no answer becoming ready, the unavailable response will be sent.
 
 ### `GET /api/login`
 

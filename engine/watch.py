@@ -19,7 +19,6 @@ def give_answer(
     hash = sha256(f"{engine} {nonce} {token}".encode()).hexdigest()
     # FIXME: Only disable RAG until we can get secure login working
     think, answer, seq, _seconds = ask(query, topic, model=model, no_rag=True)
-    print("XXX", answer[:100])
     response = requests.post(
         "https://api.bossbot.org/api/give-new-answer",
         params={"User": engine, "Nonce": nonce, "Hash": hash},
@@ -31,8 +30,11 @@ def give_answer(
             "Answer": answer,
         },
     )
-    if response.status_code != 200:
-        print("Failed to post query answer")
+    now = datetime.now().isoformat(timespec="seconds")
+    if response.status_code == 200:
+        print(f"{now} Posted query answer for {topic}[{seq}]")
+    else:
+        print(f"{now} Failed to post query answer for {topic}[{seq}]")
 
 
 def poll_queries(engine: str, token: str) -> None:
@@ -48,7 +50,7 @@ def poll_queries(engine: str, token: str) -> None:
 
     elif response.status_code == 200:
         data = response.json()
-        print(data)  # FIXME: What echoing to terminal do we want?
+        print(f"{now} {data}")
         if data["Topic"] is None:
             print(f"{now} No new queries available")
         else:

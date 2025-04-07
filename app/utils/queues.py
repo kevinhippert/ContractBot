@@ -84,9 +84,28 @@ class QueryQueue:
         seq = answer.Seq
         _answer = "§".join(answer.Answer or [])
         think = "§".join(answer.Think or [])
+        sql = """
+            UPDATE queries
+            SET Answer =?, Think =?, Status = 'Done'
+            WHERE Topic =? AND Seq =?
+        """
+        self.cursor.execute(sql, (_answer, think, topic, seq))
+
+    def find_answer(self, topic: str, seq: int) -> Answer | None:
         self.cursor.execute(
-            "UPDATE queries "
-            "SET Answer =?, Think =?, Status = 'Done'"
-            "WHERE Topic =? AND Seq =?",
-            (_answer, think, topic, seq),
+            "SELECT Query, Answer, Think "
+            "FROM queries "
+            "WHERE Topic =? AND Seq =? AND Status = 'Done'",
+            (topic, seq),
         )
+        result = self.cursor.fetchone()
+        if result is not None:
+            query, answer, think = result
+            return Answer(
+                Query=query,
+                Topic=topic,
+                Seq=seq,
+                Answer=answer.split("§"),
+                Think=think.split("§"),
+            )
+        return None

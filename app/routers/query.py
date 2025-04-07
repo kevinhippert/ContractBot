@@ -1,10 +1,8 @@
 from datetime import datetime
-from random import randint
 from time import sleep
 
 from fastapi import APIRouter, status
 from fastapi.responses import JSONResponse
-from fortune import fortune
 
 from app.models import Query, QueryAck
 from app.utils.access import authenticate
@@ -77,13 +75,17 @@ async def get_query(
             content={"detail": "Authentication failed"},
         )
 
-    for _ in range(30):
-        if randint(1, 100) < 20:
-            answer = fortune().split("\n")
-            think = fortune().split("\n")
+    RETRIES = 60
+    for _ in range(RETRIES):
+        if answer := QueryQueue().find_answer(Topic, Seq):
             return JSONResponse(
                 status_code=status.HTTP_200_OK,
-                content={"Topic": Topic, "Seq": Seq, "Answer": answer, "Think": think},
+                content={
+                    "Topic": answer.Topic,
+                    "Seq": answer.Seq,
+                    "Answer": answer.Answer,
+                    "Think": answer.Think,
+                },
             )
         sleep(1)
 
