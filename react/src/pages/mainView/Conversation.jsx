@@ -19,7 +19,7 @@ function Conversation({ messages, errorMessage, isQuerying }) {
                   marginTop: "5px",
                 }}
               >
-                {m.text.join("\n")}
+                {m.text}
               </Paper>
             ))}
           </Box>

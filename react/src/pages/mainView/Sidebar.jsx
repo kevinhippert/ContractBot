@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { createTopicId } from "../../utils/utils";
+import { useTopic } from "../../contexts/TopicContext";
 import {
   Box,
   List,
@@ -11,16 +12,18 @@ import {
 } from "@mui/material/";
 import AddIcon from "@mui/icons-material/Add";
 
-export default function Sidebar({ setCurrentTopic }) {
+export default function Sidebar() {
   const [topics, setTopics] = useState([]);
-  // [{topicId: "abc123", topicName: "What is life?", isCurrent: true}, ...]
+  // [{topicId: "abc123", topicName: "What is life?", isCurrent: true, seq: 2}, ...]
+  const { currentTopic, updateCurrentTopic } = useTopic();
 
-  const handleNewTopicClick = () => {
+  const createNewTopic = () => {
     let newTopicId = createTopicId();
     let newTopic = {
       topicId: newTopicId,
       topicName: `New Topic - ${newTopicId.slice(0, 3)}`,
       isCurrent: true,
+      seq: 1,
     };
 
     setTopics((prevTopics) =>
@@ -28,7 +31,11 @@ export default function Sidebar({ setCurrentTopic }) {
         .map((topic) => ({ ...topic, isCurrent: false }))
         .concat(newTopic)
     );
-    setCurrentTopic(newTopic);
+    updateCurrentTopic(newTopic);
+  };
+
+  const handleNewTopicClick = () => {
+    createNewTopic();
   };
 
   const handleSelectTopic = (topic) => {
@@ -38,7 +45,7 @@ export default function Sidebar({ setCurrentTopic }) {
         isCurrent: t.topicId === topic.topicId,
       }))
     );
-    setCurrentTopic(topic);
+    updateCurrentTopic(topic);
   };
 
   const sidebarHtml = (
@@ -55,7 +62,7 @@ export default function Sidebar({ setCurrentTopic }) {
                 <ListItemText
                   primary={topic.topicName}
                   sx={{
-                    color: topic.isCurrent ? "purple" : "inherit",
+                    color: currentTopic ? "purple" : "inherit",
                   }}
                 />
               </ListItemButton>

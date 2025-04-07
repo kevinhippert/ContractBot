@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Sidebar from "./Sidebar";
+import { useTopic } from "../../contexts/TopicContext";
 import { Box, Container } from "@mui/material/";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { set, useForm } from "react-hook-form";
@@ -13,7 +14,7 @@ import { createAuthenticationParams } from "../../authentication/authentication"
 // components and handles submissions ond errors
 function MainView() {
   const [seq, setSeq] = useState(1);
-  const [currentTopic, setCurrentTopic] = useState(null);
+  const { currentTopic, updateCurrentTopic } = useTopic();
   const [errorMessage, setErrorMessage] = useState(null);
   const [messages, setMessages] = useState([]);
   const [isQuerying, setIsQuerying] = useState(false);
@@ -52,8 +53,8 @@ function MainView() {
     queryFn: async () => {
       try {
         const authParams = await createAuthenticationParams();
-        const topic = "123ABC"; // createTopicId();
-        const seq = 1; // Start from 1 for the first question
+        const topic = currentTopic.topicId; // createTopicId();
+        const seq = currentTopic.seq;
         const url = `check-query?${authParams}&Topic=${topic}&Seq=${seq}`;
         const res = await api.get(url);
         setMessages((prevMessages) => [
@@ -65,6 +66,7 @@ function MainView() {
             text: res.data.Answer,
           },
         ]);
+        updateCurrentTopic({ seq: currentTopic.seq + 1 });
         setIsQuerying(false);
         return res.data;
       } catch (error) {
@@ -88,7 +90,7 @@ function MainView() {
       },
     ]);
     let formData = {
-      Topic: "123ABC",
+      Topic: currentTopic.topicId,
       Query: question.question,
       Modifiers: { Region: null, Category: question.categories },
     };
@@ -107,7 +109,7 @@ function MainView() {
     >
       <form style={{ display: "flex" }} onSubmit={handleSubmit(onSubmit)}>
         <Box sx={{ width: "200px" }}>
-          <Sidebar setCurrentTopic={setCurrentTopic} />
+          <Sidebar />
         </Box>
         <Box>
           <Categories control={control} />

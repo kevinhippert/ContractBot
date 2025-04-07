@@ -1,12 +1,15 @@
 import "./App.css";
 import NavBar from "./components/NavBar";
+import { TopicProvider } from "./contexts/TopicContext";
 import MainView from "./pages/mainView/MainView";
 
 function App() {
   return (
     <>
       <NavBar />
-      <MainView />
+      <TopicProvider>
+        <MainView />
+      </TopicProvider>
     </>
   );
 }
