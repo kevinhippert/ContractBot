@@ -21,7 +21,7 @@ function MainView() {
   const { register, control, handleSubmit, setValue } = useForm();
 
   useEffect(() => {
-    console.log(currentTopic);
+    console.log("current topic: ", currentTopic);
   }, [currentTopic]);
 
   // React Query mutation for form submission
