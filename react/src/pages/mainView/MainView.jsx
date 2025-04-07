@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Sidebar from "./Sidebar";
+import { useTopic } from "../../contexts/TopicContext";
 import { Box, Container } from "@mui/material/";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
@@ -13,11 +14,15 @@ import { createAuthenticationParams } from "../../authentication/authentication"
 // components and handles submissions ond errors
 function MainView() {
   const [seq, setSeq] = useState(1);
-  const [questions, setQuestions] = useState([]);
+  const { currentTopic, updateCurrentTopic } = useTopic();
   const [errorMessage, setErrorMessage] = useState(null);
   const [messages, setMessages] = useState([]);
   const [isQuerying, setIsQuerying] = useState(false);
   const { register, control, handleSubmit, setValue } = useForm();
+
+  useEffect(() => {
+    console.log(currentTopic);
+  }, [currentTopic]);
 
   // React Query mutation for form submission
   const mutation = useMutation({
@@ -37,7 +42,8 @@ function MainView() {
       setIsQuerying(true);
     },
     onError: (error) => {
-      setErrorMessage(error);
+      setIsQuerying(false);
+      setErrorMessage(error.response.data.detail);
       console.log("there was an error and here it is: ", error);
     },
   });
@@ -47,8 +53,8 @@ function MainView() {
     queryFn: async () => {
       try {
         const authParams = await createAuthenticationParams();
-        const topic = "123ABC"; // createTopicId();
-        const seq = 1; // Start from 1 for the first question
+        const topic = currentTopic.topicId;
+        const seq = currentTopic.seq;
         const url = `check-query?${authParams}&Topic=${topic}&Seq=${seq}`;
         const res = await api.get(url);
         setMessages((prevMessages) => [
@@ -60,9 +66,12 @@ function MainView() {
             text: res.data.Answer,
           },
         ]);
+        updateCurrentTopic({ seq: currentTopic.seq + 1 });
         setIsQuerying(false);
         return res.data;
       } catch (error) {
+        setIsQuerying(false);
+        setErrorMessage("Cannot fetch Answer");
         console.log("fetch error: ", error);
       }
     },
@@ -81,7 +90,7 @@ function MainView() {
       },
     ]);
     let formData = {
-      Topic: "123ABC",
+      Topic: currentTopic.topicId,
       Query: question.question,
       Modifiers: { Region: null, Category: question.categories },
     };
@@ -104,13 +113,13 @@ function MainView() {
         </Box>
         <Box>
           <Categories control={control} />
-          <br/>
+          <br />
           <Conversation
             messages={messages}
             errorMessage={errorMessage}
             isQuerying={isQuerying}
           />
-          <br/>
+          <br />
           <QuestionInput register={register} />
         </Box>
       </form>
