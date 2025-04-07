@@ -48,7 +48,7 @@ function MainView() {
       try {
         const authParams = await createAuthenticationParams();
         const topic = "123ABC"; // createTopicId();
-        const seq = seq; // Start from 1 for the first question
+        const seq = 1; // Start from 1 for the first question
         const url = `check-query?${authParams}&Topic=${topic}&Seq=${seq}`;
         const res = await api.get(url);
         setMessages((prevMessages) => [
@@ -61,7 +61,6 @@ function MainView() {
           },
         ]);
         setIsQuerying(false);
-        setSeq(seq + 1);
         return res.data;
       } catch (error) {
         console.log("fetch error: ", error);
