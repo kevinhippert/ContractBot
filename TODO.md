@@ -18,15 +18,16 @@
 [ ] Topic creation and switching (wireframe exists, not functionality).
 [ ] Pass LLM model selection to `api/add-query`.
 [ ] User aliases for topic IDs.
+[ ] Handle "no answer" for `api/check-query` response.
 
 ## Gunicorn/FastAPI Server
 
 [X] Authentication mechanism.
 [X] `POST api/add-query` correctly writes to `QueryQueue`.
-[ ] `GET api/check-query` (dummy form returns fortune messages).
+[X] `GET api/check-query`.
 [X] `GET api/login`.
 [X] `GET api/get-new-queries`
-[?] `POST api/give-new-answer` (probably working, but not tested yet).
+[X] `POST api/give-new-answer`.
 
 ## Inference Engine(s)
 
