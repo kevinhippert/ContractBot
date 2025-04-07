@@ -178,7 +178,7 @@ def ask(
 
     start = monotonic()
     # If invalid or alias given for model, use default
-    query = f"QUERY:\n{query}"
+    _query = f"QUERY:\n{query}"
     model = MODELS.get(model) or MODELS["default"]
     context = "" if no_context else get_context(topic)
     rag_docs = "" if no_rag else get_rag(query)
@@ -191,7 +191,7 @@ def ask(
 
     # Remove null bytes for safety (how they sneak in is unclear)
     div = "\n\n"
-    enhanced_query = div.join([introduction, context, rag_docs, query])
+    enhanced_query = div.join([introduction, context, rag_docs, _query])
     enhanced_query = enhanced_query.replace("\x00", " ")
 
     # E.g. `ollama run deepseek-r1:32b "What is the meaning of life?"`

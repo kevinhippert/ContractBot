@@ -16,6 +16,8 @@
 [X] Authentication of `api/add-query` and `api/check-query`
 [ ] Category tags (conceptually in place, but need to decide specifics).
 [ ] Topic creation and switching (wireframe exists, not functionality).
+[ ] Pass LLM model selection to `api/add-query`.
+[ ] User aliases for topic IDs.
 
 ## Gunicorn/FastAPI Server
 
