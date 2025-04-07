@@ -66,5 +66,7 @@ def give_new_answer(
             content={"detail": "Authentication failed"},
         )
 
+    print("XXX", answer)
     QueryQueue().update_answer(answer)
+    print("XXX called QueryQueue().update_answer(answer)")
     return JSONResponse(status_code=status.HTTP_200_OK, content={"status": "OK"})
