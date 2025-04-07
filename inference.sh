@@ -37,7 +37,7 @@ if [ -z "$(pgrep -fl engine/watch)" ]; then
     echo "Inference Watcher is not running."
 else
     echo "Shutting down old Inference Watcher"
-    kill $(ps ax | grep engine/watch | cut -c-6)
+    kill $(ps ax | grep engine/watch | grep -v grep | cut -c-6)
 fi
 echo "Starting Inference Watcher..."
 source .venv/bin/activate
