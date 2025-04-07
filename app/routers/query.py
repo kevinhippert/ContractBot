@@ -75,9 +75,8 @@ async def get_query(
             content={"detail": "Authentication failed"},
         )
 
-    RETRIES = 15
-    for try_num in range(RETRIES):
-        print("XXX try_num:", try_num)
+    RETRIES = 30
+    for _try_num in range(RETRIES):
         if answer := QueryQueue().find_answer(Topic, Seq):
             return JSONResponse(
                 status_code=status.HTTP_200_OK,
