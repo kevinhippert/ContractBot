@@ -6,6 +6,8 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import SessionTimeout from "./components/SessionTimeout";
 import MainView from "./pages/mainView/MainView";
 import Login from "./pages/login/Login";
+import { ThemeProvider } from "@mui/material/styles";
+import seiuTheme from "./styles/seiuTheme";
 
 function App() {
   return (

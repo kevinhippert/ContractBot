@@ -58,7 +58,7 @@ export default function Login() {
               {...register("password", { required: "Password is required" })}
               error={!!errors.password}
             />
-            <Button type="submit" variant="contained" color="primary">
+            <Button type="submit" variant="contained">
               Login
             </Button>
           </form>
