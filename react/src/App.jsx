@@ -3,6 +3,7 @@ import NavBar from "./components/NavBar";
 import { TopicProvider } from "./contexts/TopicContext";
 import { Routes, Route } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute";
+import SessionTimeout from "./components/SessionTimeout";
 import MainView from "./pages/mainView/MainView";
 import Login from "./pages/login/Login";
 
@@ -22,6 +23,7 @@ function App() {
           />
           <Route path="/login" element={<Login />} />
         </Routes>
+        <SessionTimeout />
       </TopicProvider>
     </>
   );

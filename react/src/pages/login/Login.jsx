@@ -56,6 +56,7 @@ export default function Login() {
             <TextField
               label="password"
               variant="outlined"
+              type="password"
               {...register("password", { required: "Password is required" })}
               error={!!errors.password}
             />
