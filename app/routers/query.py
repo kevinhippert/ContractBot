@@ -4,7 +4,7 @@ from time import sleep
 from fastapi import APIRouter, status
 from fastapi.responses import JSONResponse
 
-from app.models import Query, QueryAck
+from app.models import Answer, Query, QueryAck
 from app.utils.access import authenticate
 from app.utils.queues import QueryQueue
 
@@ -92,4 +92,49 @@ async def get_query(
     return JSONResponse(
         status_code=status.HTTP_200_OK,
         content={"Topic": Topic, "Seq": Seq, "Answer": None, "Think": None},
+    )
+
+
+@router.get("/api/get-topic-thread", tags=["query"])
+async def get_topic(
+    User: str,
+    Nonce: str,
+    Hash: str,
+    Topic: str,
+) -> JSONResponse:
+    """
+    Retrieve all answers within a topic. Return 404 if none exist.
+
+    Note: Will also include queries that have not yet had Answer/Think populated
+    (i.e. status "Open" or "Pending").
+    """
+    if not User.startswith("Frontend_"):
+        return JSONResponse(
+            status_code=status.HTTP_403_FORBIDDEN,
+            content={"detail": "Only Frontend users can access this endpoint"},
+        )
+    if not authenticate(User, Nonce, Hash):
+        return JSONResponse(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            content={"detail": "Authentication failed"},
+        )
+
+    answers: list[Answer] = QueryQueue().find_answers(Topic)
+    if not answers:
+        return JSONResponse(
+            status_code=status.HTTP_404_NOT_FOUND,
+            content={"detail": "Topic not found"},
+        )
+
+    return JSONResponse(
+        status_code=status.HTTP_200_OK,
+        content=[
+            {
+                "Topic": answer.Topic,
+                "Seq": answer.Seq,
+                "Answer": answer.Answer,
+                "Think": answer.Think,
+            }
+            for answer in answers
+        ],
     )

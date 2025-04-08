@@ -30,7 +30,7 @@ fi
 
 # Archive the answer database and old logs
 mkdir -p $HOME/archives
-cp -v .answers.db $HOME/archive/$(date +"%Y-%m-%d-%H-%M-%S)-answers.db
+cp -v .answers.db $HOME/archive/$(date +"%Y-%m-%d-%H-%M-%S")-answers.db
 mv -v $HOME/log/* $HOME/archive/
 
 # Setup the log file
@@ -44,6 +44,6 @@ else
     echo "Shutting down old Inference Watcher"
     kill $(ps ax | grep engine/watch | grep -v grep | cut -c-6)
 fi
-echo "Starting Inference Watcher..."
+echo "Starting Inference Watcher"
 source .venv/bin/activate
 nohup engine/watch 2>>$INFERENCE_LOG &

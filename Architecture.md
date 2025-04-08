@@ -119,6 +119,38 @@ FastAPI will wait one second a few times if no answer is yet ready.  When an
 answer is available, the response will occur immediately.  After a minute or
 so of no answer becoming ready, the unavailable response will be sent.
 
+### `GET /api/get-topic-thread`
+
+Takes authentication and topic query parameters:
+
+- User (e.g. `Frontend_1`)
+- Nonce
+- Hash
+- Topic (e.g. `&Topic=DGQIn+5troxI`)
+
+If no matches exist for the topic, return a 404 status code.  If a topic thread
+exists, return a structure like:
+
+```json
+[
+  {
+    "Topic": "DGQIn+5troxI",
+    "Seq": 1,
+    "Answer": ["First paragraph", "Second paragraph"],
+    "Think": ["Thinking about foo", "Thinking about bar"]
+  },
+  {
+    "Topic": "DGQIn+5troxI",
+    "Seq": 2,
+    "Answer": ["Other stuff"],
+    "Think": ["Thinking about baz", "Thinking about bam"]
+  },
+  ...
+]
+```
+
+Sequences within a topic are always returned in ascending numeric order.
+
 ### `GET /api/login`
 
 Logins (for now) will be handled by a static list of authorized users, with

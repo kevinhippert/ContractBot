@@ -110,3 +110,27 @@ class QueryQueue:
                 Think=think.split("§"),
             )
         return None
+
+    def find_answers(self, topic: str) -> list[Answer]:
+        self.cursor.execute(
+            "SELECT Query, Seq, Answer, Think "
+            "FROM queries "
+            "WHERE Topic =? "
+            "ORDER BY Seq",
+            (topic,),
+        )
+        result = self.cursor.fetchall()
+        for row in result:
+            row[2] = row[2] or ""  # If Answer is None, set it to empty string
+            row[3] = row[3] or ""  # If Think is None, set it to empty string
+
+        return [
+            Answer(
+                Query=row[0],
+                Topic=topic,
+                Seq=row[1],
+                Answer=row[2].split("§"),
+                Think=row[3].split("§"),
+            )
+            for row in result
+        ]
