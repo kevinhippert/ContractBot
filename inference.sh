@@ -30,7 +30,7 @@ fi
 
 # Archive the answer database and old logs
 mkdir -p $HOME/archives
-cp -v .answers.db $HOME/archive/$(date +"%Y-%m-%d-%H-%M-%S")-answers.db
+cp -v .answers.db $HOME/archive/$(date +"%Y-%m-%d")-answers.db
 mv -v $HOME/log/* $HOME/archive/
 
 # Setup the log file
