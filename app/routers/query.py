@@ -119,8 +119,8 @@ async def get_topic(
             content={"detail": "Authentication failed"},
         )
 
-    answers: list[Answer] = QueryQueue().find_answers(Topic)
-    if not answers:
+    queries: list[Answer] = QueryQueue().find_answers(Topic)
+    if not queries:
         return JSONResponse(
             status_code=status.HTTP_404_NOT_FOUND,
             content={"detail": "Topic not found"},
@@ -130,11 +130,12 @@ async def get_topic(
         status_code=status.HTTP_200_OK,
         content=[
             {
-                "Topic": answer.Topic,
-                "Seq": answer.Seq,
-                "Answer": answer.Answer,
-                "Think": answer.Think,
+                "Query": query.Query,
+                "Topic": query.Topic,
+                "Seq": query.Seq,
+                "Answer": query.Answer,
+                "Think": query.Think,
             }
-            for answer in answers
+            for query in queries
         ],
     )

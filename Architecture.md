@@ -96,6 +96,7 @@ Return body should look like this if no answer is available:
 
 ```json
 {
+    "Query": "What is the capital of Zimbabwe?",
     "Topic": "DGQIn+5troxI",
     "Seq": 4,
     "Answer": null,
@@ -107,6 +108,7 @@ If there is an available answer:
 
 ```json
 {
+    "Query": "What is the capital of Mali?",
     "Topic": "DGQIn+5troxI",
     "Seq": 4,
     "Answer": ["First paragraph", "Second paragraph"],
@@ -134,12 +136,14 @@ exists, return a structure like:
 ```json
 [
   {
+    "Query": "What is your favorite color?",
     "Topic": "DGQIn+5troxI",
     "Seq": 1,
     "Answer": ["First paragraph", "Second paragraph"],
     "Think": ["Thinking about foo", "Thinking about bar"]
   },
   {
+    "Query": "What is your mothers maiden name?",
     "Topic": "DGQIn+5troxI",
     "Seq": 2,
     "Answer": ["Other stuff"],
@@ -150,6 +154,9 @@ exists, return a structure like:
 ```
 
 Sequences within a topic are always returned in ascending numeric order.
+
+In contrast to `api/check-query` this route responds immediately with either a
+404 status or a 200 status and an array of answers.
 
 ### `GET /api/login`
 
