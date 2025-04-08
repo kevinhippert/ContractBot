@@ -18,6 +18,10 @@ export default function Sidebar() {
   const { currentTopic, updateCurrentTopic } = useTopic();
 
   useEffect(() => {
+    console.log("topics: ", topics);
+  }, [topics]);
+
+  useEffect(() => {
     if (topics.length === 0) {
       const initialTopic = createInitialTopic();
       setTopics([initialTopic]);
@@ -70,7 +74,7 @@ export default function Sidebar() {
                 <ListItemText
                   primary={topic.topicName}
                   sx={{
-                    color: currentTopic ? "purple" : "inherit",
+                    color: topic.isCurrent ? "purple" : "inherit",
                   }}
                 />
               </ListItemButton>
