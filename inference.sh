@@ -35,7 +35,7 @@ mv -v $HOME/log/* $HOME/archive/
 
 # Setup the log file
 mkdir -p $HOME/log
-INFERENCE_LOG=$HOME/log/inference-$(date +"%Y-%m-%d").log
+INFERENCE_LOG=$HOME/log/inference-$(date +"%Y-%m-%d-%H-%M-%S").log
 
 # Launch the watcher (kill old one, if running)
 if [ -z "$(pgrep -fl engine/watch)" ]; then
@@ -45,5 +45,6 @@ else
     kill $(ps ax | grep engine/watch | grep -v grep | cut -c-6)
 fi
 echo "Starting Inference Watcher"
+export TOKENIZERS_PARALLELISM=true
 source .venv/bin/activate
 nohup engine/watch 2>>$INFERENCE_LOG &
