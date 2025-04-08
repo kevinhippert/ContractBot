@@ -13,18 +13,18 @@ import { createAuthenticationParams } from "../../authentication/authentication"
 // This component basically acts as a giant form, which registers inputs from various child
 // components and handles submissions ond errors
 function MainView() {
-  const [seq, setSeq] = useState(1);
-  const { currentTopic, updateCurrentTopic } = useTopic();
+  const { currentTopic, updateCurrentTopic, updateTopicName } = useTopic();
   const [errorMessage, setErrorMessage] = useState(null);
   const [messages, setMessages] = useState([]);
   const [isQuerying, setIsQuerying] = useState(false);
   const { register, control, handleSubmit, setValue } = useForm();
 
-  useEffect(() => {
-    console.log("current topic: ", currentTopic);
-  }, [currentTopic]);
+  // useEffect(() => {
+  //   console.log("MainView, current topic: ", currentTopic);
+  // }, [currentTopic]);
 
   // React Query mutation for form submission
+  // POST add-query
   const mutation = useMutation({
     mutationFn: async (formData) => {
       try {
@@ -48,7 +48,8 @@ function MainView() {
     },
   });
 
-  const query = useQuery({
+  // GET check-query
+  useQuery({
     queryKey: ["reply", "topicId"],
     queryFn: async () => {
       try {
@@ -71,8 +72,8 @@ function MainView() {
         return res.data;
       } catch (error) {
         setIsQuerying(false);
-        setErrorMessage("Cannot fetch Answer");
-        console.log("fetch error: ", error);
+        setErrorMessage("Cannot fetch Answer"); // TODO if error.response?.data?.detail then that, else generic message
+        console.error("fetch error: ", error);
       }
     },
     enabled: isQuerying,
@@ -94,8 +95,11 @@ function MainView() {
       Query: question.question,
       Modifiers: { Region: null, Category: question.categories },
     };
+    if (currentTopic.seq === 1) {
+      updateTopicName(currentTopic.topicId, formData.Query);
+    }
     mutation.mutate(formData);
-    setValue("question", "");
+    setValue("question", ""); // reset form input
   };
 
   return (

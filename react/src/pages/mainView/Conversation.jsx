@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 import { Paper, Box, Alert } from "@mui/material";
 
 function Conversation({ messages, errorMessage, isQuerying }) {
-  useEffect(() => {
-    console.log(messages);
-  }, [messages]);
+  // useEffect(() => {
+  //   console.log(messages);
+  // }, [messages]);
 
   return (
     <>
