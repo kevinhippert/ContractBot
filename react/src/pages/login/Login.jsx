@@ -18,7 +18,6 @@ export default function Login() {
   const { setAuthorizedUser } = useAuth();
 
   const onSubmit = async (data) => {
-    console.log("submitting! ", data);
     const params = await createAuthenicateUserParams(
       data.username,
       data.password
@@ -27,7 +26,6 @@ export default function Login() {
 
     try {
       const res = await api.get(url);
-      console.log("res: ", res);
       if (res.status === 200) {
         console.log("good user!");
         setAuthorizedUser(true);
