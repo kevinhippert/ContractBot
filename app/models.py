@@ -33,7 +33,8 @@ class QueryTodo(BaseModel):
 MODELS = {
     "fastest": "deepseek-r1:7b",  # ~14s
     "faster": "gemma3:27b",  # ~30s
-    "default": "deepseek-r1:32b",  # ~34s
+    # "default": "deepseek-r1:32b",  # ~34s
+    "default": "deepseek-r1:7b",  # TODO: fast-as-possible model for testing
     "alternate": "qwq",  # ~50s
     "deepseek-r1:7b": "deepseek-r1:7b",
     "gemma3:27b": "gemma3:27b",

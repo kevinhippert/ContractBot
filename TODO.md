@@ -21,6 +21,11 @@
 - [ ] Pass LLM model selection to `api/add-query`.
 - [ ] User aliases for topic IDs.
 - [ ] Handle "no answer" for `api/check-query` response.
+- [ ] Prettify answers returned:
+  - [ ] Paragraph breaks between each item in Answer array.
+  - [ ] Bold (or similar marker) for **marked** words/phrases.
+  - [ ] Header indication for lines starting with "###"
+        (probably for any initial hash marks; perhaps different levels).
 
 ## Gunicorn/FastAPI Server
 
