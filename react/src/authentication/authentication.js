@@ -34,3 +34,13 @@ export const createAuthenticationParams = async () => {
     Hash: hash,
   }).toString();
 };
+
+export const createAuthenicateUserParams = async (user, password) => {
+  const nonce = generateNonce();
+  const hash = await generateHash(user, nonce, password);
+  return new URLSearchParams({
+    User: user,
+    Nonce: nonce,
+    Hash: hash,
+  }).toString();
+};

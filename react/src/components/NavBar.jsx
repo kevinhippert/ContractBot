@@ -1,13 +1,26 @@
 import * as React from "react";
-import AppBar from "@mui/material/AppBar";
-import Box from "@mui/material/Box";
-import Toolbar from "@mui/material/Toolbar";
-import Typography from "@mui/material/Typography";
-import Button from "@mui/material/Button";
-import IconButton from "@mui/material/IconButton";
+import { useAuth } from "../contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
+
+import {
+  AppBar,
+  Box,
+  Toolbar,
+  Typography,
+  Button,
+  IconButton,
+} from "@mui/material/";
 import MenuIcon from "@mui/icons-material/Menu";
 
 export default function NavBar() {
+  const { authorizedUser, setAuthorizedUser } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogOutClick = () => {
+    setAuthorizedUser(false);
+    navigate("/login");
+  };
+
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static">
@@ -24,7 +37,11 @@ export default function NavBar() {
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             BossBot
           </Typography>
-          <Button color="inherit">Login</Button>
+          {authorizedUser && (
+            <Button color="inherit" onClick={handleLogOutClick}>
+              Log out
+            </Button>
+          )}
         </Toolbar>
       </AppBar>
     </Box>
