@@ -1,6 +1,7 @@
 from collections import namedtuple
 from contextlib import redirect_stderr
 import io
+from pathlib import Path
 from subprocess import run
 import sqlite3
 from time import monotonic
@@ -31,7 +32,7 @@ knowlege rather than be specific to union contract negotiations.
 
 
 class Answers:
-    def __init__(self, db_file: str = ".answers.db"):
+    def __init__(self, db_file: str):
         self.conn = sqlite3.connect(db_file)
         self.cursor = self.conn.cursor()
         self.cursor.execute(
@@ -91,7 +92,7 @@ class Answers:
         return context
 
 
-answers_db = Answers()
+answers_db = Answers(str(Path.home() / ".answers.db"))
 
 EXAMPLE_RESPONSE = {
     "Topic": "DGQIn+5troxI",

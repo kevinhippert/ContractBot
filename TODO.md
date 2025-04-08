@@ -7,9 +7,13 @@
 - [X] DNS stuff for https://bossbot.org and https://api.bossbot.org.
 - [X] AWS stuff with load balancer, port forwarding, etc.
 - [X] Deployment script to launch Gunicorn and React servers
-- [?] Each redeployment removes old `.queue.db` (is this good or bad?)
+- [X] Each redeployment removes old `.queue.db`
+      (Inference Engines keeps records and archives DB).
+- [ ] Periodically remove old rows from `.queue.db`.
 - [X] Create `Frontend_2` user for local development.
-- [?] Calico access to Inference Engine via SSH?
+- [ ] Calico access to Inference Engine via SSH?
+- [ ] Answers database lives at `$HOME/.answers.db`
+      (will not get deleted on redeployment).
 
 ## React/UI
 
@@ -46,8 +50,7 @@
       environment variable `BOSSBOT_MODEL`.  In `answers.py`.
 - [X] Command-line tool `answer` to provide developer access to equivalent
       results as API, using the `ask()` function.
-- [?] Runner `watch` that will poll for questions and produce answers, calling
-      appropriate APIs. Probably working, but not tested yet.
+- [X] Runner `watch` polls for questions, produces answers, and cals APIs.
 
 # Notes
 

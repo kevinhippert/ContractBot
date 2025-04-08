@@ -1,0 +1,2 @@
+#!/bin/bash
+cp -v $HOME/.answers.db $HOME/archive/answers-$(date +"%Y-%m-%d-%H-%M-%S").db
