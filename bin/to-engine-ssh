@@ -9,4 +9,5 @@ rsync -aWv --progress -e "ssh -p443" . \
     --exclude '.ruff_cache' \
     --exclude '.answers.db' \
     --exclude '.queue.db' \
-    --exclude '.mpy_cache'
+    --exclude '.mpy_cache' \
+    --exclude 'react'

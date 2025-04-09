@@ -55,8 +55,8 @@ def poll_queries(engine: str, token: str) -> None:
 
     elif response.status_code == 200:
         data = response.json()
-        print(f"{now} {data}", file=stderr, flush=True)
         if data["Topic"] is not None:
+            print(f"{now} {data}", file=stderr, flush=True)
             topic = data["Topic"]
             for Q in data["Queries"]:
                 seq, (query, model) = Q.popitem()
