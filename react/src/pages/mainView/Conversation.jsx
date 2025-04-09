@@ -9,16 +9,11 @@ function Conversation({ messages, errorMessage, isQuerying }) {
     formatThread(messages);
   }, [messages]);
 
-  // useEffect(() => {
-  //   console.log(texts);
-  // }, [texts]);
-
   function formatThread(messages) {
     let result = [];
     let messageObj;
     for (let i = 0; i < messages.length; i++) {
       let message = messages[i];
-      console.log("message, ", message);
       if (!message.text) {
         message = {
           variant: "body1",
@@ -68,9 +63,9 @@ function Conversation({ messages, errorMessage, isQuerying }) {
               </Paper>
             ))}
           </Box>
-          {isQuerying && (
+          {isQuerying.isQuerying && (
             <Paper>
-              <Typography>Thinking...</Typography>
+              <Typography>{isQuerying.message}</Typography>
             </Paper>
           )}
           {errorMessage && (
