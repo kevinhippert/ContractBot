@@ -44,10 +44,7 @@ function MainView() {
       Query: question.question,
       Modifiers: { Region: null, Category: question.categories },
     };
-    if (currentTopic.seq === 1) {
-      // TODO something broken about this
-      updateTopicName(currentTopic.topicId, formData.Query);
-    }
+
     addQuery(formData);
   };
 
@@ -60,6 +57,10 @@ function MainView() {
       if (response.status === 200) {
         // Successful POST, start GET check-query
         checkQueryWithRetries(response.data.Seq);
+        // rename topic if first question of topic
+        if (response.data.Seq === 1) {
+          updateTopicName(currentTopic.topicId, formData.Query);
+        }
       } else {
         // POST failed
         setErrorMessage("Sorry, something went wrong. Please try again.");
