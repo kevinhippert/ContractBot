@@ -18,7 +18,7 @@ function Conversation({ messages, errorMessage, isQuerying }) {
     let messageObj;
     for (let i = 0; i < messages.length; i++) {
       let message = messages[i];
-      let para = message.text.join("\n").trim();
+      let para = message.text.join("<br/>\n").trim();
       // Change **bold** to <b>bold</b>
       para = para.replace(/\*\*(.*?)\*\*/g, "<b>$1</b>");
       // Change *italic* to <i>italic</i>
