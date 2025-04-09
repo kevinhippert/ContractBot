@@ -6,46 +6,40 @@ function Conversation({ messages, errorMessage, isQuerying }) {
 
   useEffect(() => {
     setThread(formatThread(messages));
-  }, [messages])
+  }, [messages]);
 
   function formatThread(messages) {
-    for (let i = 0; i < message.length; i++) {
-        let message = messages[i];
-        if (message.type === "question") {
-              let para = message[i].text.toString().trim();
+    for (let i = 0; i < messages.length; i++) {
+      let message = messages[i];
+      if (message.type === "question") {
+        let para = message[i].text.toString().trim();
+        // Change **bold** to <b>bold</b>
+        para = para.replace(/\*\*(.*?)\*\*/g, "<b>$1</b>");
+        // Change *italic* to <i>italic</i>
+        para = para.replace(/\*(.*?)\*/g, "<i>$1</i>");
+        // Change _underline_ to <u>underline</u>
+        para = para.replace(/_(.*?)_/g, "<u>$1</u>");
 
-              // Change **bold** to <b>bold</b>
-              para = para.replace(/\*\*(.*?)\*\*/g, "<b>$1</b>");
-              // Change *italic* to <i>italic</i>
-              para = para.replace(/\*(.*?)\*/g, "<i>$1</i>");
-              // Change _underline_ to <u>underline</u>
-              para = para.replace(/_(.*?)_/g, "<u>$1</u>");
-
-              if (para.match(/^####/)) {
-                  message[i] = { variant: "h1", text: para };
-              }
-              else if (para.match(/^###/)) {
-                  message[i] = { variant: "h3", text: para };
-              }
-              else if (para.match(/^##/)) {
-                  message[i] = { variant: "h2", text: para };
-              }
-              else if (para.match(/^#/)) {
-                  message[i] = { variant: "h1", text: para };
-              }
-              else {
-                  message[i] = { variant: "body1", text: para };
-              }
-            }
-            return message;
-          } else if (message.type === "message") {
-            for (let i = 0; i < message.length; i++) {
-              let para = message[i].text.toString().trim();
-              message[i] = { variant: "body2", text: para };
-            }
-          }
+        if (para.match(/^####/)) {
+          message[i] = { variant: "h1", text: para };
+        } else if (para.match(/^###/)) {
+          message[i] = { variant: "h3", text: para };
+        } else if (para.match(/^##/)) {
+          message[i] = { variant: "h2", text: para };
+        } else if (para.match(/^#/)) {
+          message[i] = { variant: "h1", text: para };
+        } else {
+          message[i] = { variant: "body1", text: para };
+        }
+      } else if (message.type === "message") {
+        for (let i = 0; i < message.length; i++) {
+          let para = message[i].text.toString().trim();
+          message[i] = { variant: "body2", text: para };
+        }
+      }
       return messages;
     }
+  }
 
   return (
     <>
@@ -61,9 +55,7 @@ function Conversation({ messages, errorMessage, isQuerying }) {
                 }}
               >
                 {thread.map((p) => (
-                  <Typography variant="body2">
-                    {p.text}
-                  </Typography>
+                  <Typography variant="body2">{p.text}</Typography>
                 ))}
               </Paper>
             ))}
