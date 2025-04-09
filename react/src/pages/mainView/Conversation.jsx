@@ -18,27 +18,29 @@ function Conversation({ messages, errorMessage, isQuerying }) {
     let messageObj;
     for (let i = 0; i < messages.length; i++) {
       let message = messages[i];
-      let para = message.text.join("<br/>\n").trim();
-      // Change **bold** to <b>bold</b>
-      para = para.replace(/\*\*(.*?)\*\*/g, "<b>$1</b>");
-      // Change *italic* to <i>italic</i>
-      para = para.replace(/\*(.*?)\*/g, "<i>$1</i>");
-      // Change _underline_ to <u>underline</u>
-      para = para.replace(/_(.*?)_/g, "<u>$1</u>");
+      for (let para of (message.text ?? [])) {
+        para = para.trim();
+        // Change **bold** to <b>bold</b>
+        para = para.replace(/\*\*(.*?)\*\*/g, "<b>$1</b>");
+        // Change *italic* to <i>italic</i>
+        para = para.replace(/\*(.*?)\*/g, "<i>$1</i>");
+        // Change _underline_ to <u>underline</u>
+        para = para.replace(/_(.*?)_/g, "<u>$1</u>");
 
-      if (para.match(/^####/)) {
-        messageObj = { variant: "h1", text: para };
-      } else if (para.match(/^###/)) {
-        messageObj = { variant: "h3", text: para };
-      } else if (para.match(/^##/)) {
-        messageObj = { variant: "h2", text: para };
-      } else if (para.match(/^#/)) {
-        messageObj = { variant: "h1", text: para };
-      } else {
-        messageObj = { variant: "body1", text: para };
+        if (para.match(/^#### /)) {
+          messageObj = { variant: "h4", text: para.slice(5) };
+        } else if (para.match(/^### /)) {
+          messageObj = { variant: "h3", text: para.slice(4) };
+        } else if (para.match(/^## /)) {
+          messageObj = { variant: "h2", text: para.slice(3) };
+        } else if (para.match(/^# /)) {
+          messageObj = { variant: "h1", text: para.slice(2) };
+        } else {
+          messageObj = { variant: "body1", text: para };
+        }
+        message = { ...messageObj, type: message.type };
+        result.push(message);
       }
-      message = { ...messageObj, type: message.type };
-      result.push(message);
     }
     setTexts(result);
   }
@@ -55,7 +57,9 @@ function Conversation({ messages, errorMessage, isQuerying }) {
                 }
                 key={index}
               >
-                {text.text}
+                <Typography variant={text.variant}>
+                    {text.text}
+                </Typography>
               </Paper>
             ))}
           </Box>
