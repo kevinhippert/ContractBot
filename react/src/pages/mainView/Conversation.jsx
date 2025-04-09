@@ -18,10 +18,11 @@ function Conversation({ messages, errorMessage, isQuerying }) {
     let messageObj;
     for (let i = 0; i < messages.length; i++) {
       let message = messages[i];
+      console.log("message, ", message);
       if (!message.text) {
         message = {
           variant: "body1",
-          text: "could not find answer",
+          text: "Sorry, I couldn't find an answer",
           type: "answer",
         };
       } else {
@@ -45,8 +46,8 @@ function Conversation({ messages, errorMessage, isQuerying }) {
           messageObj = { variant: "body1", text: para };
         }
         message = { ...messageObj, type: message.type };
-        result.push(message);
       }
+      result.push(message);
     }
     setTexts(result);
   }
@@ -67,7 +68,11 @@ function Conversation({ messages, errorMessage, isQuerying }) {
               </Paper>
             ))}
           </Box>
-          {isQuerying && <Paper>Thinking...</Paper>}
+          {isQuerying && (
+            <Paper>
+              <Typography>Thinking...</Typography>
+            </Paper>
+          )}
           {errorMessage && (
             <Alert severity="error">Whoopsy. {errorMessage}</Alert>
           )}
