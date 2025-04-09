@@ -3,6 +3,7 @@ import { Paper, Box, Alert, Typography } from "@mui/material";
 
 function Conversation({ messages, errorMessage, isQuerying }) {
   const [fullAnswer, setAnswer] = useState([]);
+  const [query, setQuery] = useState([]);
 
   useEffect(() => {
     // format only messages with type answer
@@ -10,10 +11,15 @@ function Conversation({ messages, errorMessage, isQuerying }) {
     setAnswer(formatAnswer(fullAnswer));
   }, [messages]);
 
+  useEffect(() => {
+    let queryText = messages.filter((message) => message.type === "question");
+    setQuery(queryText);
+  }, [messages]);
+
+
   function formatAnswer(answer) {
     for (let i = 0; i < answer.length; i++) {
-      let para = answer[i].toString().trim();
-      console.log(answer[i], typeof answer[i], para, typeof para);
+      let para = answer[i].text.toString().trim();
 
       // Change **bold** to <b>bold</b>
       para = para.replace(/\*\*(.*?)\*\*/g, "<b>$1</b>");
@@ -54,6 +60,11 @@ function Conversation({ messages, errorMessage, isQuerying }) {
                   marginTop: "5px",
                 }}
               >
+                {query.map((q) => (
+                  <Typography variant="body2">
+                    {q.text}
+                  </Typography>
+                ))}
                 {fullAnswer.map((answer) => (
                   <Typography variant={answer.variant}>
                     {answer.text}
