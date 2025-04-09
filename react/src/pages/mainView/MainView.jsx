@@ -37,7 +37,7 @@ function MainView() {
     },
     onSuccess: (response) => {
       // `response` is returned from mutationFn
-      console.log(response);
+      // console.log(response);
       // start query
       setIsQuerying(true);
     },
