@@ -9,7 +9,7 @@ from app.utils.queues import QueryQueue
 
 router = APIRouter()
 
-RETRIES = 60
+RETRIES = 20
 
 
 @router.get("/api/get-new-queries", tags=["infer"])
