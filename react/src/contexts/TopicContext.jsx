@@ -4,8 +4,11 @@ import { createTopicId } from "../utils/utils";
 const TopicContext = createContext();
 
 export function TopicProvider({ children }) {
-  const [currentTopic, setCurrentTopic] = useState(null);
   const [topics, setTopics] = useState([]);
+
+  useEffect(() => {
+    console.log("topic context, topics: ", topics);
+  });
 
   useEffect(() => {
     if (topics.length === 0) {
@@ -16,12 +19,6 @@ export function TopicProvider({ children }) {
   }, []);
 
   const setNewCurrentTopic = (newCurrentTopic) => {
-    setCurrentTopic((prevTopic) => {
-      if (!prevTopic) {
-        return newCurrentTopic;
-      }
-      return { ...prevTopic, ...newCurrentTopic };
-    });
     setTopics((prevTopics) =>
       prevTopics.map((t) => ({
         ...t,
@@ -30,13 +27,16 @@ export function TopicProvider({ children }) {
     );
   };
 
-  const updateCurrentTopic = (updatedTopicData) => {
-    setCurrentTopic((prevTopic) => {
-      if (!prevTopic) {
-        return updatedTopicData;
-      }
-      return { ...prevTopic, ...updatedTopicData };
-    });
+  const updateCurrentTopic = (updatedTopic) => {
+    setTopics((prevTopics) =>
+      prevTopics.map((topic) => {
+        if (topic.topicId === updatedTopic.topicId) {
+          return { ...topic, ...updatedTopic };
+        } else {
+          return topic;
+        }
+      })
+    );
   };
 
   const updateTopicName = (topicId, newTopicName) => {
@@ -53,7 +53,6 @@ export function TopicProvider({ children }) {
   };
 
   const value = {
-    currentTopic,
     setNewCurrentTopic,
     updateCurrentTopic,
     topics,

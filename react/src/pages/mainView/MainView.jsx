@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Sidebar from "./Sidebar";
 import { useTopic } from "../../contexts/TopicContext";
 import { Box, Container } from "@mui/material/";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import Categories from "./Categories";
 import QuestionInput from "./QuestionInput";
@@ -13,15 +13,18 @@ import { createAuthenticationParams } from "../../authentication/authentication"
 // This component basically acts as a giant form, which registers inputs from various child
 // components and handles submissions ond errors
 function MainView() {
-  const { currentTopic, updateCurrentTopic, updateTopicName } = useTopic();
+  const { topics, updateCurrentTopic, updateTopicName } = useTopic();
+  const [currentTopic, setCurrentTopic] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
   const [messages, setMessages] = useState([]);
   const [isQuerying, setIsQuerying] = useState(false);
   const { register, control, handleSubmit, setValue } = useForm();
+  const queryClient = useQueryClient();
 
-  // useEffect(() => {
-  //   console.log("MainView, current topic: ", currentTopic);
-  // }, [currentTopic]);
+  useEffect(() => {
+    console.log("MainView, topics: ", topics);
+    setCurrentTopic(topics.find((topic) => topic.isCurrent));
+  }, [topics]);
 
   // React Query mutation for form submission
   // POST add-query
@@ -37,7 +40,10 @@ function MainView() {
     },
     onSuccess: (response) => {
       // `response` is returned from mutationFn
-      // console.log(response);
+      updateCurrentTopic({
+        topicId: currentTopic.topicId,
+        seq: response.data.Seq,
+      });
       // start query
       setIsQuerying(true);
     },
@@ -50,7 +56,7 @@ function MainView() {
 
   // GET check-query
   useQuery({
-    queryKey: ["reply", "topicId"],
+    queryKey: ["reply", currentTopic?.topicId, currentTopic?.seq],
     queryFn: async () => {
       try {
         const authParams = await createAuthenticationParams();
@@ -67,7 +73,6 @@ function MainView() {
             text: res.data.Answer,
           },
         ]);
-        updateCurrentTopic({ seq: currentTopic.seq + 1 });
         setIsQuerying(false);
         return res.data;
       } catch (error) {
@@ -76,7 +81,7 @@ function MainView() {
         console.error("fetch error: ", error);
       }
     },
-    enabled: isQuerying,
+    enabled: !!(isQuerying && currentTopic),
   });
 
   const onSubmit = (question) => {

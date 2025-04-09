@@ -18,8 +18,14 @@ function Conversation({ messages, errorMessage, isQuerying }) {
     let messageObj;
     for (let i = 0; i < messages.length; i++) {
       let message = messages[i];
-      for (let para of (message.text ?? [])) {
-        para = para.trim();
+      if (!message.text) {
+        message = {
+          variant: "body1",
+          text: "could not find answer",
+          type: "answer",
+        };
+      } else {
+        let para = message.text.join("\n").trim();
         // Change **bold** to <b>bold</b>
         para = para.replace(/\*\*(.*?)\*\*/g, "<b>$1</b>");
         // Change *italic* to <i>italic</i>
@@ -57,9 +63,7 @@ function Conversation({ messages, errorMessage, isQuerying }) {
                 }
                 key={index}
               >
-                <Typography variant={text.variant}>
-                    {text.text}
-                </Typography>
+                <Typography variant={text.variant}>{text.text}</Typography>
               </Paper>
             ))}
           </Box>
