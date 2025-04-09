@@ -16,76 +16,19 @@ function MainView() {
   const { topics, updateCurrentTopic, updateTopicName } = useTopic();
   const [currentTopic, setCurrentTopic] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
-  const [messages, setMessages] = useState([]);
   const [isQuerying, setIsQuerying] = useState(false);
+  const [messages, setMessages] = useState([]);
   const { register, control, handleSubmit, setValue } = useForm();
-  const queryClient = useQueryClient();
 
   useEffect(() => {
     console.log("MainView, topics: ", topics);
     setCurrentTopic(topics.find((topic) => topic.isCurrent));
   }, [topics]);
 
-  // React Query mutation for form submission
-  // POST add-query
-  const mutation = useMutation({
-    mutationFn: async (formData) => {
-      try {
-        const authParams = await createAuthenticationParams();
-        const url = `/add-query?${authParams}`;
-        return api.post(url, formData);
-      } catch (error) {
-        console.log("mutation error: ", error);
-      }
-    },
-    onSuccess: (response) => {
-      // `response` is returned from mutationFn
-      updateCurrentTopic({
-        topicId: currentTopic.topicId,
-        seq: response.data.Seq,
-      });
-      // start query
-      setIsQuerying(true);
-    },
-    onError: (error) => {
-      setIsQuerying(false);
-      setErrorMessage(error.response.data.detail);
-      console.log("there was an error and here it is: ", error);
-    },
-  });
-
-  // GET check-query
-  useQuery({
-    queryKey: ["reply", currentTopic?.topicId, currentTopic?.seq],
-    queryFn: async () => {
-      try {
-        const authParams = await createAuthenticationParams();
-        const topic = currentTopic.topicId;
-        const seq = currentTopic.seq;
-        const url = `check-query?${authParams}&Topic=${topic}&Seq=${seq}`;
-        const res = await api.get(url);
-        setMessages((prevMessages) => [
-          ...prevMessages,
-          {
-            type: "answer",
-            seq: res.data.Seq,
-            topic: res.data.Topic,
-            text: res.data.Answer,
-          },
-        ]);
-        setIsQuerying(false);
-        return res.data;
-      } catch (error) {
-        setIsQuerying(false);
-        setErrorMessage("Cannot fetch Answer"); // TODO if error.response?.data?.detail then that, else generic message
-        console.error("fetch error: ", error);
-      }
-    },
-    enabled: !!(isQuerying && currentTopic),
-  });
-
-  const onSubmit = (question) => {
+  const onSubmit = async (question) => {
     setErrorMessage(null); // Reset server error on new submission
+    setIsQuerying(true);
+    setValue("question", "");
     setMessages((prevMessages) => [
       ...prevMessages,
       {
@@ -103,8 +46,42 @@ function MainView() {
     if (currentTopic.seq === 1) {
       updateTopicName(currentTopic.topicId, formData.Query);
     }
-    mutation.mutate(formData);
-    setValue("question", ""); // reset form input
+    try {
+      const authParams = await createAuthenticationParams();
+      const url = `/add-query?${authParams}`;
+      const response = await api.post(url, formData);
+
+      if (response.status === 200) {
+        // Successful POST, start GET check-query
+        const authParamsGet = await createAuthenticationParams();
+        const topic = currentTopic?.topicId;
+        const seq = response.data.Seq;
+        const url = `check-query?${authParamsGet}&Topic=${topic}&Seq=${seq}`;
+        const res = await api.get(url);
+
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          {
+            type: "answer",
+            seq: res.data.Seq,
+            topic: res.data.Topic,
+            text: res.data.Answer,
+          },
+        ]);
+        updateCurrentTopic({
+          topicId: currentTopic?.topicId,
+          seq: res.data.Seq,
+        });
+      } else {
+        // POST failed
+        setErrorMessage("Failed to submit query.");
+      }
+    } catch (error) {
+      setErrorMessage("Error connecting to server.");
+      console.error("Error submitting query:", error);
+    } finally {
+      setIsQuerying(false); // End loading
+    }
   };
 
   return (
@@ -122,13 +99,11 @@ function MainView() {
         </Box>
         <Box>
           <Categories control={control} />
-          <br />
           <Conversation
             messages={messages}
             errorMessage={errorMessage}
             isQuerying={isQuerying}
           />
-          <br />
           <QuestionInput register={register} />
         </Box>
       </form>
