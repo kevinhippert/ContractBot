@@ -18,10 +18,11 @@ function MainView() {
   const [errorMessage, setErrorMessage] = useState(null);
   const [isQuerying, setIsQuerying] = useState(false);
   const [messages, setMessages] = useState([]);
+  const [retries, setRetries] = useState(0);
+
   const { register, control, handleSubmit, setValue } = useForm();
 
   useEffect(() => {
-    console.log("MainView, topics: ", topics);
     setCurrentTopic(topics.find((topic) => topic.isCurrent));
   }, [topics]);
 
@@ -44,8 +45,13 @@ function MainView() {
       Modifiers: { Region: null, Category: question.categories },
     };
     if (currentTopic.seq === 1) {
+      // TODO something broken about this
       updateTopicName(currentTopic.topicId, formData.Query);
     }
+    addQuery(formData);
+  };
+
+  const addQuery = async (formData) => {
     try {
       const authParams = await createAuthenticationParams();
       const url = `/add-query?${authParams}`;
@@ -53,25 +59,7 @@ function MainView() {
 
       if (response.status === 200) {
         // Successful POST, start GET check-query
-        const authParamsGet = await createAuthenticationParams();
-        const topic = currentTopic?.topicId;
-        const seq = response.data.Seq;
-        const url = `check-query?${authParamsGet}&Topic=${topic}&Seq=${seq}`;
-        const res = await api.get(url);
-
-        setMessages((prevMessages) => [
-          ...prevMessages,
-          {
-            type: "answer",
-            seq: res.data.Seq,
-            topic: res.data.Topic,
-            text: res.data.Answer,
-          },
-        ]);
-        updateCurrentTopic({
-          topicId: currentTopic?.topicId,
-          seq: res.data.Seq,
-        });
+        checkQueryWithRetries(response.data.Seq);
       } else {
         // POST failed
         setErrorMessage("Failed to submit query.");
@@ -82,6 +70,52 @@ function MainView() {
     } finally {
       setIsQuerying(false); // End loading
     }
+  };
+
+  const checkQueryWithRetries = async (querySeq, maxRetries = 3) => {
+    updateCurrentTopic({
+      topicId: currentTopic?.topicId,
+      seq: querySeq,
+    });
+    let currentRetry = 0;
+
+    while (currentRetry < maxRetries) {
+      try {
+        const authParamsGet = await createAuthenticationParams();
+        const topic = currentTopic?.topicId;
+        const seq = querySeq;
+        const url = `check-query?${authParamsGet}&Topic=${topic}&Seq=${seq}`;
+        const response = await api.get(url);
+        console.log(response);
+
+        if (response.data.Answer !== null) {
+          console.log("Answer is not null: ", response.data);
+          setMessages((prevMessages) => [
+            ...prevMessages,
+            {
+              type: "answer",
+              seq: response.data.Seq,
+              topic: response.data.Topic,
+              text: response.data.Answer,
+            },
+          ]);
+          return response.data; // Success, return the data
+        } else {
+          console.log("retrying");
+          currentRetry++;
+          setRetries(currentRetry);
+          console.log(`Attempt ${currentRetry}: Answer is null. Retrying...`);
+          await new Promise((resolve) => setTimeout(resolve, 1000)); // Wait 1 second before retry
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        console.log(`Error fetching data: ${error.message}`);
+        throw error; // Propagate the error if you want the calling code to handle it
+      }
+    }
+
+    console.log(`Failed to get answer after ${maxRetries} attempts.`);
+    return null; // Or throw an error if you want to indicate failure
   };
 
   return (
