@@ -23,7 +23,7 @@ export function TopicProvider({ children }) {
       prevTopics.map((t) => ({
         ...t,
         isCurrent: t.topicId === newCurrentTopic.topicId,
-      })),
+      }))
     );
   };
 
@@ -35,7 +35,7 @@ export function TopicProvider({ children }) {
         } else {
           return topic;
         }
-      }),
+      })
     );
   };
 
@@ -47,8 +47,8 @@ export function TopicProvider({ children }) {
       prevTopics.map((topic) =>
         topic.topicId === topicId
           ? { ...topic, topicName: newTopicName }
-          : topic,
-      ),
+          : topic
+      )
     );
   };
 

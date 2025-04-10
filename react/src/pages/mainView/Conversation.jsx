@@ -45,6 +45,8 @@ function Conversation({ messages, errorMessage, isQuerying }) {
             variant: "h1",
             text: para.slice(2).replace(/\*\*/g, ""),
           };
+        } else if (para.match(/^\*\*.*\*\*$/)) {
+            messageObj = { variant: "h4", text: para.slice(2, para.length - 2) };
         } else if (para.match(/^\d\./)) {
           messageObj = { variant: "h6", text: para.replace(/\*\*/g, "") };
         } else if (para.match(/^- /)) {
