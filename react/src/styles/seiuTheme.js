@@ -25,19 +25,19 @@ const theme = createTheme({
 });
 
 theme.typography.h1 = {
-  fontSize: '1.2rem',
+  fontSize: "1.2rem",
 };
 
 theme.typography.h2 = {
-  fontSize: '1.1rem',
+  fontSize: "1.1rem",
 };
 
 theme.typography.h3 = {
-  fontSize: '1.0rem',
+  fontSize: "1.0rem",
 };
 
 theme.typography.h4 = {
-  fontSize: '0.9rem',
+  fontSize: "0.9rem",
 };
 
 export default theme;

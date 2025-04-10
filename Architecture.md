@@ -14,7 +14,7 @@ with a few examples:
 ### Query Objects
 
 | Topic        | Timestamp           | Seq | Query                               | Status  |
-|--------------|---------------------|-----|-------------------------------------|---------|
+| ------------ | ------------------- | --- | ----------------------------------- | ------- |
 | DGQIn+5troxI | 2025-03-22T13:35:49 | 1   | What day is it?                     | Done    |
 | DGQIn+5troxI | 2025-03-22T13:36:08 | 2   | What is the meaning of life?        | Open    |
 | DGQIn+5troxI | 2025-03-22T13:36:22 | 3   | What is your favorite color?        | Open    |
@@ -27,8 +27,8 @@ an inference engine.
 
 Although we only anticipated standing up one initial inference engine, in
 principle we could create multiple such machines to service requests in a
-round-robin fashion.  Therefore the Pending status indicates that a topic has
-been *claimed* by an inference engine but has not been answered yet.
+round-robin fashion. Therefore the Pending status indicates that a topic has
+been _claimed_ by an inference engine but has not been answered yet.
 
 Pending status lines should be reverted to Open if an answer has not been
 received within a configurable timeout period.
@@ -36,14 +36,14 @@ received within a configurable timeout period.
 ## User Routes
 
 Routes in the current version require user authentication, but specifically _do
-not_ explicitly distinguish users.  That is, while the React UI should generate
+not_ explicitly distinguish users. That is, while the React UI should generate
 globally distinct topic strings to distinguish topics, no mechanism enforces
 that an added or checked query using the same topic identifier "belongs" to the
 same user.
 
 Future versions are _likely_ to add tighter "user binding" of topics. However,
 we can envision scenarios in which sharing topic threads among users is a
-perfectly reasonable workflow.  Hence the alpha version simply does not commit
+perfectly reasonable workflow. Hence the alpha version simply does not commit
 as to what such sharing—if any—is desirable.
 
 ### `POST api/add-query`
@@ -58,27 +58,27 @@ Body should look like:
 
 ```json
 {
-    "Topic": "DGQIn+5troxI",
-    "Query": "How far can an African swallow fly?",
-    "Modifiers": {
-        "Region": "...",
-        "Category": [],
-        "TBD": "Loosely defined schema for this object"
-    },
-    "Model": "default"
+  "Topic": "DGQIn+5troxI",
+  "Query": "How far can an African swallow fly?",
+  "Modifiers": {
+    "Region": "...",
+    "Category": [],
+    "TBD": "Loosely defined schema for this object"
+  },
+  "Model": "default"
 }
 ```
 
-Models are one of a few permitted values.  If an unrecognized string is
+Models are one of a few permitted values. If an unrecognized string is
 provided, the Inference Engine will fall back to "default".
 
 Response should look like:
 
 ```json
 {
-    "Topic": "DGQIn+5troxI",
-    "Seq": 4,
-    "Timestamp": "2025-03-25T01:02:03"
+  "Topic": "DGQIn+5troxI",
+  "Seq": 4,
+  "Timestamp": "2025-03-25T01:02:03"
 }
 ```
 
@@ -96,11 +96,11 @@ Return body should look like this if no answer is available:
 
 ```json
 {
-    "Query": "What is the capital of Zimbabwe?",
-    "Topic": "DGQIn+5troxI",
-    "Seq": 4,
-    "Answer": null,
-    "Think": null
+  "Query": "What is the capital of Zimbabwe?",
+  "Topic": "DGQIn+5troxI",
+  "Seq": 4,
+  "Answer": null,
+  "Think": null
 }
 ```
 
@@ -108,17 +108,17 @@ If there is an available answer:
 
 ```json
 {
-    "Query": "What is the capital of Mali?",
-    "Topic": "DGQIn+5troxI",
-    "Seq": 4,
-    "Answer": ["First paragraph", "Second paragraph"],
-    "Think": ["Thinking about foo", "Thinking about bar"]
+  "Query": "What is the capital of Mali?",
+  "Topic": "DGQIn+5troxI",
+  "Seq": 4,
+  "Answer": ["First paragraph", "Second paragraph"],
+  "Think": ["Thinking about foo", "Thinking about bar"]
 }
 ```
 
-This response will "dawdle" a bit if no answer is yet available.  A loop in
-FastAPI will wait one second a few times if no answer is yet ready.  When an
-answer is available, the response will occur immediately.  After a minute or
+This response will "dawdle" a bit if no answer is yet available. A loop in
+FastAPI will wait one second a few times if no answer is yet ready. When an
+answer is available, the response will occur immediately. After a minute or
 so of no answer becoming ready, the unavailable response will be sent.
 
 ### `GET /api/get-topic-thread`
@@ -130,7 +130,7 @@ Takes authentication and topic query parameters:
 - Hash
 - Topic (e.g. `&Topic=DGQIn+5troxI`)
 
-If no matches exist for the topic, return a 404 status code.  If a topic thread
+If no matches exist for the topic, return a 404 status code. If a topic thread
 exists, return a structure like:
 
 ```json
@@ -161,11 +161,11 @@ In contrast to `api/check-query` this route responds immediately with either a
 ### `GET /api/login`
 
 Logins (for now) will be handled by a static list of authorized users, with
-names like "User1", "User2", etc.  Authentication of a user will be essentially
+names like "User1", "User2", etc. Authentication of a user will be essentially
 identical to authentication by an inference engine.
 
 As with other authentication, we use a nonce, a shared secret, and create a
-hash.  The query parameters for the route are:
+hash. The query parameters for the route are:
 
 - User
 - Nonce
@@ -176,7 +176,7 @@ Responses are simply 200 OK for successful authentication, or 401 Unauthorized.
 Suppose we have this information stored on the FastAPI server securely:
 
 | User   | Password         |
-|--------|------------------|
+| ------ | ---------------- |
 | User_1 | 04EMG47U62bjoyL3 |
 | User_2 | MLIyPLaQqCJ6tMqP |
 
@@ -184,30 +184,30 @@ The React frontend will take the username and purported password from the user,
 and compute:
 
 ```javascript
-const crypto = require('crypto');
-let shasum = crypto.createHash('sha1');
-let nonce = crypto.randomBytes(16).toStr
+const crypto = require("crypto");
+let shasum = crypto.createHash("sha1");
+let nonce = crypto.randomBytes(16).toStr;
 shasum.update(`${user} ${nonce} ${purported_pw}`);
-let hash = shasum.digest('hex');
+let hash = shasum.digest("hex");
 ```
 
 ## Inference Engine Authentication
 
 Inference engines are loosely coupled with the frontend, and moreover we wish
-for the inference engines to avoid *all dependencies* on external services.
+for the inference engines to avoid _all dependencies_ on external services.
 However, we also require that only authorized engines are permitted to answer
 queries.
 
 Requests submitted by inference engines will contain information sufficient for
-the frontend to validate them.  This will be accomplished by the frontend
+the frontend to validate them. This will be accomplished by the frontend
 maintaining a secure mapping from authorized inference engines to secret tokens
-shared between the inference engines and the frontend.  For example, the
+shared between the inference engines and the frontend. For example, the
 frontend might have a secure table like:
 
-| Engine       | Tokens              |
-|--------------|---------------------|
-| Inference_1  | 7b18d017f89f61cf17d |
-| Inference_2  | 03cfd743661f07975fa |
+| Engine      | Tokens              |
+| ----------- | ------------------- |
+| Inference_1 | 7b18d017f89f61cf17d |
+| Inference_2 | 03cfd743661f07975fa |
 
 Validated inference routes will contain the following query parameters:
 
@@ -216,7 +216,7 @@ Validated inference routes will contain the following query parameters:
 - Hash (e.g. "3f71f8a88e09b52f7ff6c73aa96826558b302d32")
 
 If the result of hashing the nonce with the shared secret token does not
-produce the hash, then an HTTP 401 status code is returned by the route.  The
+produce the hash, then an HTTP 401 status code is returned by the route. The
 example shown will validate successfully:[^2]
 
 ```bash
@@ -232,14 +232,14 @@ Hash at **every** call to a secured route to avoid replay attacks.
 ### `GET api/get-new-queries`
 
 The body contains the validation block discussed in the authentication section.
-No additional data is required in the body for this route.  Inference engines
+No additional data is required in the body for this route. Inference engines
 will call this route immediately after they complete providing answers to a
 previous batch of queries within a topic and also frequently after receiving a
 response indicating no such batches exist.
 
 As a means to minimize the latency and number of required authentications, the
 server should permit up to a minute or two for queries to become available
-before returning a response (but return immediately if some exist).  For
+before returning a response (but return immediately if some exist). For
 example (in pseudo-code):
 
 ```python
@@ -255,8 +255,8 @@ body:
 
 ```json
 {
-    "Topic": null,
-    "Queries": null
+  "Topic": null,
+  "Queries": null
 }
 ```
 
@@ -265,18 +265,18 @@ will resemble:
 
 ```json
 {
-    "Topic": "DGQIn+5troxI",
-    "Queries": [
-        {"2": "What is the meaning of life?"},
-        {"3": "What is your favorite color?"}
-    ]
+  "Topic": "DGQIn+5troxI",
+  "Queries": [
+    { "2": "What is the meaning of life?" },
+    { "3": "What is your favorite color?" }
+  ]
 }
 ```
 
 Notice that since query 1 within this topic has already been answered, it is
-not included in the Queries array of the JSON body.  The inference engine *may*
+not included in the Queries array of the JSON body. The inference engine _may_
 (and probably will) include both earlier queries in the same topic and their
-answers into formulating an answer to the identified queries.  Those queries
+answers into formulating an answer to the identified queries. Those queries
 and answers can be cached within the inference engine based on the topic
 identifier.
 
@@ -291,35 +291,37 @@ the only query it has received within a topic), it posts the answer in the form:
 
 ```json
 {
-    "Query": "What is the meaning of life?",
-    "Topic": "DGQIn+5troxI",
-    "Seq": 2,
-    "Think": [
-        "That’s a great question.",
-        "Many philosophers have asked that.",
-        "Duke Ellington seems relevant."
-    ],
-    "Answer": ["It don’t mean a thing if you ain’t got that swing."]
+  "Query": "What is the meaning of life?",
+  "Topic": "DGQIn+5troxI",
+  "Seq": 2,
+  "Think": [
+    "That’s a great question.",
+    "Many philosophers have asked that.",
+    "Duke Ellington seems relevant."
+  ],
+  "Answer": ["It don’t mean a thing if you ain’t got that swing."]
 }
 ```
 
 Note that the sequence produced by the engine is not guaranteed to be the same
-as the sequence created by the frontend.  In normal operation, they should
-match, but it is not enforced.  The frontend _may decide_ to compare the
+as the sequence created by the frontend. In normal operation, they should
+match, but it is not enforced. The frontend _may decide_ to compare the
 underlying query to check this alignment.
 
 Since chain-of-thought models provide self-injection of prompt elaborations, we
 can include the “Think” key in the response that the frontend may wish to
-expose to users.  The answer, as well as the thinking is returned as a list of
+expose to users. The answer, as well as the thinking is returned as a list of
 paragraphs.
 
 When an answer has been received for a given topic and sequence number, that
 row of the Query Objects table should be marked as Done.
 
-[^1]:  The “inference engine” is an LLM model that utilizes RAG (retrieval
-augmented generation) customized for the needs of SEIU negotiators.  Most
-likely the underlying model will be DeepSeek-R1-Distill-Qwen-32B, but this
-detail will not be exposed to users.
+[^1]:
+    The “inference engine” is an LLM model that utilizes RAG (retrieval
+    augmented generation) customized for the needs of SEIU negotiators. Most
+    likely the underlying model will be DeepSeek-R1-Distill-Qwen-32B, but this
+    detail will not be exposed to users.
 
-[^2]:  The SHA-1 algorithm is shown in these examples.  We may choose to use
-SHA-256 or an alternative cryptographic hash in the actual implementation.
+[^2]:
+    The SHA-1 algorithm is shown in these examples. We may choose to use
+    SHA-256 or an alternative cryptographic hash in the actual implementation.

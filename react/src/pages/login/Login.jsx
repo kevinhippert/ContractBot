@@ -20,7 +20,7 @@ export default function Login() {
   const onSubmit = async (data) => {
     const params = await createAuthenicateUserParams(
       data.username,
-      data.password
+      data.password,
     );
     const url = `/login?${params}`;
 
