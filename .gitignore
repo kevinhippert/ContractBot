@@ -1,6 +1,7 @@
 # RAG content
 assets/text/
 assets/raw-documents/
+asserts/outputs/
 chroma/
 .queue.db
 .answers.db
