@@ -19,7 +19,7 @@ function Conversation({ messages, errorMessage, isQuerying }) {
         message = {
           variant: "body1",
           text: "This is taking a moment...",
-          type: "waiting",
+          type: "answer",
         };
       } else {
         let para = message.text.join("\n").trim();
