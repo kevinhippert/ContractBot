@@ -36,7 +36,7 @@ function MainView() {
         type: "question",
         seq: question.seq,
         topic: question.topic,
-        text: [question.question],
+        text: [question.question], // TODO why are we setting this as an array?
       },
     ]);
     let formData = {
@@ -115,21 +115,20 @@ function MainView() {
     }
     setIsQuerying({ isQuerying: false, message: null });
     console.log(`Failed to get answer after ${maxRetries} attempts.`);
-    // TODO reload entire conversation with apologies
+    fetchTopicThread(currentTopic.topicId);
     return null;
   };
 
   const fetchTopicThread = async (topicId) => {
+    // TODO create loading message
     try {
       const authParamsGet = await createAuthenticationParams();
       let url = `get-topic-thread?${authParamsGet}&Topic=${topicId}`;
       const res = await api.get(url);
       if (res.status === 200 && res.data) {
-        // setMessages
         rerenderConversation(res.data)
-        console.log(res.data)
       } else {
-        // setMessage to empty array?
+        setErrorMessage("Sorry, we couldn't fetch this topic.")
       }
     } catch (error) {
       console.log("Unable to fetch conversation about topic: ", error);
@@ -137,23 +136,22 @@ function MainView() {
   }
 
   const rerenderConversation = (data) => {
-    console.log(data)
     let messages = [];
-    data.forEach((qAndA) => {
+    data.forEach((message) => {
       let question = {
         type: "question",
-        seq: qAndA.Seq,
-        topic: qAndA.Topic,
-        text: qAndA.Query
+        seq: message.Seq,
+        topic: message.Topic,
+        text: [message.Query] // TODO why are we setting this as an array?
       };
       let answer = {
         type: "answer",
-        seq: qAndA.Seq,
-        topic: qAndA.Topic,
-        text: qAndA.Answer
+        seq: message.Seq,
+        topic: message.Topic,
+        text: message.Answer
       };
       messages.push(question);
-    messages.push(answer)
+      messages.push(answer)
     })
     setMessages(messages)
   } 
@@ -190,7 +188,7 @@ function MainView() {
           <QuestionInput register={register} isQuerying={isQuerying} />
         </Box>
       </form>
-      <Button onClick={getParams}>get params</Button>
+      {/* <Button onClick={getParams}>get params</Button> // XXX development hack */}
     </Container>
   );
 }
