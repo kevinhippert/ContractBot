@@ -46,6 +46,8 @@ theme.typography.h5 = {
 
 theme.typography.h6 = {
   fontSize: "0.7rem",
+  fontStyle: "normal",
+  fontWeight: 600,
 };
 
 export default theme;
