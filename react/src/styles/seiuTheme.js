@@ -45,9 +45,10 @@ theme.typography.h5 = {
 };
 
 theme.typography.h6 = {
-  fontSize: "0.7rem",
-  fontStyle: "normal",
-  fontWeight: 600,
+  fontSize: "1.1rem",
+  fontStyle: "italic",
+  fontWeight: "normal",
+  fontFamily: "Helvetica, Arial, sans-serif",
 };
 
 export default theme;
