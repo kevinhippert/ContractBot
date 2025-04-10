@@ -17,19 +17,21 @@
 
 ## React/UI
 
-- [ ] Chat interface. Sort-of done. Needs to be prettier.
-- [ ] Login screen with authentication.
+- [x] Chat interface. Sort-of done. Needs to be prettier.
+- [x] Login screen with authentication.
 - [x] Authentication of `api/add-query` and `api/check-query`
 - [ ] Category tags (conceptually in place, but need to decide specifics).
-- [ ] Topic creation and switching (wireframe exists, not functionality).
-- [ ] Pass LLM model selection to `api/add-query`.
-- [ ] User aliases for topic IDs.
+- [x] Topic creation and switching (wireframe exists, not functionality).
+- [x] Pass LLM model selection to `api/add-query`.
+- [x] User aliases for topic IDs.
 - [ ] Handle "no answer" for `api/check-query` response.
+- [ ] Model selection.
+- [ ] Make the screen scroll to the bottom on topic reload, maybe have the question input fixed in place.
 - [ ] Prettify answers returned:
-  - [ ] Paragraph breaks between each item in Answer array.
-  - [ ] Bold (or similar marker) for **marked** words/phrases.
-  - [ ] Header indication for lines starting with "###"
-        (probably for any initial hash marks; perhaps different levels).
+      - [ ] Paragraph breaks between each item in Answer array.
+      - [ ] Bold (or similar marker) for **marked** words/phrases.
+      - [ ] Header indication for lines starting with "###"
+            (probably for any initial hash marks; perhaps different levels).
 
 ## Gunicorn/FastAPI Server
 
@@ -39,6 +41,7 @@
 - [x] `GET api/login`.
 - [x] `GET api/get-new-queries`
 - [x] `POST api/give-new-answer`.
+- [ ] Why is the get-topic-thread request sometimes slow?
 
 ## Inference Engine(s)
 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Sidebar from "./Sidebar";
 import { useTopic } from "../../contexts/TopicContext";
-import { Box, Button, Container } from "@mui/material/";
+import { Box, Button, Container, Typography } from "@mui/material/";
 import { useForm } from "react-hook-form";
 import Categories from "./Categories";
 import QuestionInput from "./QuestionInput";
@@ -15,6 +15,7 @@ function MainView() {
   const { topics, updateCurrentTopic, updateTopicName } = useTopic();
   const [currentTopic, setCurrentTopic] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
+  const [loadingTopic, setLoadingTopic] = useState(false);
   const [isQuerying, setIsQuerying] = useState({
     isQuerying: false,
     message: null,
@@ -116,11 +117,12 @@ function MainView() {
     setIsQuerying({ isQuerying: false, message: null });
     console.log(`Failed to get answer after ${maxRetries} attempts.`);
     fetchTopicThread(currentTopic.topicId);
+    setErrorMessage("Query is queued and will be answered as soon as possible.")
     return null;
   };
 
   const fetchTopicThread = async (topicId) => {
-    // TODO create loading message
+    setLoadingTopic(true);
     try {
       const authParamsGet = await createAuthenticationParams();
       let url = `get-topic-thread?${authParamsGet}&Topic=${topicId}`;
@@ -130,7 +132,10 @@ function MainView() {
       } else {
         setErrorMessage("Sorry, we couldn't fetch this topic.")
       }
+      setLoadingTopic(false)
     } catch (error) {
+      setLoadingTopic(false)
+      setErrorMessage("Sorry, we couldn't fetch this topic.")
       console.log("Unable to fetch conversation about topic: ", error);
     }
   }
@@ -180,6 +185,7 @@ function MainView() {
         </Box>
         <Box>
           <Categories control={control} />
+          { loadingTopic && <Typography>Loading topic...</Typography>}
           <Conversation
             messages={messages}
             errorMessage={errorMessage}
