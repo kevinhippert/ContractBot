@@ -8,6 +8,7 @@ import QuestionInput from "./QuestionInput";
 import api from "../../api/api";
 import Conversation from "./Conversation";
 import { createAuthenticationParams } from "../../authentication/authentication";
+import ModelPicker from "./ModelPicker";
 
 // This component basically acts as a giant form, which registers inputs from various child
 // components and handles submissions ond errors
@@ -21,13 +22,24 @@ function MainView() {
     message: null,
   });
   const [messages, setMessages] = useState([]);
-  const { register, control, handleSubmit, setValue } = useForm();
+  const {
+    register,
+    handleSubmit,
+    control,
+    setValue,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      model: "default",
+    },
+  });
 
   useEffect(() => {
     setCurrentTopic(topics.find((topic) => topic.isCurrent));
   }, [topics]);
 
   const onSubmit = async (question) => {
+    console.log("onSubmit, question: ", question);
     setErrorMessage(null); // Reset server error on new submission
     setIsQuerying({ isQuerying: true, message: "Thinking..." });
     setValue("question", "");
@@ -44,6 +56,7 @@ function MainView() {
       Topic: currentTopic.topicId,
       Query: question.question,
       Modifiers: { Region: null, Category: question.categories },
+      Model: question.model,
     };
 
     addQuery(formData);
@@ -78,8 +91,7 @@ function MainView() {
       seq: querySeq,
     });
 
-    let currentRetry = 0;
-    while (currentRetry < maxRetries) {
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
         const authParamsGet = await createAuthenticationParams();
         const topic = currentTopic?.topicId;
@@ -101,8 +113,7 @@ function MainView() {
           setIsQuerying({ isQuerying: false, message: null });
           return response.data;
         } else {
-          currentRetry++;
-          console.log(`Attempt ${currentRetry}: Answer is null. Retrying...`);
+          console.log(`Attempt ${attempt}: Answer is null. Retrying...`);
           setIsQuerying({
             isQuerying: true,
             message: "I'm still working, please continue to wait...",
@@ -112,12 +123,16 @@ function MainView() {
       } catch (error) {
         console.error("Error fetching data:", error);
         console.log(`Error fetching data: ${error.message}`);
+        // Consider re-throwing or handling more specifically
       }
     }
+
     setIsQuerying({ isQuerying: false, message: null });
     console.log(`Failed to get answer after ${maxRetries} attempts.`);
     fetchTopicThread(currentTopic.topicId);
-    setErrorMessage("Query is queued and will be answered as soon as possible.")
+    setErrorMessage(
+      "Query is queued and will be answered as soon as possible."
+    );
     return null;
   };
 
@@ -128,17 +143,17 @@ function MainView() {
       let url = `get-topic-thread?${authParamsGet}&Topic=${topicId}`;
       const res = await api.get(url);
       if (res.status === 200 && res.data) {
-        rerenderConversation(res.data)
+        rerenderConversation(res.data);
       } else {
-        setErrorMessage("Sorry, we couldn't fetch this topic.")
+        setErrorMessage("Sorry, we couldn't fetch this topic.");
       }
-      setLoadingTopic(false)
+      setLoadingTopic(false);
     } catch (error) {
-      setLoadingTopic(false)
-      setErrorMessage("Sorry, we couldn't fetch this topic.")
+      setLoadingTopic(false);
+      setErrorMessage("Sorry, we couldn't fetch this topic.");
       console.log("Unable to fetch conversation about topic: ", error);
     }
-  }
+  };
 
   const rerenderConversation = (data) => {
     let messages = [];
@@ -147,28 +162,28 @@ function MainView() {
         type: "question",
         seq: message.Seq,
         topic: message.Topic,
-        text: [message.Query] // TODO why are we setting this as an array?
+        text: [message.Query], // TODO why are we setting this as an array?
       };
       let answer = {
         type: "answer",
         seq: message.Seq,
         topic: message.Topic,
-        text: message.Answer
+        text: message.Answer,
       };
       messages.push(question);
-      messages.push(answer)
-    })
-    setMessages(messages)
-  } 
+      messages.push(answer);
+    });
+    setMessages(messages);
+  };
 
   const clearMessages = () => {
     setMessages([]);
-  }
+  };
 
   const getParams = async () => {
     let params = await createAuthenticationParams();
-    console.log(params)
-  }
+    console.log(params);
+  };
 
   return (
     <Container
@@ -181,11 +196,15 @@ function MainView() {
     >
       <form style={{ display: "flex" }} onSubmit={handleSubmit(onSubmit)}>
         <Box sx={{ width: "200px" }}>
-          <Sidebar clearMessages={clearMessages} fetchTopicThread={fetchTopicThread} />
+          <Sidebar
+            clearMessages={clearMessages}
+            fetchTopicThread={fetchTopicThread}
+          />
         </Box>
         <Box>
+          <ModelPicker register={register} setValue={setValue} />
           <Categories control={control} />
-          { loadingTopic && <Typography>Loading topic...</Typography>}
+          {loadingTopic && <Typography>Loading topic...</Typography>}
           <Conversation
             messages={messages}
             errorMessage={errorMessage}
