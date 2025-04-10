@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Sidebar from "./Sidebar";
 import { useTopic } from "../../contexts/TopicContext";
-import { Box, Container } from "@mui/material/";
+import { Box, Button, Container } from "@mui/material/";
 import { useForm } from "react-hook-form";
 import Categories from "./Categories";
 import QuestionInput from "./QuestionInput";
@@ -119,6 +119,54 @@ function MainView() {
     return null;
   };
 
+  const fetchTopicThread = async (topicId) => {
+    try {
+      const authParamsGet = await createAuthenticationParams();
+      let url = `get-topic-thread?${authParamsGet}&Topic=${topicId}`;
+      const res = await api.get(url);
+      if (res.status === 200 && res.data) {
+        // setMessages
+        rerenderConversation(res.data)
+        console.log(res.data)
+      } else {
+        // setMessage to empty array?
+      }
+    } catch (error) {
+      console.log("Unable to fetch conversation about topic: ", error);
+    }
+  }
+
+  const rerenderConversation = (data) => {
+    console.log(data)
+    let messages = [];
+    data.forEach((qAndA) => {
+      let question = {
+        type: "question",
+        seq: qAndA.Seq,
+        topic: qAndA.Topic,
+        text: qAndA.Query
+      };
+      let answer = {
+        type: "answer",
+        seq: qAndA.Seq,
+        topic: qAndA.Topic,
+        text: qAndA.Answer
+      };
+      messages.push(question);
+    messages.push(answer)
+    })
+    setMessages(messages)
+  } 
+
+  const clearMessages = () => {
+    setMessages([]);
+  }
+
+  const getParams = async () => {
+    let params = await createAuthenticationParams();
+    console.log(params)
+  }
+
   return (
     <Container
       sx={{
@@ -130,7 +178,7 @@ function MainView() {
     >
       <form style={{ display: "flex" }} onSubmit={handleSubmit(onSubmit)}>
         <Box sx={{ width: "200px" }}>
-          <Sidebar />
+          <Sidebar clearMessages={clearMessages} fetchTopicThread={fetchTopicThread} />
         </Box>
         <Box>
           <Categories control={control} />
@@ -142,6 +190,7 @@ function MainView() {
           <QuestionInput register={register} isQuerying={isQuerying} />
         </Box>
       </form>
+      <Button onClick={getParams}>get params</Button>
     </Container>
   );
 }
