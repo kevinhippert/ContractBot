@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Paper, Box, Alert, Typography } from "@mui/material";
+import LinearProgress from '@mui/material/LinearProgress';
 import "../../styles/conversation.css";
 
 function Conversation({ messages, errorMessage, isQuerying }) {
@@ -17,7 +18,7 @@ function Conversation({ messages, errorMessage, isQuerying }) {
       if (!message.text) {
         message = {
           variant: "body1",
-          text: "Sorry, I couldn't find an answer",
+          text: "This is taking a moment...",
           type: "answer",
         };
       } else {
@@ -47,25 +48,35 @@ function Conversation({ messages, errorMessage, isQuerying }) {
     setTexts(result);
   }
 
+  function ShowAnswer({ text, index }) {
+    if (text.type === "question") {
+      return (
+        <Paper className="question-class" key={index} elevation="8">
+          <Typography variant={text.variant}>{text.text}</Typography>
+        </Paper>
+      );
+    } else if (text.type === "answer") {
+      return (
+        <Paper className="answer-class" key={index} elevation="0">
+          <Typography variant={text.variant}>{text.text}</Typography>
+        </Paper>
+      );
+    }
+  }
+
   return (
     <>
       {messages.length > 0 && (
         <>
           <Box>
             {texts.map((text, index) => (
-              <Paper
-                className={
-                  text.type === "question" ? "question-class" : "answer-class"
-                }
-                key={index}
-              >
-                <Typography variant={text.variant}>{text.text}</Typography>
-              </Paper>
+              <ShowAnswer text={text} />
             ))}
           </Box>
           {isQuerying.isQuerying && (
             <Paper>
               <Typography>{isQuerying.message}</Typography>
+              <LinearProgress />
             </Paper>
           )}
           {errorMessage && (
