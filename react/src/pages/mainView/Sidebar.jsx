@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { createTopicId } from "../../utils/utils";
 import { useTopic, createTopic } from "../../contexts/TopicContext";
 import {
   Box,
@@ -15,10 +14,6 @@ import AddIcon from "@mui/icons-material/Add";
 export default function Sidebar() {
   // [{topicId: "abc123", topicName: "What is life?", isCurrent: true, seq: 2}, ...]
   const { topics, setTopics, setNewCurrentTopic } = useTopic();
-
-  // useEffect(() => {
-  //   console.log("sidebar, topics: ", topics);
-  // }, [topics]);
 
   // create a new topic, add to the list of topics, set as current topic
   const handleNewTopicClick = () => {
