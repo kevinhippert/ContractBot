@@ -11,7 +11,7 @@ import {
 } from "@mui/material/";
 import AddIcon from "@mui/icons-material/Add";
 
-export default function Sidebar() {
+export default function Sidebar({ clearMessages, fetchTopicThread }) {
   // [{topicId: "abc123", topicName: "What is life?", isCurrent: true, seq: 2}, ...]
   const { topics, setTopics, setNewCurrentTopic } = useTopic();
 
@@ -20,11 +20,15 @@ export default function Sidebar() {
     let newTopic = createTopic();
     setTopics((prevTopics) => [...prevTopics, newTopic]);
     setNewCurrentTopic(newTopic);
+    // clear conversation
+    clearMessages();
   };
 
   // set as current topic
-  const handleSelectTopic = (topic) => {
+  const handleSelectTopic = async (topic) => {
     setNewCurrentTopic(topic);
+    clearMessages();
+    fetchTopicThread(topic.topicId);
   };
 
   const sidebarHtml = (

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Sidebar from "./Sidebar";
 import { useTopic } from "../../contexts/TopicContext";
-import { Box, Container } from "@mui/material/";
+import { Box, Button, Container } from "@mui/material/";
 import { useForm } from "react-hook-form";
 import Categories from "./Categories";
 import QuestionInput from "./QuestionInput";
@@ -36,7 +36,7 @@ function MainView() {
         type: "question",
         seq: question.seq,
         topic: question.topic,
-        text: [question.question],
+        text: [question.question], // TODO why are we setting this as an array?
       },
     ]);
     let formData = {
@@ -115,9 +115,55 @@ function MainView() {
     }
     setIsQuerying({ isQuerying: false, message: null });
     console.log(`Failed to get answer after ${maxRetries} attempts.`);
-    // TODO reload entire conversation with apologies
+    fetchTopicThread(currentTopic.topicId);
     return null;
   };
+
+  const fetchTopicThread = async (topicId) => {
+    // TODO create loading message
+    try {
+      const authParamsGet = await createAuthenticationParams();
+      let url = `get-topic-thread?${authParamsGet}&Topic=${topicId}`;
+      const res = await api.get(url);
+      if (res.status === 200 && res.data) {
+        rerenderConversation(res.data)
+      } else {
+        setErrorMessage("Sorry, we couldn't fetch this topic.")
+      }
+    } catch (error) {
+      console.log("Unable to fetch conversation about topic: ", error);
+    }
+  }
+
+  const rerenderConversation = (data) => {
+    let messages = [];
+    data.forEach((message) => {
+      let question = {
+        type: "question",
+        seq: message.Seq,
+        topic: message.Topic,
+        text: [message.Query] // TODO why are we setting this as an array?
+      };
+      let answer = {
+        type: "answer",
+        seq: message.Seq,
+        topic: message.Topic,
+        text: message.Answer
+      };
+      messages.push(question);
+      messages.push(answer)
+    })
+    setMessages(messages)
+  } 
+
+  const clearMessages = () => {
+    setMessages([]);
+  }
+
+  const getParams = async () => {
+    let params = await createAuthenticationParams();
+    console.log(params)
+  }
 
   return (
     <Container
@@ -130,7 +176,7 @@ function MainView() {
     >
       <form style={{ display: "flex" }} onSubmit={handleSubmit(onSubmit)}>
         <Box sx={{ width: "200px" }}>
-          <Sidebar />
+          <Sidebar clearMessages={clearMessages} fetchTopicThread={fetchTopicThread} />
         </Box>
         <Box>
           <Categories control={control} />
@@ -142,6 +188,7 @@ function MainView() {
           <QuestionInput register={register} isQuerying={isQuerying} />
         </Box>
       </form>
+      {/* <Button onClick={getParams}>get params</Button> // XXX development hack */}
     </Container>
   );
 }
