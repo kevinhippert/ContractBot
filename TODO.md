@@ -2,55 +2,54 @@
 
 ## Deployment
 
-- [x] Create a repository (SEIU/BossBot)
-- [x] Create an instance for BossBot UI to run on.
-- [x] DNS stuff for https://bossbot.org and https://api.bossbot.org.
-- [x] AWS stuff with load balancer, port forwarding, etc.
-- [x] Deployment script to launch Gunicorn and React servers
-- [x] Each redeployment removes old `.queue.db`
+- [X] Create a repository (SEIU/BossBot)
+- [X] Create an instance for BossBot UI to run on.
+- [X] DNS stuff for https://bossbot.org and https://api.bossbot.org.
+- [X] AWS stuff with load balancer, port forwarding, etc.
+- [X] Deployment script to launch Gunicorn and React servers
+- [X] Each redeployment removes old `.queue.db`
       (Inference Engines keeps records and archives DB).
 - [ ] Periodically remove old rows from `.queue.db`.
-- [x] Create `Frontend_2` user for local development.
+- [X] Create `Frontend_2` user for local development.
 - [ ] Calico access to Inference Engine via SSH?
-- [ ] Answers database lives at `$HOME/.answers.db`
+- [X] Answers database lives at `$HOME/.answers.db`
       (will not get deleted on redeployment).
 
 ## React/UI
 
-- [ ] Chat interface. Sort-of done. Needs to be prettier.
-- [ ] Login screen with authentication.
-- [x] Authentication of `api/add-query` and `api/check-query`
+- [X] Chat interface.
+- [X] Login screen with authentication.
+- [X] Authentication of `api/add-query` and `api/check-query`
 - [ ] Category tags (conceptually in place, but need to decide specifics).
-- [ ] Topic creation and switching (wireframe exists, not functionality).
+- [X] Topic creation and switching.
 - [ ] Pass LLM model selection to `api/add-query`.
-- [ ] User aliases for topic IDs.
-- [ ] Handle "no answer" for `api/check-query` response.
-- [ ] Prettify answers returned:
-  - [ ] Paragraph breaks between each item in Answer array.
+- [X] User aliases for topic IDs (use first query).
+- [X] Handle "no answer" for `api/check-query` response.
+- [X] Prettify answers returned:
+  - [X] Paragraph breaks between each item in Answer array.
   - [ ] Bold (or similar marker) for **marked** words/phrases.
-  - [ ] Header indication for lines starting with "###"
-        (probably for any initial hash marks; perhaps different levels).
+  - [X] Header indication for lines starting with "###" etc.
 
 ## Gunicorn/FastAPI Server
 
-- [x] Authentication mechanism.
-- [x] `POST api/add-query` correctly writes to `QueryQueue`.
-- [x] `GET api/check-query`.
-- [x] `GET api/login`.
-- [x] `GET api/get-new-queries`
-- [x] `POST api/give-new-answer`.
+- [X] Authentication mechanism.
+- [X] `POST api/add-query` correctly writes to `QueryQueue`.
+- [X] `GET api/check-query`.
+- [X] `GET api/login`.
+- [X] `GET api/get-new-queries`
+- [X] `POST api/give-new-answer`.
 
 ## Inference Engine(s)
 
-- [x] Command-line tool `mk_db` for vectorizing raw documents.
-- [x] `Answer` class in `answers.py` to provide access to storage of queries,
+- [X] Command-line tool `mk_db` for vectorizing raw documents.
+- [X] `Answer` class in `answers.py` to provide access to storage of queries,
       topics, answers, etc.
-- [x] Command-line tool `search` to show RAG content identified matching queries.
-- [x] `ask()` to inject RAG and history context, then call a model specified by
+- [X] Command-line tool `search` to show RAG content identified matching queries.
+- [X] `ask()` to inject RAG and history context, then call a model specified by
       environment variable `BOSSBOT_MODEL`. In `answers.py`.
-- [x] Command-line tool `answer` to provide developer access to equivalent
+- [X] Command-line tool `answer` to provide developer access to equivalent
       results as API, using the `ask()` function.
-- [x] Runner `watch` polls for questions, produces answers, and cals APIs.
+- [X] Runner `watch` polls for questions, produces answers, and cals APIs.
 
 # Notes
 
