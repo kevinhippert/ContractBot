@@ -11,7 +11,7 @@ if __name__ == "__main__":
         "BOSSBOT_ENGINE_NAME",
         "BOSSBOT_ENGINE_TOKEN",
         "BOSSBOT_MODEL",
-        "TOKENIZER_PARALLELISM",
+        "TOKENIZERS_PARALLELISM",
     ]:
         if not os.getenv(key):
             print(f"Missing environment variable: {key}")
