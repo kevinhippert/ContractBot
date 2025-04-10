@@ -15,13 +15,6 @@ function Conversation({ messages, errorMessage, isQuerying }) {
     let messageObj;
     for (let i = 0; i < messages.length; i++) {
       let message = messages[i];
-      if (!message.text) {
-        message = {
-          variant: "body1",
-          text: "This is taking a moment...",
-          type: "answer",
-        };
-      } else {
         for (let para of message.text ?? []) {
           para = para.trim();
           // TODO: figure out how to add inline markup in a JSX compatible way
@@ -40,13 +33,16 @@ function Conversation({ messages, errorMessage, isQuerying }) {
             messageObj = { variant: "h2", text: para.slice(3) };
           } else if (para.match(/^# /)) {
             messageObj = { variant: "h1", text: para.slice(2) };
+          } else if (para.match(/^\d\./)) {
+            messageObj = { variant: "h6", text: para.replace(/\*\*/g, "") };
+          } else if (para.match(/^- /)) {
+            messageObj = { variant: "body1", text: para.replace(/^- /, "• ") };
           } else {
             messageObj = { variant: "body1", text: para };
           }
           message = { ...messageObj, type: message.type };
           result.push(message);
         }
-      }
       setTexts(result);
     }
   }
