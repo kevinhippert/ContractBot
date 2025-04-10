@@ -11,6 +11,7 @@ import {
   IconButton,
 } from "@mui/material/";
 import MenuIcon from "@mui/icons-material/Menu";
+import logo from "../assets/SEIU.png";
 
 export default function NavBar() {
   const { authorizedUser, setAuthorizedUser } = useAuth();
@@ -25,16 +26,22 @@ export default function NavBar() {
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static">
         <Toolbar>
-          <IconButton
-            size="large"
-            edge="start"
-            color="inherit"
-            aria-label="menu"
-            sx={{ mr: 2 }}
+          <img
+            alt="SEIU Logo"
+            src={logo}
+            style={{ height: "3em", paddingRight: "2em", paddingLeft: "0em" }}
+          />
+          <Typography
+            component="div"
+            sx={{
+              font: "helvetica; arial; sans-serif",
+              "font-style": "italic",
+              "font-weight": "bold",
+              "letter-spacing": "0.02em",
+              "font-size": "1.6em",
+              flexGrow: 1,
+            }}
           >
-            <MenuIcon />
-          </IconButton>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             BossBot
           </Typography>
           {authorizedUser && (

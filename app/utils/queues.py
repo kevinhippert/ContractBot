@@ -121,6 +121,7 @@ class QueryQueue:
         )
         result = self.cursor.fetchall()
         for row in result:
+            row = list(row)
             row[2] = row[2] or ""  # If Answer is None, set it to empty string
             row[3] = row[3] or ""  # If Think is None, set it to empty string
 
