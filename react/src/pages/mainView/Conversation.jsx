@@ -26,17 +26,32 @@ function Conversation({ messages, errorMessage, isQuerying }) {
         // para = para.replace(/_(.*?)_/g, "<u>$1</u>");
 
         if (para.match(/^#### /)) {
-          messageObj = { variant: "h4", text: para.slice(5) };
+          messageObj = {
+            variant: "h4",
+            text: para.slice(5).replace(/\*\*/g, ""),
+          };
         } else if (para.match(/^### /)) {
-          messageObj = { variant: "h3", text: para.slice(4) };
+          messageObj = {
+            variant: "h3",
+            text: para.slice(4).replace(/\*\*/g, ""),
+          };
         } else if (para.match(/^## /)) {
-          messageObj = { variant: "h2", text: para.slice(3) };
+          messageObj = {
+            variant: "h2",
+            text: para.slice(3).replace(/\*\*/g, ""),
+          };
         } else if (para.match(/^# /)) {
-          messageObj = { variant: "h1", text: para.slice(2) };
+          messageObj = {
+            variant: "h1",
+            text: para.slice(2).replace(/\*\*/g, ""),
+          };
         } else if (para.match(/^\d\./)) {
           messageObj = { variant: "h6", text: para.replace(/\*\*/g, "") };
         } else if (para.match(/^- /)) {
-          messageObj = { variant: "body1", text: para.replace(/^- /, "• ") };
+          messageObj = {
+            variant: "body1",
+            text: para.replace(/^- /, "• ").replace(/\*\*/g, ""),
+          };
         } else {
           messageObj = { variant: "body1", text: para };
         }
