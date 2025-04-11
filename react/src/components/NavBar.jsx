@@ -23,34 +23,32 @@ export default function NavBar() {
   };
 
   return (
-    <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="static">
-        <Toolbar>
-          <img
-            alt="SEIU Logo"
-            src={logo}
-            style={{ height: "3em", paddingRight: "1em", paddingLeft: "0em" }}
-          />
-          <Typography
-            component="div"
-            sx={{
-              font: "helvetica; arial; sans-serif",
-              "font-style": "italic",
-              "font-weight": "bold",
-              "letter-spacing": "0.02em",
-              "font-size": "1.6em",
-              flexGrow: 1,
-            }}
-          >
-            ContractBot
-          </Typography>
-          {authorizedUser && (
-            <Button color="inherit" onClick={handleLogOutClick}>
-              Log out
-            </Button>
-          )}
-        </Toolbar>
-      </AppBar>
-    </Box>
+    <AppBar sx={{ position: "fixed" }}>
+      <Toolbar>
+        <img
+          alt="SEIU Logo"
+          src={logo}
+          style={{ height: "3em", paddingRight: "1em", paddingLeft: "0em" }}
+        />
+        <Typography
+          component="div"
+          sx={{
+            font: "helvetica; arial; sans-serif",
+            "font-style": "italic",
+            "font-weight": "bold",
+            "letter-spacing": "0.02em",
+            "font-size": "1.6em",
+            flexGrow: 1,
+          }}
+        >
+          ContractBot
+        </Typography>
+        {authorizedUser && (
+          <Button color="inherit" onClick={handleLogOutClick}>
+            Log out
+          </Button>
+        )}
+      </Toolbar>
+    </AppBar>
   );
 }

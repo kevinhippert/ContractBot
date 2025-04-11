@@ -186,12 +186,13 @@ function MainView() {
   return (
     <Container
       sx={{
-        marginTop: "40px",
+        // marginTop: "40px",
         "&.MuiContainer-root": {
           padding: 0,
           // maxWidth: "1600px",
           display: "flex",
           justifyContent: "center",
+          marginTop: "100px",
         },
       }}
     >

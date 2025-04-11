@@ -12,6 +12,8 @@ function Categories({ control }) {
     "public",
     "private",
     "immigration",
+    "grievances",
+    "sample contract language",
   ];
 
   return (
