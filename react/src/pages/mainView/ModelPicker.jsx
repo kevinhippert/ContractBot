@@ -11,7 +11,7 @@ export default function ModelPicker({ register, watch }) {
   const models = [
     {
       name: "qwq",
-      description: "Alternative | Possibly better than default | ~50s for response",
+      description: "Alternative | Sometimes better than default | ~50s for response",
       value: "alternate",
     },
     {
@@ -21,12 +21,12 @@ export default function ModelPicker({ register, watch }) {
     },
     {
       name: "gemma3:27b",
-      description: "Good quality answers, very talkative | ~30s for response",
+      description: "Fast | Good quality loquacious answers | ~30s for response",
       value: "faster",
     },
     {
       name: "deepseek-r1:7b",
-      description: "Lower quality answers, fastest | ~15s for response",
+      description: "Fastest | Lower quality answers | ~15s for response",
       value: "fastest",
     },
   ];
