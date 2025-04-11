@@ -6,9 +6,9 @@ const TopicContext = createContext();
 export function TopicProvider({ children }) {
   const [topics, setTopics] = useState([]);
 
-  useEffect(() => {
-    console.log("topic context, topics: ", topics);
-  });
+  // useEffect(() => {
+  //   console.log("topic context, topics: ", topics);
+  // });
 
   useEffect(() => {
     if (topics.length === 0) {

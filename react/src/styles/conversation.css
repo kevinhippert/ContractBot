@@ -1,8 +1,8 @@
 .question-class {
-  margin-top: 0.75em !important;
+  /* margin-top: 0.75em !important; */
   background-color: #c6a0f063 !important;
 }
 .answer-class {
-  margin-top: 0.25em !important;
+  /* margin-top: 0.25em !important; */
   background-color: #ffffff80 !important;
 }
