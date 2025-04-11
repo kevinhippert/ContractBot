@@ -118,15 +118,19 @@ function Conversation({ messages, errorMessage, isQuerying }) {
               <ShowAnswer key={index} text={text} />
             ))}
           </Box>
-          {isQuerying.isQuerying && (
-            <Paper sx={{ marginBottom: "5px", padding: "10px" }}>
-              <Typography>{isQuerying.message}</Typography>
-              <LinearProgress />
-            </Paper>
-          )}
-          {errorMessage && (
-            <Alert severity="error">Whoopsy. {errorMessage}</Alert>
-          )}
+          <>
+            {isQuerying.isQuerying && (
+              <>
+                <Typography sx={{ marginBottom: "5px", padding: "10px" }}>
+                  {isQuerying.message}
+                </Typography>
+                <LinearProgress />
+              </>
+            )}
+            {errorMessage && (
+              <Alert severity="error">Whoopsy. {errorMessage}</Alert>
+            )}
+          </>
         </>
       )}
     </>

@@ -142,6 +142,7 @@ function MainView() {
       const res = await api.get(url);
       if (res.status === 200 && res.data) {
         rerenderConversation(res.data);
+        setErrorMessage(null);
       } else {
         setErrorMessage("Sorry, we couldn't fetch this topic.");
       }
@@ -186,12 +187,13 @@ function MainView() {
   return (
     <Container
       sx={{
-        marginTop: "40px",
+        // marginTop: "40px",
         "&.MuiContainer-root": {
           padding: 0,
           // maxWidth: "1600px",
           display: "flex",
           justifyContent: "center",
+          marginTop: "100px",
         },
       }}
     >

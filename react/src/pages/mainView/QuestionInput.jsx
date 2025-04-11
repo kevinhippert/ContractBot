@@ -17,7 +17,7 @@ function QuestionInput({ register, isQuerying }) {
         label="Ask your question"
         variant="outlined"
         disabled={isQuerying.isQuerying}
-        style={{ width: "80%", marginTop: "10px" }}
+        style={{ width: "80%", margin: "25px 0 40px 0" }}
         {...register("question")}
         onKeyDown={handleKeyDown}
       />

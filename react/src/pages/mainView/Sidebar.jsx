@@ -32,7 +32,7 @@ export default function Sidebar({ clearMessages, fetchTopicThread }) {
   };
 
   const sidebarHtml = (
-    <Box sx={{ width: "300px", marginRight: "10px" }}>
+    <Box sx={{ width: "250px", marginRight: "10px" }}>
       <nav>
         {topics.length && (
           <List>
