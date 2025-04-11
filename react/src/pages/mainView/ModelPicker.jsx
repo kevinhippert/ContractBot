@@ -4,7 +4,7 @@ import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 
-export default function ModelPicker({ register, setValue }) {
+export default function ModelPicker({ register }) {
   const models = [
     {
       name: "deepseek-r1:32b | default",
@@ -26,14 +26,14 @@ export default function ModelPicker({ register, setValue }) {
   return (
     <>
       <InputLabel>Model</InputLabel>
-      <Select {...register("model")}>
+      <select {...register("model")}>
         {models &&
           models.map((model) => (
-            <MenuItem key={model.value} value={model.value}>
+            <option key={model.value} value={model.value}>
               {model.name} | {model.description}
-            </MenuItem>
+            </option>
           ))}
-      </Select>
+      </select>
     </>
   );
 }
