@@ -84,7 +84,7 @@ function Conversation({ messages, errorMessage, isQuerying }) {
         <>
           <Box>
             {texts.map((text, index) => (
-              <ShowAnswer text={text} />
+              <ShowAnswer key={index} text={text} />
             ))}
           </Box>
           {isQuerying.isQuerying && (

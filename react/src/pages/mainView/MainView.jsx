@@ -26,6 +26,7 @@ function MainView() {
     register,
     handleSubmit,
     control,
+    watch,
     setValue,
     formState: { errors },
   } = useForm({
@@ -202,7 +203,7 @@ function MainView() {
           />
         </Box>
         <Box>
-          <ModelPicker register={register} setValue={setValue} />
+          <ModelPicker register={register} watch={watch} />
           <Categories control={control} />
           {loadingTopic && <Typography>Loading topic...</Typography>}
           <Conversation
