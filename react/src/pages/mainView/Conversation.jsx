@@ -119,7 +119,7 @@ function Conversation({ messages, errorMessage, isQuerying }) {
             ))}
           </Box>
           {isQuerying.isQuerying && (
-            <Paper>
+            <Paper sx={{ marginBottom: "5px", padding: "10px" }}>
               <Typography>{isQuerying.message}</Typography>
               <LinearProgress />
             </Paper>

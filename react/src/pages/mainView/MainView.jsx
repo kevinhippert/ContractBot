@@ -196,7 +196,7 @@ function MainView() {
       }}
     >
       <form style={{ display: "flex" }} onSubmit={handleSubmit(onSubmit)}>
-        <Box sx={{ width: "200px" }}>
+        <Box>
           <Sidebar
             clearMessages={clearMessages}
             fetchTopicThread={fetchTopicThread}
