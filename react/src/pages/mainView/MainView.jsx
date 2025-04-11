@@ -142,6 +142,7 @@ function MainView() {
       const res = await api.get(url);
       if (res.status === 200 && res.data) {
         rerenderConversation(res.data);
+        setErrorMessage(null);
       } else {
         setErrorMessage("Sorry, we couldn't fetch this topic.");
       }
