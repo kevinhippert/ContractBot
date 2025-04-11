@@ -11,9 +11,9 @@ rsync -aWv --progress -e "ssh -p443" . \
     --exclude '.queue.db' \
     --exclude '.mypy_cache' \
     --exclude 'react' \
-    --exclude 'app' \
     --exclude 'deploy.sh' \
     --exclude '.github' \
     --exclude '.gitignore' \
     --exclude '.pre-commit-config.yaml' \
-    --exclude 'openssl.cnf'
+    --exclude 'openssl.cnf' \
+    --exclude 'node_modules'

@@ -7,10 +7,11 @@ function Categories({ control }) {
     "wages",
     "benefits",
     "PTO",
-    "my boss is a jerk",
-    "california",
-    "gig work",
-    "power to the people",
+    "healthcare",
+    "building services",
+    "public",
+    "private",
+    "immigration",
   ];
 
   return (

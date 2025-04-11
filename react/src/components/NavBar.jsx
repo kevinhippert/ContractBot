@@ -29,7 +29,7 @@ export default function NavBar() {
           <img
             alt="SEIU Logo"
             src={logo}
-            style={{ height: "3em", paddingRight: "2em", paddingLeft: "0em" }}
+            style={{ height: "3em", paddingRight: "1em", paddingLeft: "0em" }}
           />
           <Typography
             component="div"
@@ -42,7 +42,7 @@ export default function NavBar() {
               flexGrow: 1,
             }}
           >
-            BossBot
+            ContractBot
           </Typography>
           {authorizedUser && (
             <Button color="inherit" onClick={handleLogOutClick}>
