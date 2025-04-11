@@ -22,7 +22,7 @@
 - [X] Authentication of `api/add-query` and `api/check-query`
 - [ ] Category tags (conceptually in place, but need to decide specifics).
 - [X] Topic creation and switching.
-- [ ] Pass LLM model selection to `api/add-query`.
+- [X] Pass LLM model selection to `api/add-query`.
 - [X] User aliases for topic IDs (use first query).
 - [X] Handle "no answer" for `api/check-query` response.
 - [X] Prettify answers returned:

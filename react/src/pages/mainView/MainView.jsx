@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from "react";
 import Sidebar from "./Sidebar";
 import { useTopic } from "../../contexts/TopicContext";
-import { Box, Button, Container } from "@mui/material/";
+import { Box, Button, Container, Typography } from "@mui/material/";
 import { useForm } from "react-hook-form";
 import Categories from "./Categories";
 import QuestionInput from "./QuestionInput";
 import api from "../../api/api";
 import Conversation from "./Conversation";
 import { createAuthenticationParams } from "../../authentication/authentication";
+import ModelPicker from "./ModelPicker";
 
 // This component basically acts as a giant form, which registers inputs from various child
 // components and handles submissions ond errors
@@ -15,18 +16,31 @@ function MainView() {
   const { topics, updateCurrentTopic, updateTopicName } = useTopic();
   const [currentTopic, setCurrentTopic] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
+  const [loadingTopic, setLoadingTopic] = useState(false);
   const [isQuerying, setIsQuerying] = useState({
     isQuerying: false,
     message: null,
   });
   const [messages, setMessages] = useState([]);
-  const { register, control, handleSubmit, setValue } = useForm();
+  const {
+    register,
+    handleSubmit,
+    control,
+    watch,
+    setValue,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      model: "default",
+    },
+  });
 
   useEffect(() => {
     setCurrentTopic(topics.find((topic) => topic.isCurrent));
   }, [topics]);
 
   const onSubmit = async (question) => {
+    console.log("onSubmit, question: ", question);
     setErrorMessage(null); // Reset server error on new submission
     setIsQuerying({ isQuerying: true, message: "Thinking..." });
     setValue("question", "");
@@ -43,6 +57,7 @@ function MainView() {
       Topic: currentTopic.topicId,
       Query: question.question,
       Modifiers: { Region: null, Category: question.categories },
+      Model: question.model,
     };
 
     addQuery(formData);
@@ -77,8 +92,7 @@ function MainView() {
       seq: querySeq,
     });
 
-    let currentRetry = 0;
-    while (currentRetry < maxRetries) {
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
         const authParamsGet = await createAuthenticationParams();
         const topic = currentTopic?.topicId;
@@ -100,8 +114,7 @@ function MainView() {
           setIsQuerying({ isQuerying: false, message: null });
           return response.data;
         } else {
-          currentRetry++;
-          console.log(`Attempt ${currentRetry}: Answer is null. Retrying...`);
+          console.log(`Attempt ${attempt}: Answer is null. Retrying...`);
           setIsQuerying({
             isQuerying: true,
             message: "I'm still working, please continue to wait...",
@@ -113,14 +126,18 @@ function MainView() {
         console.log(`Error fetching data: ${error.message}`);
       }
     }
+
     setIsQuerying({ isQuerying: false, message: null });
     console.log(`Failed to get answer after ${maxRetries} attempts.`);
     fetchTopicThread(currentTopic.topicId);
+    setErrorMessage(
+      "Query is queued and will be answered as soon as possible."
+    );
     return null;
   };
 
   const fetchTopicThread = async (topicId) => {
-    // TODO create loading message
+    setLoadingTopic(true);
     try {
       const authParamsGet = await createAuthenticationParams();
       let url = `get-topic-thread?${authParamsGet}&Topic=${topicId}`;
@@ -130,7 +147,10 @@ function MainView() {
       } else {
         setErrorMessage("Sorry, we couldn't fetch this topic.");
       }
+      setLoadingTopic(false);
     } catch (error) {
+      setLoadingTopic(false);
+      setErrorMessage("Sorry, we couldn't fetch this topic.");
       console.log("Unable to fetch conversation about topic: ", error);
     }
   };
@@ -182,7 +202,9 @@ function MainView() {
           />
         </Box>
         <Box>
+          <ModelPicker register={register} watch={watch} />
           <Categories control={control} />
+          {loadingTopic && <Typography>Loading topic...</Typography>}
           <Conversation
             messages={messages}
             errorMessage={errorMessage}
