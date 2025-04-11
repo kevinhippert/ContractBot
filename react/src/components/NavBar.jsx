@@ -28,7 +28,7 @@ export default function NavBar() {
         <img
           alt="SEIU Logo"
           src={logo}
-          style={{ height: "3em", paddingRight: "1em", paddingLeft: "0em" }}
+          style={{ height: "3em", marginRight: "2.5em" }}
         />
         <Typography
           component="div"
