@@ -29,10 +29,11 @@ function Categories({ control }) {
           };
 
           return (
-            <Box>
+            <Box sx={{ margin: "18px 0" }}>
               {categories.map((category) => (
                 <Button
                   key={category}
+                  sx={{ marginRight: "7px", marginBottom: "7px" }}
                   onClick={() => handleCategoryClick(category)}
                   variant={value.includes(category) ? "contained" : "outlined"} //add visual feedback
                 >

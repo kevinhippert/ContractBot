@@ -40,7 +40,6 @@ function MainView() {
   }, [topics]);
 
   const onSubmit = async (question) => {
-    console.log("onSubmit, question: ", question);
     setErrorMessage(null); // Reset server error on new submission
     setIsQuerying({ isQuerying: true, message: "Thinking..." });
     setValue("question", "");
@@ -101,7 +100,6 @@ function MainView() {
         const response = await api.get(url);
 
         if (response.data.Answer !== null) {
-          console.log("Answer is not null: ", response.data);
           setMessages((prevMessages) => [
             ...prevMessages,
             {
@@ -188,14 +186,17 @@ function MainView() {
   return (
     <Container
       sx={{
-        marginTop: "20px",
+        marginTop: "40px",
         "&.MuiContainer-root": {
           padding: 0,
+          // maxWidth: "1600px",
+          display: "flex",
+          justifyContent: "center",
         },
       }}
     >
       <form style={{ display: "flex" }} onSubmit={handleSubmit(onSubmit)}>
-        <Box sx={{ width: "200px" }}>
+        <Box>
           <Sidebar
             clearMessages={clearMessages}
             fetchTopicThread={fetchTopicThread}
