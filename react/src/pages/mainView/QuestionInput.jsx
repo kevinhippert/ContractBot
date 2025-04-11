@@ -4,7 +4,7 @@ import { Box, TextField, Button, Alert } from "@mui/material/";
 function QuestionInput({ register, isQuerying }) {
   const handleKeyDown = (event) => {
     if (event.key === "Enter") {
-      event.preventDefault(); // Prevent default form submission
+      event.preventDefault();
       event.target.form.dispatchEvent(
         new Event("submit", { bubbles: true, cancelable: true })
       );

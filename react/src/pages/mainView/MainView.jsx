@@ -124,7 +124,6 @@ function MainView() {
       } catch (error) {
         console.error("Error fetching data:", error);
         console.log(`Error fetching data: ${error.message}`);
-        // Consider re-throwing or handling more specifically
       }
     }
 

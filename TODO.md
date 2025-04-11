@@ -24,8 +24,8 @@
 - [x] Topic creation and switching (wireframe exists, not functionality).
 - [x] Pass LLM model selection to `api/add-query`.
 - [x] User aliases for topic IDs.
-- [ ] Handle "no answer" for `api/check-query` response.
-- [ ] Model selection.
+- [X] Handle "no answer" for `api/check-query` response.
+- [X] Model selection.
 - [ ] Make the screen scroll to the bottom on topic reload, maybe have the question input fixed in place.
 - [ ] Prettify answers returned:
       - [ ] Paragraph breaks between each item in Answer array.
