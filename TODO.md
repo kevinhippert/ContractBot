@@ -12,8 +12,9 @@
 - [ ] Periodically remove old rows from `.queue.db`.
 - [X] Create `Frontend_2` user for local development.
 - [ ] Calico access to Inference Engine via SSH?
-- [X] Answers database lives at `$HOME/.answers.db`
+- [-] Answers database lives at `$HOME/.answers.db`
       (will not get deleted on redeployment).
+- [ ] Rotate passwords post-conference.
 
 ## React/UI
 
@@ -29,6 +30,10 @@
   - [X] Paragraph breaks between each item in Answer array.
   - [ ] Bold (or similar marker) for **marked** words/phrases.
   - [X] Header indication for lines starting with "###" etc.
+- [ ] Markdown tables.
+- [ ] Pin topic list to left, don't scroll with answers.
+- [ ] New topic at top of list of previous topics.
+- [ ] Query entry box should wrap text longer than its width.
 
 ## Gunicorn/FastAPI Server
 
@@ -38,6 +43,7 @@
 - [X] `GET api/login`.
 - [X] `GET api/get-new-queries`
 - [X] `POST api/give-new-answer`.
+- [ ] Persist the single-use nonce check.  Show nonce reuse vs bad hash? 
 
 ## Inference Engine(s)
 
