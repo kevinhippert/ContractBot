@@ -24,6 +24,7 @@ if __name__ == "__main__":
         threads[topic].append(query)
 
     for model in MODELS:
-        for topic, query in threads.items():
-            query = query.replace('"', '\\"')  # type: ignore
-            print(f"""engine/answer "{query}" {topic}-{model} {model}""")
+        for topic, queries in threads.items():
+            for query in queries:
+                query = query.replace('"', '\\"')  # type: ignore
+                print(f"""engine/answer "{query}" {topic}-{model} {model}""")
