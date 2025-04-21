@@ -28,5 +28,5 @@ if __name__ == "__main__":
         for line in wrap(a):
             print(f"  {line}")
         print()
-    model = os.getenv("BOSSBOT_MODEL", "no model")
+
     print(f"Answer computed in {seconds:,} seconds with {model}")
