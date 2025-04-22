@@ -1,0 +1,30 @@
+#!/usr/bin/env python
+from collections import defaultdict
+from os.path import basename
+import sys
+import sqlite3
+
+MODELS = ["deepseek-r1:7b", "deepseek-r1:32b", "deepseek-r1-70b", "gemma3:27b", "qwq"]
+
+if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        print(f"USAGE: {basename(__file__)} <db-file>")
+
+    threads = defaultdict(list)
+
+    conn = sqlite3.connect(sys.argv[1])
+    cur = conn.cursor()
+    sql_queries = """
+        SELECT Topic, Seq, Query
+        FROM answers
+        ORDER BY Topic, Seq;
+    """
+    cur.execute(sql_queries)
+    for topic, _seq, query in cur:
+        threads[topic].append(query)
+
+    for model in MODELS:
+        for topic, queries in threads.items():
+            for query in queries:
+                query = query.replace('"', '\\"')  # type: ignore
+                print(f"""engine/answer "{query}" {topic}-{model} {model}""")

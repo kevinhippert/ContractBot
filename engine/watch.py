@@ -18,7 +18,6 @@ def give_answer(
 ) -> None:
     nonce = make_nonce(16)
     hash = sha256(f"{engine} {nonce} {token}".encode()).hexdigest()
-    # FIXME: Only disable RAG until we can get secure login working
     think, answer, seq, _seconds = ask(query, topic, model=model)
     response = requests.post(
         "https://api.bossbot.org/api/give-new-answer",
