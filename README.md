@@ -1,4 +1,4 @@
-# BossBot
+# ContractBot
 
 Cutsomized LLM to aid with contract negotiation
 
