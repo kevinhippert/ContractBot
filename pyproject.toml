@@ -13,6 +13,7 @@ dependencies = [
     "ipython",
     "onnxruntime",
     "python-dotenv",
+    "pyyaml",
     "requests",
     "tqdm",
     "uvicorn",
