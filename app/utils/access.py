@@ -13,7 +13,7 @@ def authenticate(user: str, nonce: str, hash: str) -> bool:
     if user not in USERS:
         return False
 
-    with dbm.open(Path.home() / "persist/nonces.db", "c") as nonces_seen:
+    with dbm.open(Path.home() / "persist/nonces", "c") as nonces_seen:
         if nonce.encode() in nonces_seen:
             # Guard against replay attacks (MITM still a danger)
             return False
