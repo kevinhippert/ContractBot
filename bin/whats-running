@@ -1,4 +1,5 @@
 #!/bin/bash
 ps ax | grep gunicorn | grep -v grep | cut -c-8,30-88
 ps ax | grep 'node'  | grep -v grep | cut -c-8,30-
-
+# macOS formats ps a bit differently than Linux
+ps ax | grep 'watch$' | grep -v grep | cut -c-6,28-
