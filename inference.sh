@@ -29,7 +29,7 @@ else
 fi
 
 # Archive the answer database and old logs
-mkdir -p $HOME/archives
+mkdir -p $HOME/archive
 cp -v $HOME/.answers.db $HOME/archive/answers-$(date +"%Y-%m-%d-%H-%M-%S").db
 mv -v $HOME/log/* $HOME/archive/
 
