@@ -18,9 +18,10 @@ if __name__ == "__main__":
     topic = argv[2]  # The topic related to the query
     # The model to use for answering
     model = argv[3] if len(argv) == 4 else os.getenv("BOSSBOT_MODEL", "default")
+    user = "Developer"
 
     # Call the ask function from the engine.answers module
-    think, answer, seq, seconds = ask(query, topic, model)
+    think, answer, seq, seconds = ask(query, topic, user, model)
 
     # Print the topic, sequence number, and query
     print(f"Topic: {topic} [{seq}]")
