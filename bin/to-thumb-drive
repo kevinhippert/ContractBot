@@ -1,9 +1,0 @@
-#!/bin/bash
-rsync -av . /media/dmertz/RED/BossBot/ \
-    --delete \
-    --exclude 'chroma*' \
-    --exclude '.git/*' \
-    --exclude 'assets/raw-documents/*' \
-    --exclude '.venv/*' \
-    --exclude '*__pycache__*' \
-    --exclude '.ruff_cache/*'

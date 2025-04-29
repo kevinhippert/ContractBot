@@ -33,7 +33,7 @@ async def get_new_queries(
 
     for _ in range(RETRIES):
         if query_todo := QueryQueue().find_queries():
-            queries = query_todo.Queries or []  # [{Seq: (Query, Model)}] mappings
+            queries = query_todo.Queries or []  # [{Seq: (Query, User, Model)}] mappings
             seqs = []
             for q in queries:
                 seqs.extend(list(q))  # Only one Seq key in each dict
