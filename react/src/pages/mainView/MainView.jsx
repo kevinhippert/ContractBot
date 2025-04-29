@@ -9,6 +9,7 @@ import api from "../../api/api";
 import Conversation from "./Conversation";
 import { createAuthenticationParams } from "../../authentication/authentication";
 import ModelPicker from "./ModelPicker";
+import { useAuth } from "../../contexts/AuthContext";
 
 // This component basically acts as a giant form, which registers inputs from various child
 // components and handles submissions ond errors
@@ -17,6 +18,7 @@ function MainView() {
   const [currentTopic, setCurrentTopic] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
   const [loadingTopic, setLoadingTopic] = useState(false);
+  const { authorizedUser } = useAuth();
   const [isQuerying, setIsQuerying] = useState({
     isQuerying: false,
     message: null,
@@ -54,7 +56,7 @@ function MainView() {
     ]);
     let formData = {
       Topic: currentTopic.topicId,
-      User: "Place_Holder",  // TODO replace with actual user name
+      User: authorizedUser.userName,
       Query: question.question,
       Modifiers: { Region: null, Category: question.categories },
       Model: question.model,
