@@ -13,6 +13,7 @@ class QueryQueue:
             CREATE TABLE IF NOT EXISTS queries (
                 Topic TEXT NOT NULL,
                 Timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                User TEXT NOT NULL,
                 Seq INTEGER NOT NULL,
                 Query TEXT NOT NULL,
                 Status TEXT NOT NULL DEFAULT 'Open',
@@ -28,12 +29,17 @@ class QueryQueue:
         self.cursor.execute(
             "CREATE INDEX IF NOT EXISTS idx_queries_status ON queries(Status)"
         )
+        self.cursor.execute(
+            "CREATE INDEX IF NOT EXISTS idx_queries_user ON queries(User)"
+        )
         self.conn.commit()
 
     def __del__(self):
         self.conn.close()
 
-    def add_query(self, topic: str, query: str, model: str) -> tuple[int, str]:
+    def add_query(
+        self, topic: str, user: str, query: str, model: str
+    ) -> tuple[int, str]:
         # Dereference alias names for Ollama models
         model = MODELS.get(model) or MODELS["default"]
 
@@ -45,8 +51,8 @@ class QueryQueue:
             seq = last_seq[0] + 1
 
         self.cursor.execute(
-            "INSERT INTO queries (Topic, Seq, Query, Model) VALUES (?,?,?,?)",
-            (topic, seq, query, model),
+            "INSERT INTO queries (Topic, Seq, User, Query, Model) VALUES (?,?,?,?,?)",
+            (topic, seq, user, query, model),
         )
         self.cursor.execute(
             "SELECT Timestamp FROM queries WHERE Topic =? AND Seq =?", (topic, seq)
@@ -57,7 +63,7 @@ class QueryQueue:
 
     def find_queries(self) -> QueryTodo | None:
         self.cursor.execute(
-            "SELECT Topic, Seq, Query, Model FROM queries WHERE Status = 'Open'"
+            "SELECT Topic, Seq, Query, User, Model FROM queries WHERE Status = 'Open'"
         )
         rows = self.cursor.fetchall()
         if not rows:
@@ -66,7 +72,8 @@ class QueryQueue:
         # First topic, ignore other topics for this call
         topic = rows[0][0]
         # Map Seq -> (Query, Model) for each item in the first topic found
-        queries = [{row[1]: (row[2], row[3])} for row in rows if row[0] == topic]
+        # Note: (query, user, model) = row[2:5]
+        queries = [{row[1]: tuple(row[2:5])} for row in rows if row[0] == topic]
         return QueryTodo(Topic=topic, Queries=queries)
 
     def mark_pending(self, topic: str, seqs: list[int]) -> None:
@@ -135,3 +142,10 @@ class QueryQueue:
             )
             for row in result
         ]
+
+    def user_topics(self, user: str) -> list[str]:
+        self.cursor.execute(
+            "SELECT DISTINCT Topic FROM queries WHERE User =?",
+            (user,),
+        )
+        return [row[0] for row in self.cursor.fetchall()]

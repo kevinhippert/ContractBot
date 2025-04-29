@@ -1,5 +1,9 @@
 # Tasks
 
+NOTE: We have adopted GitHub Issues to track these items, and the canonical
+status of them is maintained at https://github.com/SEIU/BossBot/issues rather
+than in this document.
+
 ## Deployment
 
 - [X] Create a repository (SEIU/BossBot)
@@ -11,10 +15,10 @@
       (Inference Engines keeps records and archives DB).
 - [ ] Periodically remove old rows from `.queue.db`.
 - [X] Create `Frontend_2` user for local development.
-- [ ] Calico access to Inference Engine via SSH?
-- [-] Answers database lives at `$HOME/.answers.db`
+- [X] Calico access to Inference Engine via SSH?
+- [X] Answers database lives at `$HOME/.answers.db`
       (will not get deleted on redeployment).
-- [ ] Rotate passwords post-conference.
+- [X] Rotate passwords post-conference.
 
 ## React/UI
 
@@ -43,7 +47,7 @@
 - [X] `GET api/login`.
 - [X] `GET api/get-new-queries`
 - [X] `POST api/give-new-answer`.
-- [ ] Persist the single-use nonce check.  Show nonce reuse vs bad hash? 
+- [X] Persist the single-use nonce check.
 
 ## Inference Engine(s)
 

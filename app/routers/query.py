@@ -40,7 +40,7 @@ async def add_query(
         )
 
     # TODO: Should utilize Query.Modifiers to enhance Query.Query
-    seq, received = QueryQueue().add_query(Query.Topic, Query.Query, Query.Model)
+    seq, received = QueryQueue().add_query(Query.Topic, User, Query.Query, Query.Model)
     ack = QueryAck(
         Topic=Query.Topic,
         Seq=seq,

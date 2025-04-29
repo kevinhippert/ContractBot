@@ -104,7 +104,7 @@ knowlege rather than be specific to union contract negotiations.
 
 
 class Answers:
-    def __init__(self, db_file: str):
+    def __init__(self, db_file=Path.home() / ".answers.db"):
         self.conn = sqlite3.connect(db_file)
         self.cursor = self.conn.cursor()
         self.cursor.execute(
@@ -112,6 +112,7 @@ class Answers:
             CREATE TABLE IF NOT EXISTS answers (
                 Topic TEXT NOT NULL,
                 Seq INTEGER NOT NULL,
+                User TEXT NOT NULL,
                 Timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
                 Query TEXT NOT NULL,
                 Answer TEXT,
@@ -127,12 +128,16 @@ class Answers:
         self.cursor.execute(
             "CREATE INDEX IF NOT EXISTS idx_queries_status ON answers(Seq)"
         )
+        self.cursor.execute(
+            "CREATE INDEX IF NOT EXISTS idx_queries_user ON answers(User)"
+        )
         self.conn.commit()
 
     def add_answer(
         self,
         topic: str,
         query: str,
+        user: str,
         answer: list[str],
         think: list[str],
         model: str,
@@ -147,9 +152,9 @@ class Answers:
         row = self.cursor.fetchone()
         seq = 1 if row[0] is None else row[0] + 1
         self.cursor.execute(
-            "INSERT INTO answers (Topic, Seq, Query, Answer, Think, Model, Seconds) "
-            "VALUES (?,?,?,?,?,?,?)",
-            (topic, seq, query, _answer, _think, model, seconds),
+            "INSERT INTO answers (Topic, Seq, User, Query, Answer, Think, Model, Seconds) "
+            "VALUES (?,?,?,?,?,?,?,?)",
+            (topic, seq, user, query, _answer, _think, model, seconds),
         )
         self.conn.commit()
         return seq
@@ -163,8 +168,9 @@ class Answers:
         context = "\n\n".join(row[0] for row in rows)
         return context
 
+    def __del__(self):
+        self.conn.close()
 
-answers_db = Answers(str(Path.home() / ".answers.db"))
 
 EXAMPLE_RESPONSE = {
     "Topic": "DGQIn+5troxI",
@@ -219,7 +225,7 @@ def get_rag(
 
 
 def get_context(topic: str) -> str:
-    context = answers_db.get_context(topic)  # Get context for the topic, if any
+    context = Answers().get_context(topic)  # Get context for the topic, if any
     return f"PRIOR ANSWERS:\n{context}"
 
 
@@ -236,7 +242,8 @@ def parse_response(response: str) -> tuple[list[str], list[str]]:
 def ask(
     query: str,
     topic: str,
-    model: str,
+    user: str = "Unknown",
+    model: str | None = "default",
     no_rag: bool = False,
     no_context: bool = False,
     introduction: str = INTRODUCTION,
@@ -281,6 +288,6 @@ def ask(
     #   same as the sequence created by the frontend.  In normal operation,
     #   they should match, but it is not enforced.
     seconds = int(monotonic() - start)
-    seq = answers_db.add_answer(topic, query, answer, think, model, seconds)
+    seq = Answers().add_answer(topic, user, query, answer, think, model, seconds)
 
     return think, answer, seq, seconds

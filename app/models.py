@@ -24,8 +24,8 @@ class Answer(BaseModel):
 
 class QueryTodo(BaseModel):
     Topic: str | None
-    # Queries is a list of dicts {Seq: (Query, Model)}
-    Queries: list[dict[int, tuple[str, str]]] | None
+    # Queries is a list of dicts {Seq: (Query, User, Model)}
+    Queries: list[dict[int, tuple[str, str, str]]] | None
 
 
 # This plays off the two meanings of "models".  Pydantic models are above,
@@ -34,7 +34,6 @@ MODELS = {
     "fastest": "deepseek-r1:7b",  # ~14s
     "faster": "gemma3:27b",  # ~30s
     "default": "deepseek-r1:32b",  # ~34s
-    # "default": "deepseek-r1:7b",  # fast-as-possible model for testing
     "alternate": "qwq",  # ~50s
     "deepseek-r1:7b": "deepseek-r1:7b",
     "gemma3:27b": "gemma3:27b",
