@@ -11,12 +11,14 @@ export default function ModelPicker({ register, watch }) {
   const models = [
     {
       name: "qwq",
-      description: "Alternative | Sometimes better than default | ~50s for response",
+      description:
+        "Alternative | Sometimes better than default | ~50s for response",
       value: "alternate",
     },
     {
       name: "deepseek-r1:32b",
-      description: "Recommended | High quality answers, balanced | ~40s for response",
+      description:
+        "Recommended | High quality answers, balanced | ~40s for response",
       value: "default",
     },
     {
