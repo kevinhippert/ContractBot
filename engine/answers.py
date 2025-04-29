@@ -136,8 +136,8 @@ class Answers:
     def add_answer(
         self,
         topic: str,
-        query: str,
         user: str,
+        query: str,
         answer: list[str],
         think: list[str],
         model: str,
