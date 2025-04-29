@@ -59,5 +59,5 @@ def poll_queries(engine: str, token: str) -> None:
             print(f"{now} {data}", file=stderr, flush=True)
             topic = data["Topic"]
             for Q in data["Queries"]:
-                seq, (query, model) = Q.popitem()
-                give_answer(engine, token, topic, seq, query, model)
+                seq, (query, user, model) = Q.popitem()
+                give_answer(engine, token, topic, user, seq, query, model)

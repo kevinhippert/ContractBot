@@ -3,6 +3,7 @@ from pydantic import BaseModel
 
 class Query(BaseModel):
     Topic: str
+    User: str
     Query: str
     Modifiers: dict = {}
     Model: str = "default"

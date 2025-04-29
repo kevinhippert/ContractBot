@@ -54,6 +54,7 @@ function MainView() {
     ]);
     let formData = {
       Topic: currentTopic.topicId,
+      User: "Place_Holder",  // TODO replace with actual user name
       Query: question.question,
       Modifiers: { Region: null, Category: question.categories },
       Model: question.model,

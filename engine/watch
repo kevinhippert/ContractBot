@@ -10,7 +10,7 @@ from engine.watch import poll_queries
 if __name__ == "__main__":
     config = Path.home() / ".bossbot.yaml"
     if config.exists():
-        for k, v in yaml.safe_load(config.read_text()):
+        for k, v in yaml.safe_load(config.read_text()).items():
             os.environ[k] = v
 
     missing = False
