@@ -18,7 +18,10 @@ export default function NavBar() {
   const navigate = useNavigate();
 
   const handleLogOutClick = () => {
-    setAuthorizedUser(false);
+    setAuthorizedUser(
+        // Reset authorizedUser state and navigate to login page
+        { userName: null, isAuthenticated: false }
+    );
     navigate("/login");
   };
 
@@ -43,7 +46,7 @@ export default function NavBar() {
         >
           ContractBot
         </Typography>
-        {authorizedUser && (
+        {authorizedUser.isAuthenticated && (
           <Button color="inherit" onClick={handleLogOutClick}>
             Log out
           </Button>

@@ -9,9 +9,9 @@ function SessionTimeout() {
   const timeout = 60 * 60 * 1000; // 1 hour
 
   useEffect(() => {
-    if (authorizedUser) {
+    if (authorizedUser.isAuthenticated) {
       timeoutId.current = setTimeout(() => {
-        setAuthorizedUser(false);
+        setAuthorizedUser({ userName: null, isAuthenticated: false });
         navigate("/login");
       }, timeout);
 

@@ -34,7 +34,7 @@ export default function Login() {
       const res = await api.get(url);
       if (res.status === 200) {
         console.log("good user!");
-        setAuthorizedUser(true);
+        setAuthorizedUser({ userName: data.username, isAuthenticated: true });
         navigate("/");
       } else {
         setErrorMessage("Invalid credentials");

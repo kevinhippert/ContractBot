@@ -1,5 +1,5 @@
 // TODO: Probably load from environment variable or similar
-const userName = "Frontend_2";
+const userName = "Frontend_1";
 
 const generateNonce = () => {
   const nonceLength = 8;
