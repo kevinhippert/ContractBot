@@ -19,8 +19,8 @@ export default function NavBar() {
 
   const handleLogOutClick = () => {
     setAuthorizedUser(
-        // Reset authorizedUser state and navigate to login page
-        { userName: null, isAuthenticated: false }
+      // Reset authorizedUser state and navigate to login page
+      { userName: null, isAuthenticated: false }
     );
     navigate("/login");
   };

@@ -3,9 +3,10 @@ import React, { createContext, useState, useContext } from "react";
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
-  const [authorizedUser, setAuthorizedUser] = useState(
-        { userName: null, isAuthenticated: false }
-    );
+  const [authorizedUser, setAuthorizedUser] = useState({
+    userName: null,
+    isAuthenticated: false,
+  });
 
   const value = {
     authorizedUser,
