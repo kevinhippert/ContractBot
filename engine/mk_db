@@ -188,7 +188,7 @@ def main(
     if reset:
         if os.getenv("ALLOW_RESET") != "TRUE":
             print("DB re-creation permitted only with environment ALLOW_RESET=TRUE")
-            return 0
+            return -1
         client.reset()  # Clear the database
 
     if list_collections:
@@ -196,7 +196,7 @@ def main(
         return 0
     elif delete_collection:
         collection_delete(client, collection)
-        sys.exit(0)
+        return 0
 
     if pattern:
         files = glob(pattern)
