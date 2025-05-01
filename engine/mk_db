@@ -110,9 +110,9 @@ def add_document(
 
     desc = doc_file.name.removesuffix(".txt")[:40].ljust(40)
     for n in tqdm(range(len(chunks) // BATCH_SIZE), desc=desc):
-        chunks = all_chunks[n * BATCH_SIZE : (n + 1) * BATCH_SIZE]
+        chunk_list = all_chunks[n * BATCH_SIZE : (n + 1) * BATCH_SIZE]
         ids = all_ids[n * BATCH_SIZE : (n + 1) * BATCH_SIZE]
-        collection.add(documents=chunks, ids=ids)
+        collection.add(documents=chunk_list, ids=ids)
 
     return collection
 
@@ -188,26 +188,27 @@ def main(
     if reset:
         if os.getenv("ALLOW_RESET") != "TRUE":
             print("DB re-creation permitted only with environment ALLOW_RESET=TRUE")
-            sys.exit(-1)
+            return -1
         client.reset()  # Clear the database
 
     if list_collections:
         collection_info(client)
-        sys.exit(0)
+        return 0
     elif delete_collection:
         collection_delete(client, collection)
-        sys.exit(0)
+        return 0
 
-    _filelist = filelist
-    if pattern and not filelist:
+    if pattern:
         files = glob(pattern)
-        _filelist: str = "documents.cfg"
         Path("documents.cfg").write_text("\n".join(files))
+        print(f"Created a list of {len(files):,} files in 'document.cfg'")
+        return 0
 
-    if not _filelist:
+    if not filelist:
         print(f"Run {Path(__file__).name} --help for options")
+        return -1
     else:
-        files = Path(_filelist).read_text().splitlines()
+        files = Path(filelist).read_text().splitlines()
         try:
             if cosine:
                 print("WARNING: cosine is not supported by default embedding")
@@ -224,7 +225,7 @@ def main(
                 collection_obj = client.create_collection(
                     name=collection, metadata={"hnsw:space": "l2"}
                 )
-        except:
+        except Exception:
             if cosine or inner:
                 print(
                     "Using existing collection, "
@@ -244,7 +245,7 @@ def main(
             n_processed += 1
             # Mark each completed file back to the filelist
             files[i - 1] = f"[DONE] {files[i-1]}"
-            Path(_filelist).write_text("\n".join(files))
+            Path(filelist).write_text("\n".join(files))
             if i >= num_docs:
                 break
 

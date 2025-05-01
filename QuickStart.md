@@ -148,3 +148,104 @@ The only route that regular users can utilize at all is `GET api/login`. All
 further actions are performed on their behalf by a `Frontend_*` "user" which
 can access relevant routes.  The [Architecture](Architecture.md) document
 discusses how the security system works in more detail.
+
+## The RAG Database
+
+A database system called `chromadb` is used to maintain and search vector
+representations of fragments of documents that are utilized in enhancing
+queries. Retrieval Augmented Generation (RAG) identifies such relevant quotes
+(approximately one paragraph each) to inject into each prompt.
+
+The small command-line tool `engine/search` allows you to experiment with
+searching fragments based on test queries.
+
+Populating the RAG database is performed with the command-line tool
+`engine/mk_db`.  This tool provides several switches, but is nonetheless
+probably a bit cryptic until you are familiar with it.
+
+```sh
+% engine/mk_db --help
+Usage: mk_db [OPTIONS]
+
+Options:
+  --reset                 Reset the vector database of document chunks
+  -f, --filelist TEXT     File with list of files to process, one per line
+  -c, --collection TEXT   Name of collection to create (default 'BossBot')
+  -l, --list-collections  List the existing collections and their sizes
+  --delete-collection     Delete a collection (requires confirmation)
+  --cosine                Use cosine similarity metric not squared L2 norm
+  --inner                 Use inner product metric not squared L2 norm
+  -n, --num-docs INTEGER  Limit processing to N files
+  -p, --pattern TEXT      Generate 'documents.cfg' from glob pattern
+  -v, --verbose           More verbose output
+  -h, -?, --help          Show this message and exit.
+```
+
+Documents that can be vectorized must be plain text.  However, using tools
+such as `docx2txt`, `lynx`, or `pdftotext` can be used to convert mostly
+textual formats into plain text prior to their inclusion in the RAG database.
+
+### Vectorizing Document Fragments
+
+Vectorization and storage of RAG documents isn't fast.  *Retrieval* of stored
+vector matches *is* fast though.  The below design allows for incremental
+processing of document collections; typically about 1 second to match 50 best
+fragments/chunks.
+
+For example, chunking and processing ~5l initial documents, consisting of ~3M
+(overlapping) chunks takes about 8 hours on a CPU-only machine with 16 cores,
+and pegs all cores for that entire time.  This can probably be done faster on
+a system with a good GPU, but requires mucking with some extra libraries
+(which I have not yet figured out).
+
+The first step in ingesting RAG documents is to enumerate them into a
+configuration file.  This is performed with, e.g.:
+
+```sh
+% engine/mk_db -p 'assets/text/*.txt'
+Created a list of 4,850 files in 'document.cfg'
+```
+
+Often you will wish to rename the file `document.cfg` to a more descriptive
+name prior to further use of it.  This simple configuration format merely
+lists files that may be processed.  For example:
+
+```sh
+% head -3 documents.cfg
+assets/text/Milwaukee Master CBA 2015-2018.txt
+assets/text/N205 PACE exp2019.txt
+assets/text/superior-court-of-butte-county_professional-unit_mou_12.1.2020-11.30.2021.txt
+```
+
+While processing files, this configuration is modified to mark files that have
+been vectorized, e.g.:
+
+```sh
+% head -3 documents.cfg-l2-2025-04-11
+[DONE] assets/text/Milwaukee Master CBA 2015-2018.txt
+[DONE] assets/text/N205 PACE exp2019.txt
+[DONE] assets/text/superior-court-of-butte-county_professional-unit_mou_12.1.2020-11.30.2021.txt
+```
+
+When you want to run the vectorization against a document collection—as defined in
+a configuration file—you reference the configuration, e.g.:
+
+```sh
+% engine/mk_db -f documents.cfg-l2-2025-04-11 2>/dev/null
+Processed 1 documents in 6 seconds
+Collection BossBot has 3,369,537 vectors/chunks
+```
+
+In the example shown, we discard STDERR. This hides the progress bars, but
+in this case also hides hundreds of lines similar to:
+
+```
+Insert of existing embedding ID: 345010c8b7155b98452c8034ecbe3c06bd066319
+```
+
+There's no *harm* in re-adding the very same fragment, but there's also no
+reason to spend the processing time.  Hence the somewhat crude markup of some
+files as "[DONE]" allows us to skip repetition.  If the vectorization and DB
+storage processing is interrupted, all the files actually processed are marked
+so within the config file, and the same configuration can be resumed without
+loss.
