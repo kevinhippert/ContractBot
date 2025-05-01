@@ -41,11 +41,12 @@ domain name is associated with the Inference Engine, only an IP address.
 
 An Engine must have [Ollama](https://github.com/ollama/ollama) installed.
 On Linux doing this is as simple as running the following while logged into
-that machine.  On macOS or Windows, a download of an installer is needed.
+that machine. 
 
 ```sh
 curl -fsSL https://ollama.com/install.sh | sh
 ```
+On macOS or Windows, a download of an [installer](https://ollama.com/download) is needed.
 
 Updating code on the Inference Engine is peformed via `rsync`, and hence only
 from one of the few machines with SSH access to the relevant IP address.  The
@@ -82,7 +83,7 @@ recorded within the `answers` table:
 * User - Who created this query (and was provided the corresponding answer)?
 * Timestamp - Second-resolution ISO-8601 datetime when query was received.
 * Query - The query provided by the user.
-* Answer - The text produced by the underlying LLM in resonse.
+* Answer - The text produced by the underlying LLM in response.
 * Model - The name of the LLM used to calculate the answer.
 * Seconds - An integer count of the time generating this answer took.
 
