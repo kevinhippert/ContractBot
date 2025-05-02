@@ -1,10 +1,17 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Paper, Box, Alert, Typography } from "@mui/material";
 import LinearProgress from "@mui/material/LinearProgress";
 import "../../styles/conversation.css";
 
 function Conversation({ messages, errorMessage, isQuerying }) {
   const [texts, setTexts] = useState([]);
+  const bottomRef = useRef(null);
+  useEffect(() => {
+    window.scrollTo({
+      top: document.body.scrollHeight,
+      behavior: "smooth",
+    });
+  }, [messages]);
 
   useEffect(() => {
     formatThread(messages);
@@ -86,25 +93,29 @@ function Conversation({ messages, errorMessage, isQuerying }) {
   function ShowAnswer({ text, index }) {
     if (text.type === "question") {
       return (
-        <Paper
-          sx={{ marginBottom: "10px", padding: "5px 12px" }}
-          className="question-class"
-          key={index}
-          elevation="2"
-        >
-          <Typography variant={text.variant}>{text.text}</Typography>
-        </Paper>
+        <>
+          <Paper
+            sx={{ marginBottom: "10px", padding: "5px 12px" }}
+            className="question-class"
+            key={index}
+            elevation="2"
+          >
+            <Typography variant={text.variant}>{text.text}</Typography>
+          </Paper>
+        </>
       );
     } else if (text.type === "answer") {
       return (
-        <Paper
-          sx={{ marginBottom: "5px" }}
-          className="answer-class"
-          key={index}
-          elevation="0"
-        >
-          <Typography variant={text.variant}>{text.text}</Typography>
-        </Paper>
+        <>
+          <Paper
+            sx={{ marginBottom: "5px" }}
+            className="answer-class"
+            key={index}
+            elevation="0"
+          >
+            <Typography variant={text.variant}>{text.text}</Typography>
+          </Paper>
+        </>
       );
     }
   }
@@ -131,6 +142,7 @@ function Conversation({ messages, errorMessage, isQuerying }) {
               <Alert severity="error">Whoopsy. {errorMessage}</Alert>
             )}
           </>
+          <div ref={bottomRef} />
         </>
       )}
     </>

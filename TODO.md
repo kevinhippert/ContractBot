@@ -6,34 +6,34 @@ than in this document.
 
 ## Deployment
 
-- [X] Create a repository (SEIU/BossBot)
-- [X] Create an instance for BossBot UI to run on.
-- [X] DNS stuff for https://bossbot.org and https://api.bossbot.org.
-- [X] AWS stuff with load balancer, port forwarding, etc.
-- [X] Deployment script to launch Gunicorn and React servers
-- [X] Each redeployment removes old `.queue.db`
+- [x] Create a repository (SEIU/BossBot)
+- [x] Create an instance for BossBot UI to run on.
+- [x] DNS stuff for https://bossbot.org and https://api.bossbot.org.
+- [x] AWS stuff with load balancer, port forwarding, etc.
+- [x] Deployment script to launch Gunicorn and React servers
+- [x] Each redeployment removes old `.queue.db`
       (Inference Engines keeps records and archives DB).
 - [ ] Periodically remove old rows from `.queue.db`.
-- [X] Create `Frontend_2` user for local development.
-- [X] Calico access to Inference Engine via SSH?
-- [X] Answers database lives at `$HOME/.answers.db`
+- [x] Create `Frontend_2` user for local development.
+- [x] Calico access to Inference Engine via SSH?
+- [x] Answers database lives at `$HOME/.answers.db`
       (will not get deleted on redeployment).
-- [X] Rotate passwords post-conference.
+- [x] Rotate passwords post-conference.
 
 ## React/UI
 
-- [X] Chat interface.
-- [X] Login screen with authentication.
-- [X] Authentication of `api/add-query` and `api/check-query`
+- [x] Chat interface.
+- [x] Login screen with authentication.
+- [x] Authentication of `api/add-query` and `api/check-query`
 - [ ] Category tags (conceptually in place, but need to decide specifics).
-- [X] Topic creation and switching.
-- [X] Pass LLM model selection to `api/add-query`.
-- [X] User aliases for topic IDs (use first query).
-- [X] Handle "no answer" for `api/check-query` response.
-- [X] Prettify answers returned:
-  - [X] Paragraph breaks between each item in Answer array.
+- [x] Topic creation and switching.
+- [x] Pass LLM model selection to `api/add-query`.
+- [x] User aliases for topic IDs (use first query).
+- [x] Handle "no answer" for `api/check-query` response.
+- [x] Prettify answers returned:
+  - [x] Paragraph breaks between each item in Answer array.
   - [ ] Bold (or similar marker) for **marked** words/phrases.
-  - [X] Header indication for lines starting with "###" etc.
+  - [x] Header indication for lines starting with "###" etc.
 - [ ] Markdown tables.
 - [ ] Pin topic list to left, don't scroll with answers.
 - [ ] New topic at top of list of previous topics.
@@ -41,25 +41,25 @@ than in this document.
 
 ## Gunicorn/FastAPI Server
 
-- [X] Authentication mechanism.
-- [X] `POST api/add-query` correctly writes to `QueryQueue`.
-- [X] `GET api/check-query`.
-- [X] `GET api/login`.
-- [X] `GET api/get-new-queries`
-- [X] `POST api/give-new-answer`.
-- [X] Persist the single-use nonce check.
+- [x] Authentication mechanism.
+- [x] `POST api/add-query` correctly writes to `QueryQueue`.
+- [x] `GET api/check-query`.
+- [x] `GET api/login`.
+- [x] `GET api/get-new-queries`
+- [x] `POST api/give-new-answer`.
+- [x] Persist the single-use nonce check.
 
 ## Inference Engine(s)
 
-- [X] Command-line tool `mk_db` for vectorizing raw documents.
-- [X] `Answer` class in `answers.py` to provide access to storage of queries,
+- [x] Command-line tool `mk_db` for vectorizing raw documents.
+- [x] `Answer` class in `answers.py` to provide access to storage of queries,
       topics, answers, etc.
-- [X] Command-line tool `search` to show RAG content identified matching queries.
-- [X] `ask()` to inject RAG and history context, then call a model specified by
+- [x] Command-line tool `search` to show RAG content identified matching queries.
+- [x] `ask()` to inject RAG and history context, then call a model specified by
       environment variable `BOSSBOT_MODEL`. In `answers.py`.
-- [X] Command-line tool `answer` to provide developer access to equivalent
+- [x] Command-line tool `answer` to provide developer access to equivalent
       results as API, using the `ask()` function.
-- [X] Runner `watch` polls for questions, produces answers, and cals APIs.
+- [x] Runner `watch` polls for questions, produces answers, and cals APIs.
 
 # Notes
 
