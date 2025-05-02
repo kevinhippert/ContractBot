@@ -2,6 +2,8 @@ import sqlite3
 
 from app.models import Answer, MODELS, QueryTodo
 
+priority_queue: list[str] = []
+
 
 class QueryQueue:
     def __init__(self, db_file: str = ".queue.db"):
@@ -147,5 +149,11 @@ class QueryQueue:
         self.cursor.execute(
             "SELECT DISTINCT Topic FROM queries WHERE User =?",
             (user,),
+        )
+        return [row[0] for row in self.cursor.fetchall()]
+
+    def recent_users(self) -> list[str]:
+        self.cursor.execute(
+            "SELECT User, max(Timestamp) ts FROM queries GROUP BY User ORDER BY ts DESC"
         )
         return [row[0] for row in self.cursor.fetchall()]

@@ -8,6 +8,7 @@ dependencies = [
     "chromadb",
     "click",
     "fastapi",
+    "fastapi_utils",
     "fortune-python",
     "gunicorn",
     "ipython",
