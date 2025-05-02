@@ -154,6 +154,10 @@ class QueryQueue:
 
     def recent_users(self) -> list[str]:
         self.cursor.execute(
-            "SELECT User, max(Timestamp) ts FROM queries GROUP BY User ORDER BY ts DESC"
+            "SELECT User, max(Timestamp) ts "
+            "FROM queries "
+            "GROUP BY User "
+            "HAVING datetime('now', '-1 hour') <= ts "
+            "ORDER BY ts DESC"
         )
         return [row[0] for row in self.cursor.fetchall()]

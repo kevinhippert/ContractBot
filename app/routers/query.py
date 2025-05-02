@@ -6,7 +6,7 @@ from fastapi.responses import JSONResponse
 
 from app.models import Answer, Query, QueryAck
 from app.utils.access import authenticate
-from app.utils.queues import QueryQueue
+from app.utils.queues import priority_queue, QueryQueue
 
 router = APIRouter()
 
@@ -37,6 +37,17 @@ async def add_query(
         return JSONResponse(
             status_code=status.HTTP_400_BAD_REQUEST,
             content={"detail": "Query must be at least 10 characters long"},
+        )
+
+    priority_queue[:] = QueryQueue().recent_users()
+    print("DEBUG:", priority_queue)
+    if len(priority_queue) >= 3 and Query.User not in priority_queue[:3]:
+        return JSONResponse(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            content={
+                "detail": "The service is experiencing heavy traffic. "
+                "Please try again later."
+            },
         )
 
     # TODO: Should utilize Query.Modifiers to enhance Query.Query
