@@ -7,7 +7,6 @@ function Conversation({ messages, errorMessage, isQuerying }) {
   const [texts, setTexts] = useState([]);
   const bottomRef = useRef(null);
   useEffect(() => {
-    // Scroll to the bottom when messages change
     window.scrollTo({
       top: document.body.scrollHeight,
       behavior: "smooth",
