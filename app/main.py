@@ -1,9 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi_utils.tasks import repeat_every
 
 from app.routers import infer, login, query
-from app.utils.queues import priority_queue, QueryQueue
 
 app = FastAPI()
 app.include_router(infer.router)
@@ -19,9 +17,3 @@ app.add_middleware(
     allow_headers=["*"],
     expose_headers=["x-access-token"],
 )
-
-
-@repeat_every(seconds=60 * 5)
-def reorder_user_queue():
-    priority_queue[:] = QueryQueue().recent_users()
-    print("DEBUG:", priority_queue)
