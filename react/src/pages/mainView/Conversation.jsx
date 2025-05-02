@@ -1,10 +1,16 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Paper, Box, Alert, Typography } from "@mui/material";
 import LinearProgress from "@mui/material/LinearProgress";
 import "../../styles/conversation.css";
 
 function Conversation({ messages, errorMessage, isQuerying }) {
   const [texts, setTexts] = useState([]);
+  const bottomRef = useRef(null);
+  useEffect(() => {
+    // 👇️ Scroll to the bottom every time messages change
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    console.log("Trying to scroll to bottom");
+  }, [messages]);
 
   useEffect(() => {
     formatThread(messages);
@@ -131,6 +137,7 @@ function Conversation({ messages, errorMessage, isQuerying }) {
               <Alert severity="error">Whoopsy. {errorMessage}</Alert>
             )}
           </>
+          <div ref={bottomRef} />
         </>
       )}
     </>

@@ -33,6 +33,10 @@ export default function Sidebar({ clearMessages, fetchTopicThread }) {
 
   const sidebarHtml = (
     <Box sx={{ width: "250px", marginRight: "10px" }}>
+      <Button onClick={handleNewTopicClick}>
+        <AddIcon />
+        new topic
+      </Button>
       <nav>
         {topics.length && (
           <List>
@@ -55,10 +59,6 @@ export default function Sidebar({ clearMessages, fetchTopicThread }) {
           </List>
         )}
       </nav>
-      <Button onClick={handleNewTopicClick}>
-        <AddIcon />
-        new topic
-      </Button>
     </Box>
   );
   return sidebarHtml;

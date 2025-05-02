@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Sidebar from "./Sidebar";
 import { useTopic } from "../../contexts/TopicContext";
 import { Box, Button, Container, Typography } from "@mui/material/";
