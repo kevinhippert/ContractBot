@@ -15,12 +15,22 @@ function QuestionInput({ register, isQuerying }) {
     <>
       <TextField
         label="Ask your question"
+        multiline
         variant="outlined"
         disabled={isQuerying.isQuerying}
-        style={{ width: "80%", margin: "25px 0 40px 0" }}
+        style={{ width: "80%", margin: "1em 0 2em 0", height: "5em" }}
         {...register("question")}
         onKeyDown={handleKeyDown}
       />
+      <Button
+        variant="contained"
+        type="submit"
+        onclick={handleKeyDown}
+        disabled={isQuerying.isQuerying}
+        style={{ width: "10%", margin: "1.3em 0 2em 1em", height: "3.5em" }}
+      >
+        Ask
+      </Button>
     </>
   );
 }
