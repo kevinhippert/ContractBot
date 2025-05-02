@@ -5,23 +5,23 @@
 ContractBot consists of three major hardware components, each with a
 corresponding software stack:
 
-* An "Inference Engine" is a physical machine with a reasonably powerful GPU
-  to perform LLM inference.  Code relevant to this component lives under the
+- An "Inference Engine" is a physical machine with a reasonably powerful GPU
+  to perform LLM inference. Code relevant to this component lives under the
   `engine/` directory.
 
-* A backend is a physical machine running a FastAPI server that provides
-  several routes.  Code relevant to this component lives under the `app/`
+- A backend is a physical machine running a FastAPI server that provides
+  several routes. Code relevant to this component lives under the `app/`
   directory.
 
-* A frontend is a physical machine running a React server and creating a
-  single-page interface for interacting with the system.  Code relevant to
+- A frontend is a physical machine running a React server and creating a
+  single-page interface for interacting with the system. Code relevant to
   this component lives under the `react/` directory.
 
 It is very reasonable, and even recommended, to host the backend and frontend
-on the same physical machine.  The SEIU IU deployment runs on an AWS EC2
+on the same physical machine. The SEIU IU deployment runs on an AWS EC2
 t3.small instance, supporting both FastAPI and React servers.
 
-The bulk of the computational load relies on one or more engines.  We
+The bulk of the computational load relies on one or more engines. We
 **strongly recommend** that every Inference Engine is a physical machine owned
 and controlled by the implementer of a ContractBot instance, and **not** a
 cloud-hosted instance under the control of an external entity.
@@ -29,27 +29,28 @@ cloud-hosted instance under the control of an external entity.
 ## Deploying an Inference Engine
 
 By design, an Inference Engine that may contain proprietary information, or
-even PII, is isolated from general external access.  It performs its work by
+even PII, is isolated from general external access. It performs its work by
 calling a backend frequently to inquire whether additional work is available
-to perform.  After queries are provided by the backend, another route is
+to perform. After queries are provided by the backend, another route is
 called once an answer is computed.
 
 Within the SEIU IU deployment, our initial Inference Engine is a Mac Studio
-(M3 Ultra, 60-core GPU, 96 GiB).  The only port exposed is SSH over 443, and a
-small number of public keys are contained in its `.ssh/authorized_keys`.  No
+(M3 Ultra, 60-core GPU, 96 GiB). The only port exposed is SSH over 443, and a
+small number of public keys are contained in its `.ssh/authorized_keys`. No
 domain name is associated with the Inference Engine, only an IP address.
 
 An Engine must have [Ollama](https://github.com/ollama/ollama) installed.
 On Linux doing this is as simple as running the following while logged into
-that machine. 
+that machine.
 
 ```sh
 curl -fsSL https://ollama.com/install.sh | sh
 ```
+
 On macOS or Windows, a download of an [installer](https://ollama.com/download) is needed.
 
 Updating code on the Inference Engine is peformed via `rsync`, and hence only
-from one of the few machines with SSH access to the relevant IP address.  The
+from one of the few machines with SSH access to the relevant IP address. The
 script `bin/to-engine-ssh` is used by SEIU, but will have to be adapted
 modestly for a different deployment.
 
@@ -57,12 +58,12 @@ modestly for a different deployment.
 
 The script `engine/watch` will loop forever, and periodically call
 `poll_queries()` which in turn calls `give_answer()` once an answer is
-computed.  The functions each call routes on the backend to obtain or provide
+computed. The functions each call routes on the backend to obtain or provide
 the actual data.
 
 The script `./inference.sh` performs a few tasks prior to launching
-`engine/watch`.  It uses Ollama to install several models, then archives
-previous data, configures log file location, and restarts the watcher.  The
+`engine/watch`. It uses Ollama to install several models, then archives
+previous data, configures log file location, and restarts the watcher. The
 heart of script is simply:
 
 ```sh
@@ -75,17 +76,17 @@ directly; such changes are straightforward.
 ### LLM Interaction History
 
 All interactions with the Inference Engine are kept in an SQLite3 database at
-`$HOME/.answers.db` on that physical machine.  The following columns are
+`$HOME/.answers.db` on that physical machine. The following columns are
 recorded within the `answers` table:
 
-* Topic - A random string that distinguishes topic threads.
-* Seq - A one-based counter of queries within the same topic thread.
-* User - Who created this query (and was provided the corresponding answer)?
-* Timestamp - Second-resolution ISO-8601 datetime when query was received.
-* Query - The query provided by the user.
-* Answer - The text produced by the underlying LLM in response.
-* Model - The name of the LLM used to calculate the answer.
-* Seconds - An integer count of the time generating this answer took.
+- Topic - A random string that distinguishes topic threads.
+- Seq - A one-based counter of queries within the same topic thread.
+- User - Who created this query (and was provided the corresponding answer)?
+- Timestamp - Second-resolution ISO-8601 datetime when query was received.
+- Query - The query provided by the user.
+- Answer - The text produced by the underlying LLM in response.
+- Model - The name of the LLM used to calculate the answer.
+- Seconds - An integer count of the time generating this answer took.
 
 In general, the interactions records in the Engine's DB will be kept
 long-term. However, they will not be copied to exposed public locations.
@@ -93,11 +94,11 @@ long-term. However, they will not be copied to exposed public locations.
 ## Deploying the Backend and Frontend Servers
 
 The SEIU IU deployment uses GitHub Actions to deploy both the backend and
-frontend.  The bulk of the deployment work is performed by the script
+frontend. The bulk of the deployment work is performed by the script
 `.deploy.sh`, which should run similarly in any deployment environment.
 
 The deployment script rotates logs, kills old processes, installs software
-components if needed, and so on.  Once initial setup is taken care of, the
+components if needed, and so on. Once initial setup is taken care of, the
 backend server is launched with:
 
 ```sh
@@ -115,7 +116,7 @@ serve -s dist -l 3000 > $FRONTEND_LOG 2>&1 & disown >/dev/null 2>&1
 
 You will need to modify the GitHub workflow for a different deployment, and if
 you do not use GitHub and/or Actions, the same tasks will be achieved by other
-scripts or manual steps.  What the workflow does is:
+scripts or manual steps. What the workflow does is:
 
 1. Checkout code to a runner. This will later, but does not yet, run tests to
    gate the next steps.
@@ -128,7 +129,7 @@ scripts or manual steps.  What the workflow does is:
 ## Understanding Credentials
 
 Login credentials are manually maintained (and sometimes rotated) during this
-development period.  The `secrets/credentials` file resembles the following:
+development period. The `secrets/credentials` file resembles the following:
 
 ```
 Inference_1=ascii-beijing-analytical-foam
@@ -136,17 +137,17 @@ Frontend_1=preparation-lesbians-deserve-soon
 Sara_Chan=employment-legitimate-uganda-case
 ```
 
-Those are, of course, not real credentials, but share the same form.  Later
+Those are, of course, not real credentials, but share the same form. Later
 on, we will probably transition to an OAuth provider and a different
 credential system.
 
-Credentials come in three types, as illustrated.  Users named `Inference_*`
-can only communicate with a subset of relevant routes.  Users named
+Credentials come in three types, as illustrated. Users named `Inference_*`
+can only communicate with a subset of relevant routes. Users named
 `Frontend_*` can only communicate with a distinct subset of the routes.
 
 The only route that regular users can utilize at all is `GET api/login`. All
 further actions are performed on their behalf by a `Frontend_*` "user" which
-can access relevant routes.  The [Architecture](Architecture.md) document
+can access relevant routes. The [Architecture](Architecture.md) document
 discusses how the security system works in more detail.
 
 ## The RAG Database
@@ -160,7 +161,7 @@ The small command-line tool `engine/search` allows you to experiment with
 searching fragments based on test queries.
 
 Populating the RAG database is performed with the command-line tool
-`engine/mk_db`.  This tool provides several switches, but is nonetheless
+`engine/mk_db`. This tool provides several switches, but is nonetheless
 probably a bit cryptic until you are familiar with it.
 
 ```sh
@@ -181,25 +182,25 @@ Options:
   -h, -?, --help          Show this message and exit.
 ```
 
-Documents that can be vectorized must be plain text.  However, using tools
+Documents that can be vectorized must be plain text. However, using tools
 such as `docx2txt`, `lynx`, or `pdftotext` can be used to convert mostly
 textual formats into plain text prior to their inclusion in the RAG database.
 
 ### Vectorizing Document Fragments
 
-Vectorization and storage of RAG documents isn't fast.  *Retrieval* of stored
-vector matches *is* fast though.  The below design allows for incremental
+Vectorization and storage of RAG documents isn't fast. _Retrieval_ of stored
+vector matches _is_ fast though. The below design allows for incremental
 processing of document collections; typically about 1 second to match 50 best
 fragments/chunks.
 
 For example, chunking and processing ~5l initial documents, consisting of ~3M
 (overlapping) chunks takes about 8 hours on a CPU-only machine with 16 cores,
-and pegs all cores for that entire time.  This can probably be done faster on
+and pegs all cores for that entire time. This can probably be done faster on
 a system with a good GPU, but requires mucking with some extra libraries
 (which I have not yet figured out).
 
 The first step in ingesting RAG documents is to enumerate them into a
-configuration file.  This is performed with, e.g.:
+configuration file. This is performed with, e.g.:
 
 ```sh
 % engine/mk_db -p 'assets/text/*.txt'
@@ -207,8 +208,8 @@ Created a list of 4,850 files in 'document.cfg'
 ```
 
 Often you will wish to rename the file `document.cfg` to a more descriptive
-name prior to further use of it.  This simple configuration format merely
-lists files that may be processed.  For example:
+name prior to further use of it. This simple configuration format merely
+lists files that may be processed. For example:
 
 ```sh
 % head -3 documents.cfg
@@ -243,9 +244,9 @@ in this case also hides hundreds of lines similar to:
 Insert of existing embedding ID: 345010c8b7155b98452c8034ecbe3c06bd066319
 ```
 
-There's no *harm* in re-adding the very same fragment, but there's also no
-reason to spend the processing time.  Hence the somewhat crude markup of some
-files as "[DONE]" allows us to skip repetition.  If the vectorization and DB
+There's no _harm_ in re-adding the very same fragment, but there's also no
+reason to spend the processing time. Hence the somewhat crude markup of some
+files as "[DONE]" allows us to skip repetition. If the vectorization and DB
 storage processing is interrupted, all the files actually processed are marked
 so within the config file, and the same configuration can be resumed without
 loss.

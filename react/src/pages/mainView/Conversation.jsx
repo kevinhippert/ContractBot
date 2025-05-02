@@ -7,9 +7,11 @@ function Conversation({ messages, errorMessage, isQuerying }) {
   const [texts, setTexts] = useState([]);
   const bottomRef = useRef(null);
   useEffect(() => {
-    // 👇️ Scroll to the bottom every time messages change
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-    console.log("Trying to scroll to bottom");
+    // Scroll to the bottom when messages change
+    window.scrollTo({
+      top: document.body.scrollHeight,
+      behavior: "smooth",
+    });
   }, [messages]);
 
   useEffect(() => {
@@ -92,25 +94,29 @@ function Conversation({ messages, errorMessage, isQuerying }) {
   function ShowAnswer({ text, index }) {
     if (text.type === "question") {
       return (
-        <Paper
-          sx={{ marginBottom: "10px", padding: "5px 12px" }}
-          className="question-class"
-          key={index}
-          elevation="2"
-        >
-          <Typography variant={text.variant}>{text.text}</Typography>
-        </Paper>
+        <>
+          <Paper
+            sx={{ marginBottom: "10px", padding: "5px 12px" }}
+            className="question-class"
+            key={index}
+            elevation="2"
+          >
+            <Typography variant={text.variant}>{text.text}</Typography>
+          </Paper>
+        </>
       );
     } else if (text.type === "answer") {
       return (
-        <Paper
-          sx={{ marginBottom: "5px" }}
-          className="answer-class"
-          key={index}
-          elevation="0"
-        >
-          <Typography variant={text.variant}>{text.text}</Typography>
-        </Paper>
+        <>
+          <Paper
+            sx={{ marginBottom: "5px" }}
+            className="answer-class"
+            key={index}
+            elevation="0"
+          >
+            <Typography variant={text.variant}>{text.text}</Typography>
+          </Paper>
+        </>
       );
     }
   }
