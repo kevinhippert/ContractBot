@@ -77,7 +77,7 @@ function MainView() {
         // rename topic if first question of topic
         if (response.data.Seq === 1) {
           updateTopicName(currentTopic.topicId, formData.Query);
-        };
+        }
       } else {
         // POST failed
         setErrorMessage("Sorry, something went wrong. Please try again.");
@@ -86,8 +86,9 @@ function MainView() {
       if (error.response.status === 429) {
         setErrorMessage(error.response.data.detail);
       } else {
-          setErrorMessage("Sorry, something went wrong. Please try again.");
-          console.error("Error submitting query:", error);
+        setErrorMessage("Sorry, something went wrong. Please try again.");
+        console.error("Error submitting query:", error);
+      }
     }
   };
 
