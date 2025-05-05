@@ -114,6 +114,15 @@ function MainView() {
           ]);
           setIsQuerying({ isQuerying: false, message: null });
           return response.data;
+        } else if (response.status === 429) {
+          const data = {
+            type: "answer",
+            seq: -1,
+            topic: null,
+            text: response.data.details,
+          };
+          setMessages((prevMessages) => [{ ...prevMessages, ...data }]);
+          return data;
         } else {
           console.log(`Attempt ${attempt}: Answer is null. Retrying...`);
           setIsQuerying({
