@@ -89,7 +89,8 @@ function MainView() {
         setValue("question", "");
       } else {
         setErrorMessage("Sorry, something went wrong. Please try again.");
-        console.error("Error submitting query:", error);
+        setIsQuerying({ isQuerying: false, message: null });
+        setValue("question", "");
       }
     }
   };
@@ -129,7 +130,6 @@ function MainView() {
         }
       } catch (error) {
         console.error("Error fetching data:", error);
-        console.log(`Error fetching data: ${error.message}`);
       }
     }
 
@@ -189,7 +189,6 @@ function MainView() {
 
   const getParams = async () => {
     let params = await createAuthenticationParams();
-    console.log(params);
   };
 
   return (
