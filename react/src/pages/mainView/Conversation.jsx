@@ -139,7 +139,7 @@ function Conversation({ messages, errorMessage, isQuerying }) {
               </>
             )}
             {errorMessage && (
-              <Alert severity="error">Whoopsy. {errorMessage}</Alert>
+              <Alert severity="error">{errorMessage}</Alert>
             )}
           </>
           <div ref={bottomRef} />

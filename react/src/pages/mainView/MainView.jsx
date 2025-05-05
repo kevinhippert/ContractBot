@@ -85,6 +85,8 @@ function MainView() {
     } catch (error) {
       if (error.response.status === 429) {
         setErrorMessage(error.response.data.detail);
+        setIsQuerying({ isQuerying: false, message: null });
+        setValue("question", "");
       } else {
         setErrorMessage("Sorry, something went wrong. Please try again.");
         console.error("Error submitting query:", error);
