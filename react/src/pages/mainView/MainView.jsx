@@ -77,14 +77,17 @@ function MainView() {
         // rename topic if first question of topic
         if (response.data.Seq === 1) {
           updateTopicName(currentTopic.topicId, formData.Query);
-        }
+        };
       } else {
         // POST failed
         setErrorMessage("Sorry, something went wrong. Please try again.");
       }
     } catch (error) {
-      setErrorMessage("Sorry, something went wrong. Please try again.");
-      console.error("Error submitting query:", error);
+      if (error.response.status === 429) {
+        setErrorMessage(error.response.data.detail);
+      } else {
+          setErrorMessage("Sorry, something went wrong. Please try again.");
+          console.error("Error submitting query:", error);
     }
   };
 
@@ -101,7 +104,6 @@ function MainView() {
         const seq = querySeq;
         const url = `check-query?${authParamsGet}&Topic=${topic}&Seq=${seq}`;
         const response = await api.get(url);
-
         if (response.data.Answer !== null) {
           setMessages((prevMessages) => [
             ...prevMessages,
@@ -114,15 +116,6 @@ function MainView() {
           ]);
           setIsQuerying({ isQuerying: false, message: null });
           return response.data;
-        } else if (response.status === 429) {
-          const data = {
-            type: "answer",
-            seq: -1,
-            topic: null,
-            text: response.data.details,
-          };
-          setMessages((prevMessages) => [{ ...prevMessages, ...data }]);
-          return data;
         } else {
           console.log(`Attempt ${attempt}: Answer is null. Retrying...`);
           setIsQuerying({
