@@ -25,7 +25,7 @@ function QuestionInput({ register, isQuerying }) {
       <Button
         variant="contained"
         type="submit"
-        onclick={handleKeyDown}
+        onClick={handleKeyDown}
         disabled={isQuerying.isQuerying}
         style={{ width: "10%", margin: "1.3em 0 2em 1em", height: "3.5em" }}
       >
