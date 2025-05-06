@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Paper, Box, Alert, Typography } from "@mui/material";
+import { Alert, Box, Button, Grid, Paper, Typography } from "@mui/material";
+import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import LinearProgress from "@mui/material/LinearProgress";
 import "../../styles/conversation.css";
 
@@ -113,7 +114,24 @@ function Conversation({ messages, errorMessage, isQuerying }) {
             key={index}
             elevation="0"
           >
-            <Typography variant={text.variant}>{text.text}</Typography>
+            <Typography
+              style={{ display: "inline-block" }}
+              variant={text.variant}
+            >
+              {text.text}
+            </Typography>
+            { (text.text.length > 240) && (
+            <Button
+              style={{
+                position: "fixed",
+                right: "5%",
+                display: "inline-block",
+              }}
+              color="primary"
+              onClick={() => alert(text.text)}
+            >
+              <FileDownloadIcon />
+            </Button>) }
           </Paper>
         </>
       );
@@ -126,7 +144,9 @@ function Conversation({ messages, errorMessage, isQuerying }) {
         <>
           <Box>
             {texts.map((text, index) => (
-              <ShowAnswer key={index} text={text} />
+              <>
+                <ShowAnswer key={index} text={text} />
+              </>
             ))}
           </Box>
           <>
@@ -138,9 +158,7 @@ function Conversation({ messages, errorMessage, isQuerying }) {
                 <LinearProgress />
               </>
             )}
-            {errorMessage && (
-              <Alert severity="error">{errorMessage}</Alert>
-            )}
+            {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
           </>
           <div ref={bottomRef} />
         </>
