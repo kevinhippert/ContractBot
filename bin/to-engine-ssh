@@ -18,5 +18,5 @@ rsync -aWv --progress -e "ssh -p443" . \
     --exclude 'openssl.cnf' \
     --exclude 'node_modules'
 
-rsync -aWv --progress -e "ssh -p443" ../RAG \
+rsync -aWv --progress -e "ssh -p443" ../RAG/* \
     bossbot@70.105.237.83:/Users/bossbot/RAG/ --delete
