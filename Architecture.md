@@ -59,6 +59,7 @@ Body should look like:
 ```json
 {
   "Topic": "DGQIn+5troxI",
+  "User": "John_Doe",
   "Query": "How far can an African swallow fly?",
   "Modifiers": {
     "Region": "...",
@@ -81,6 +82,98 @@ Response should look like:
   "Timestamp": "2025-03-25T01:02:03"
 }
 ```
+
+### `POST api/add-lookup`
+
+This request queues a text to identify the most similar fragments within the
+document/vector database.
+
+Takes authentication query parameters:
+
+- User (e.g. `Frontend_1`)
+- Nonce
+- Hash
+
+Body should look like:
+
+```json
+{
+  "Topic": "DGQIn+5troxI",
+  "Seq": 4,
+  "Fragment": "Employees can accrue comp time for overtime hours worked ...",
+  "Count": 5,
+  "Threshold": 1.0
+}
+```
+
+`Fragment` is simply the text we wish to match against existing fragments in
+RAG data. The lookup will identify the top-N matches, for N specified by
+`Count`.  `Threshold` will discard matches that are too distant in the vector
+space of the embedding (lower numbers are "closer").
+
+If `Count` or `Threshold` are not provided, they default to the values shown
+in this document.
+
+A response will resemble the following.
+
+```json
+{
+  "Fingerprint": "7b33f9588431",
+  "Timestamp": "2025-03-25T01:02:03"
+}
+```
+
+The `Fingerprint` is a hash of the fragment being searched that is used as an
+index.  E.g.:
+
+```sh
+% echo "Employees can accrue comp time for overtime hours worked ..." |
+    sha1sum | cut -c-12
+7b33f9588431
+```
+
+### `GET api/get-lookups`
+
+Takes authentication query parameters:
+
+- User (e.g. `Frontend_1`)
+- Nonce
+- Hash
+
+Body should look like:
+
+```json
+{
+  "Topic": "DGQIn+5troxI",
+}
+```
+
+Response should resemble:
+
+```json
+{
+  "Topic": "DGQIn+5troxI",
+  "Lookups": [
+    {
+      "Question": "What's the meaning of life?",
+      "Fragments": [
+        {"Employees can accrue comp time...": [
+            "Match 1 - whole bunch of info, with line breaks embedded",
+            "Match 2 - yet more info",
+            "..."
+          ],
+        },
+        {"Another lookup fragment": ["..."]}
+      ]
+    },
+    {
+      "Question": "..."
+      "Fragments": []
+    }
+  ]
+}
+```
+
 
 ### `GET api/check-query`
 
