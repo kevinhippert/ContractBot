@@ -1,5 +1,5 @@
 # ContractBot
 
-Cutsomized LLM to aid with contract negotiation
+Customized LLM to aid with contract negotiation
 
-Date: 2025-04-22
+Date: 2025-05-06
