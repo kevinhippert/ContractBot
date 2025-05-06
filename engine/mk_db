@@ -46,6 +46,7 @@ def get_metadata(document: Path) -> str:
         "effective_date": "Effective Date",
         "employer_name": "Employer",
         "expiration_date": "Expiration",
+        "federation": "Federation",
         "local_now": "Local",
         "membership_size": "Local Size",
         "non_profit_ind": "Nonprofit (Y/N)",
@@ -55,6 +56,7 @@ def get_metadata(document: Path) -> str:
         "pub_jur_level": "pub_jur_level",  # Not sure of meaning
         "pub_pri_ind": "pub_pri_ind",  # Not sure of meaning
         "state": "State",
+        "union": "Union",
         "unit_size": "Unit Size",
         "upload_time": "Uploaded At",
         "Year": "Year",
@@ -72,7 +74,7 @@ def get_metadata(document: Path) -> str:
         metadata = "\n".join(meta_items)  # type: ignore
 
     if "Document Name" not in metadata:
-        metadata += f"\nDocument Name: {document.name.removesuffix(".txt")}"
+        metadata += f"\nDocument Name: {document.name.removesuffix('.txt')}"
     return metadata
 
 
