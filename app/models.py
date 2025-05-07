@@ -29,6 +29,25 @@ class QueryTodo(BaseModel):
     Queries: list[dict[int, tuple[str, str, str]]] | None
 
 
+class Lookup(BaseModel):
+    Topic: str
+    Seq: int
+    Fragment: str
+    Count: int = 5
+    Threshold: float = 1.0
+
+
+class Match(BaseModel):
+    # Fragments maps answer fragment to list of RAG fragments
+    Query: str
+    Fragments: list[dict[str, list[str]]]
+
+
+class LookupMatch(BaseModel):
+    Topic: str
+    Lookups: list[Match]
+
+
 # This plays off the two meanings of "models".  Pydantic models are above,
 # Below we define a dict to use Ollama/LLM models
 MODELS = {

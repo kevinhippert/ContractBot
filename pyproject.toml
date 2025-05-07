@@ -13,6 +13,7 @@ dependencies = [
     "gunicorn",
     "ipython",
     "onnxruntime",
+    "pydantic",
     "python-dotenv",
     "pyyaml",
     "requests",

@@ -40,7 +40,6 @@ async def add_query(
         )
 
     priority_queue[:] = QueryQueue().recent_users()
-    print("DEBUG:", priority_queue)
     if len(priority_queue) >= 3 and Query.User not in priority_queue[:3]:
         return JSONResponse(
             status_code=status.HTTP_429_TOO_MANY_REQUESTS,
