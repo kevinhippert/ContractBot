@@ -1,8 +1,12 @@
+from hashlib import sha1
 import sqlite3
+from typing import NewType
 
-from app.models import Answer, MODELS, QueryTodo
+
+from app.models import Answer, LookupMatch, Match, MODELS, QueryTodo
 
 priority_queue: list[str] = []
+Timestamp = NewType("Timestamp", str)
 
 
 class QueryQueue:
@@ -10,14 +14,15 @@ class QueryQueue:
         self.conn = sqlite3.connect(db_file)
         self.cursor = self.conn.cursor()
 
+        # Table for queries, and some indices
         self.cursor.execute(
             """
             CREATE TABLE IF NOT EXISTS queries (
-                Topic TEXT NOT NULL,
+                Topic TEXT NOT NULL, -- Topic ID (random short string)
                 Timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
                 User TEXT NOT NULL,
                 Seq INTEGER NOT NULL,
-                Query TEXT NOT NULL,
+                Query TEXT NOT NULL, -- User-provided query
                 Status TEXT NOT NULL DEFAULT 'Open',
                 Answer TEXT,
                 Think TEXT,
@@ -33,6 +38,44 @@ class QueryQueue:
         )
         self.cursor.execute(
             "CREATE INDEX IF NOT EXISTS idx_queries_user ON queries(User)"
+        )
+
+        # Table for lookups, and some indices
+        self.cursor.execute(
+            """
+            CREATE TABLE IF NOT EXISTS lookups (
+                Topic TEXT NOT NULL,
+                Seq Integer NOT NULL,
+                Timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                Fragment TEXT NOT NULL, -- Fragment (paragraph) from an Answer
+                Fingerprint TEXT NOT NULL, -- Hash of the fragment
+                Status TEXT NOT NULL DEFAULT 'Open'
+            )
+            """
+        )
+        self.cursor.execute(
+            "CREATE INDEX IF NOT EXISTS idx_lookups_topic ON lookups(Topic)"
+        )
+        self.cursor.execute(
+            "CREATE INDEX IF NOT EXISTS idx_lookups_status ON lookups(Status)"
+        )
+        self.cursor.execute(
+            "CREATE UNIQUE INDEX IF NOT EXISTS "
+            "idx_lookups_fingerprint ON lookups(Fingerprint)"
+        )
+
+        # Table for lookup matches, and an index
+        # One-to-many relationship between lookup and matches
+        self.cursor.execute(
+            """
+            CREATE TABLE IF NOT EXISTS lookup_matches (
+                Fingerprint TEXT NOT NULL,  -- Specifically non-unique lookup hash
+                Match TEXT NOT NULL,
+                """
+        )
+        self.cursor.execute(
+            "CREATE INDEX IF NOT EXISTS "
+            "idx_lookup_matches_fingerprint ON lookup_matches(Fingerprint)"
         )
         self.conn.commit()
 
@@ -161,3 +204,110 @@ class QueryQueue:
             "ORDER BY ts DESC"
         )
         return [row[0] for row in self.cursor.fetchall()]
+
+    def add_lookup(self, topic: str, seq: int, fragment: str) -> tuple[str, Timestamp]:
+        fingerprint = sha1(fragment.encode()).hexdigest()
+        self.cursor.execute(
+            "INSERT INTO lookups (Topic, Seq, Fragment, Fingerprint) "
+            "VALUES (?,?,?,?)"
+            "RETURNING Timestamp",
+            (topic, seq, fragment, fingerprint),
+        )
+        timestamp = self.cursor.fetchone()[0]
+        return fingerprint, timestamp
+
+    def answer_lookup(self, fingerprint: str, matches: list[str]) -> None:
+        self.cursor.execute(
+            "UPDATE lookups SET Status='Done' WHERE Fingerprint =?",
+            (fingerprint,),
+        )
+        self.cursor.executemany(
+            "INSERT INTO lookup_matches (Fingerprint, Match) VALUES (?,?)",
+            [(fingerprint, match) for match in matches],
+        )
+        self.conn.commit()
+
+    def find_lookup_matches(self, fingerprint: str) -> list[str]:
+        self.cursor.execute(
+            "SELECT Match FROM lookup_matches WHERE Fingerprint = ?",
+            (fingerprint,),
+        )
+        return [row[0] for row in self.cursor.fetchall()]
+
+    def find_topic_lookups(self, topic: str) -> dict:
+        """
+        Return a LookupMatch¹ with a Topic and a Lookups list of Match objects.
+        Each Match contains a Query and a list of Fragments. E.g.
+
+          LookupMatch(
+            Topic="DGQIn+5troxI",
+            Lookups=[
+              Match(
+                Query="What's the meaning of life?",
+                Fragments=[
+                  {"Employees can accrue comp time...": [
+                    "Match 1 - whole bunch of info, with line breaks embedded",
+                    "Match 2 - yet more info",
+                    "..."
+                  ]},
+                  {"Another lookup fragment": ["..."]}
+                ]
+              ),
+              Match(
+                Query="...",
+                Fragments=[],
+              )
+            ]
+          )
+
+        ¹Technically, we dump this all to a dict for the return value, but use
+        Pydantic models for more readable creation and type checking.
+        """
+        # Find all the answered queries within a topic
+        topic_lookups = LookupMatch(
+            Topic=topic,
+            Lookups=[],  # Populate below
+        )
+
+        # More than we need (not all answers have lookups), but still a small number
+        self.cursor.execute(
+            "SELECT Seq, Query FROM queries WHERE Topic =? AND Status = 'Done'",
+            (topic,),
+        )
+        seq_to_query = dict(self.cursor)
+
+        # Get each sequence and fingerprint within the topic
+        self.cursor.execute(
+            "SELECT Seq, Fragment, Fingerprint "
+            "FROM lookups "
+            "WHERE Topic =? AND Status = 'Done'",
+            (topic,),
+        )
+        for seq, fragment, fingerprint in self.cursor.fetchall():
+            # We really should have this sequence within this topic
+            if seq not in seq_to_query:
+                print(f"ALERT: Topic={topic} Seq={seq} not found in `lookups` table!")
+                continue
+            else:
+                query = seq_to_query[seq]
+
+            # Ready to add matches for fragments under this query
+            topic_lookups.Lookups.append(Match(Query=query, Fragments=[{fragment: []}]))
+
+            # Find all matches for this fingerprint/fragment
+            self.cursor.execute(
+                "SELECT Match FROM lookup_matches WHERE Fingerprint =?",
+                (fingerprint,),
+            )
+            for match in self.cursor.fetchall():
+                match = match[0]
+                topic_lookups.Lookups[-1].Fragments[-1][fragment].append(match)
+
+        return topic_lookups.model_dump()
+
+    def mark_lookup_pending(self, fingerprint: str) -> None:
+        self.cursor.execute(
+            "UPDATE lookups SET Status='Pending' WHERE Fingerprint =?",
+            (fingerprint,),
+        )
+        self.conn.commit()
