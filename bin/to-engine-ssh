@@ -10,6 +10,8 @@ rsync -aWv --progress -e "ssh -p443" . \
     --exclude '.answers.db' \
     --exclude '.queue.db' \
     --exclude '.mypy_cache' \
+    --exclude '.clocignore' \
+    --exclude '.prettierrc.json' \
     --exclude 'react' \
     --exclude 'deploy.sh' \
     --exclude '.github' \
