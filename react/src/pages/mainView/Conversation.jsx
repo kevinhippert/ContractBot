@@ -106,6 +106,20 @@ function Conversation({ messages, errorMessage, isQuerying }) {
         </>
       );
     } else if (text.type === "answer") {
+      if (
+        text.text.toLowerCase().includes("easter egg") &
+        (Math.random() < 0.1)
+      ) {
+        return (
+          <>
+            <img
+              alt="Software is mysterious!"
+              src="/Ideas-are-illusions.jpg"
+              style={{ height: "14em", paddingLeft: "2em" }}
+            />
+          </>
+        );
+      }
       return (
         <>
           <Paper
@@ -120,18 +134,19 @@ function Conversation({ messages, errorMessage, isQuerying }) {
             >
               {text.text}
             </Typography>
-            { (text.text.length > 240) && (
-            <Button
-              style={{
-                position: "fixed",
-                right: "5%",
-                display: "inline-block",
-              }}
-              color="primary"
-              onClick={() => alert(text.text)}
-            >
-              <FileDownloadIcon />
-            </Button>) }
+            {text.text.length > 240 && (
+              <Button
+                style={{
+                  position: "fixed",
+                  right: "5%",
+                  display: "inline-block",
+                }}
+                color="primary"
+                onClick={() => alert(text.text)}
+              >
+                <FileDownloadIcon />
+              </Button>
+            )}
           </Paper>
         </>
       );
