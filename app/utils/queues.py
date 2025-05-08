@@ -3,7 +3,7 @@ import sqlite3
 from typing import NewType
 
 
-from app.models import Answer, LookupMatch, Match, MODELS, QueryTodo
+from app.models import Answer, Lookup, LookupMatch, LookupTodo, Match, MODELS, QueryTodo
 
 priority_queue: list[str] = []
 Timestamp = NewType("Timestamp", str)
@@ -49,6 +49,8 @@ class QueryQueue:
                 Timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
                 Fragment TEXT NOT NULL, -- Fragment (paragraph) from an Answer
                 Fingerprint TEXT NOT NULL, -- Hash of the fragment
+                Count INTEGER NOT NULL DEFAULT 5,  -- Max matches to find
+                Threshold REAL NOT NULL DEFAULT 1.0  -- Required match closeness
                 Status TEXT NOT NULL DEFAULT 'Open'
             )
             """
@@ -205,13 +207,20 @@ class QueryQueue:
         )
         return [row[0] for row in self.cursor.fetchall()]
 
-    def add_lookup(self, topic: str, seq: int, fragment: str) -> tuple[str, Timestamp]:
-        fingerprint = sha1(fragment.encode()).hexdigest()
+    def add_lookup(self, lookup: Lookup) -> tuple[str, Timestamp]:
+        fingerprint = sha1(lookup.Fragment.encode()).hexdigest()
         self.cursor.execute(
-            "INSERT INTO lookups (Topic, Seq, Fragment, Fingerprint) "
-            "VALUES (?,?,?,?)"
+            "INSERT INTO lookups (Topic, Seq, Fragment, Fingerprint, Count, Threshold) "
+            "VALUES (?,?,?,?,?,?)"
             "RETURNING Timestamp",
-            (topic, seq, fragment, fingerprint),
+            (
+                lookup.Topic,
+                lookup.Seq,
+                lookup.Fragment,
+                fingerprint,
+                lookup.Count,
+                lookup.Threshold,
+            ),
         )
         timestamp = self.cursor.fetchone()[0]
         return fingerprint, timestamp
@@ -226,13 +235,6 @@ class QueryQueue:
             [(fingerprint, match) for match in matches],
         )
         self.conn.commit()
-
-    def find_lookup_matches(self, fingerprint: str) -> list[str]:
-        self.cursor.execute(
-            "SELECT Match FROM lookup_matches WHERE Fingerprint = ?",
-            (fingerprint,),
-        )
-        return [row[0] for row in self.cursor.fetchall()]
 
     def find_topic_lookups(self, topic: str) -> dict:
         """
@@ -305,9 +307,38 @@ class QueryQueue:
 
         return topic_lookups.model_dump()
 
-    def mark_lookup_pending(self, fingerprint: str) -> None:
+    def get_new_lookup(self) -> LookupTodo | None:
         self.cursor.execute(
-            "UPDATE lookups SET Status='Pending' WHERE Fingerprint =?",
+            "SELECT Fragment, Fingerprint, Count, Threshold "
+            "FROM lookups "
+            "WHERE Status = 'Open' "
+            "ORDER BY Timestamp "
+            "LIMIT 1"
+        )
+        new = self.cursor.fetchone()
+        if not new:
+            return None
+        else:
+            fragment, fingerprint, count, threshold = new
+            self.cursor.execute(
+                "UPDATE lookups SET Status='Pending' WHERE Fingerprint =?",
+                (fingerprint,),
+            )
+            self.conn.commit()
+            return LookupTodo(
+                Fragment=fragment,
+                Fingerprint=fingerprint,
+                Count=count,
+                Threshold=threshold,
+            )
+
+    def update_matches(self, fingerprint: str, matches: list[str]) -> None:
+        self.cursor.execute(
+            "UPDATE lookups SET Status='Done' WHERE Fingerprint =?",
             (fingerprint,),
+        )
+        self.cursor.executemany(
+            "INSERT INTO lookup_matches (Fingerprint, Match) VALUES (?,?)",
+            [(fingerprint, match) for match in matches],
         )
         self.conn.commit()

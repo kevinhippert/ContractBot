@@ -326,6 +326,69 @@ Hash at **every** call to a secured route to avoid replay attacks.
 
 ## Inference Routes
 
+### `GET api/get-new-lookup`
+
+In contrast to the `api/get-new-queries` route that potentially returns
+multiple queries, at most one lookup fragment is returned at a time.  Servicing
+a lookup takes much less time than servicing a query.
+
+If no new lookup has been requested, the route returns a 404 status code.
+
+If a new lookup is available, the route return a 200 with a body similar to:
+
+```json
+{
+    "Fragment": "Employees can accrue comp time...",
+    "Fingerprint": "4892a5d812af",
+    "Count": 5,
+    "Threshold": 1.0
+}
+```
+
+### `POST api/give-new-matches`
+
+When an inference engine has identified matches to a fragment it posts a body
+similar to:
+
+```json
+{
+  "Fingerprint": "4892a5d812af",
+  "Matches": [
+    "Match 1 - whole bunch of info, with line breaks embedded",
+    "Match 2 - yet more info",
+    "..."
+  ]
+}
+```
+
+Each match will contain multiple lines, separated by newlines.  Within each
+match, the initial portion will contain metadata, then a line with only 5 dots
+will occur, followed by approximately a paragraph of relevant content from the
+RAG database.  For example, this might be a returned match (generally one of
+several):
+
+    Distance: 0.75
+    Document Type: Contract
+    Company: CHICAGO PUBLIC SCHOOLS
+    Division: Public
+    Effective Date: 2018-04-09
+    Employer: Chicago Public Schools
+    Expiration: 2021-04-04
+    Local: L00001
+    Prior Local Number: L00001
+    Document Name: CPS-4-9-18-to-4-4-21-FINAL-rfza_ocr
+    Uploaded At: 2023-08-17 19:19
+    .....
+    Overtime work shall be distributed equitably among employees able and
+    qualified to perform the needed overtime work. Section 11. Part-time
+    employees may constitute up to fifteen percent (15%) of the total work
+    force, but no more at any given time.	Section 12. Employees assigned to
+    multiple worksites during their shift shall be paid for eight hours per shift
+    which shall include one (1) hour of paid travel time between sites
+
+This data will be stored in the backend table `lookup_matches` and the
+frontend will be responsible for formatting the matches.
+
 ### `GET api/get-new-queries`
 
 The body contains the validation block discussed in the authentication section.
