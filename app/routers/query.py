@@ -4,7 +4,7 @@ from time import sleep
 from fastapi import APIRouter, status
 from fastapi.responses import JSONResponse
 
-from app.models import Answer, Query, QueryAck
+from app.models import Answer, Lookup, Query, QueryAck
 from app.utils.access import authenticate
 from app.utils.queues import priority_queue, QueryQueue
 
@@ -150,4 +150,53 @@ async def get_topic(
             }
             for query in queries
         ],
+    )
+
+
+@router.post("/api/add-lookup", tags=["query", "lookup"])
+async def get_user(
+    User: str,
+    Nonce: str,
+    Hash: str,
+    lookup: Lookup,
+) -> JSONResponse:
+    """
+    Add a new lookup to the queue.
+    """
+    if not User.startswith("Frontend_"):
+        return JSONResponse(
+            status_code=status.HTTP_403_FORBIDDEN,
+            content={"detail": "Only Frontend users can access this endpoint"},
+        )
+    if not authenticate(User, Nonce, Hash):
+        return JSONResponse(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            content={"detail": "Authentication failed"},
+        )
+    fingerprint, timestamp = QueryQueue().add_lookup(lookup)
+    return JSONResponse(
+        status_code=status.HTTP_200_OK,
+        content={"Fingerprint": fingerprint, "Timestamp": timestamp},
+    )
+
+
+@router.get("/api/get-lookups", tags=["query", "lookup"])
+async def get_lookups(User: str, Nonce: str, Hash: str, Topic: str) -> JSONResponse:
+    """
+    Return a nested structure following the LookupMatch model
+    """
+    if not User.startswith("Frontend_"):
+        return JSONResponse(
+            status_code=status.HTTP_403_FORBIDDEN,
+            content={"detail": "Only Frontend users can access this endpoint"},
+        )
+    if not authenticate(User, Nonce, Hash):
+        return JSONResponse(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            content={"detail": "Authentication failed"},
+        )
+
+    return JSONResponse(
+        status_code=status.HTTP_200_OK,
+        content=QueryQueue().find_topic_lookups(Topic),
     )

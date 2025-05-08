@@ -30,6 +30,7 @@ class QueryTodo(BaseModel):
 
 
 class Lookup(BaseModel):
+    # Used by FastAPI backend server"
     Topic: str
     Seq: int
     Fragment: str
@@ -38,14 +39,30 @@ class Lookup(BaseModel):
 
 
 class Match(BaseModel):
-    # Fragments maps answer fragment to list of RAG fragments
+    # Used by FastAPI backend server"
     Query: str
+    # Fragments maps answer fragment to list of RAG fragments
     Fragments: list[dict[str, list[str]]]
 
 
 class LookupMatch(BaseModel):
+    # Used by FastAPI backend server"
     Topic: str
     Lookups: list[Match]
+
+
+class LookupTodo(BaseModel):
+    # Used by Inference Engine"
+    Fragment: str
+    Fingerprint: str
+    Count: int = 5
+    Threshold: float = 1.0
+
+
+class LookupMatches(BaseModel):
+    # Used by Inference Engine (different from LookupMatch)"
+    Fingerprint: str
+    Matches: list[str]
 
 
 # This plays off the two meanings of "models".  Pydantic models are above,
