@@ -72,8 +72,9 @@ class QueryQueue:
             """
             CREATE TABLE IF NOT EXISTS lookup_matches (
                 Fingerprint TEXT NOT NULL,  -- Specifically non-unique lookup hash
-                Match TEXT NOT NULL,
-                """
+                Match TEXT NOT NULL
+            )
+            """
         )
         self.cursor.execute(
             "CREATE INDEX IF NOT EXISTS "
