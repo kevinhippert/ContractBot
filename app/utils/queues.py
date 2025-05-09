@@ -84,6 +84,16 @@ class QueryQueue:
     def __del__(self):
         self.conn.close()
 
+    def get_user_topics(self, user: str) -> list[str]:
+        self.cursor.execute(
+            "SELECT DISTINCT Topic "
+            "FROM queries "
+            "WHERE User =? "
+            "ORDER BY Timestamp DESC",
+            (user,),
+        )
+        return [row[0] for row in self.cursor.fetchall()]
+
     def add_query(
         self, topic: str, user: str, query: str, model: str
     ) -> tuple[int, str]:

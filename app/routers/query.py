@@ -11,6 +11,28 @@ from app.utils.queues import priority_queue, QueryQueue
 router = APIRouter()
 
 
+@router.get("/api/user-topics", tags=["query", "lookup"])
+async def user_topics(
+    User: str, Nonce: str, Hash: str, OnBehalfOf: str
+) -> JSONResponse:
+    """
+    Return a list of topics the user has access to.
+    """
+    if not User.startswith("Frontend_"):
+        return JSONResponse(
+            status_code=status.HTTP_403_FORBIDDEN,
+            content={"detail": "Only Frontend users can access this endpoint"},
+        )
+    if not authenticate(User, Nonce, Hash):
+        return JSONResponse(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            content={"detail": "Authentication failed"},
+        )
+    return JSONResponse(
+        status_code=status.HTTP_200_OK, content=QueryQueue().get_user_topics(OnBehalfOf)
+    )
+
+
 @router.post("/api/add-query", tags=["query"])
 async def add_query(
     User: str,
