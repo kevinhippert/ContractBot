@@ -8,7 +8,7 @@ import {
   Typography,
 } from "@mui/material/";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { useAuth } from "../../contexts/AuthContext";
 import { createAuthenicateUserParams } from "../../authentication/authentication";
 import api from "../../api/api";
