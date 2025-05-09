@@ -50,7 +50,7 @@ class QueryQueue:
                 Fragment TEXT NOT NULL, -- Fragment (paragraph) from an Answer
                 Fingerprint TEXT NOT NULL, -- Hash of the fragment
                 Count INTEGER NOT NULL DEFAULT 5,  -- Max matches to find
-                Threshold REAL NOT NULL DEFAULT 1.0  -- Required match closeness
+                Threshold REAL NOT NULL DEFAULT 1.0,  -- Required match closeness
                 Status TEXT NOT NULL DEFAULT 'Open'
             )
             """
