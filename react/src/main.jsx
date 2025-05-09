@@ -6,7 +6,7 @@ import { ThemeProvider } from "@mui/material/styles";
 import seiuTheme from "./styles/seiuTheme.js";
 import "./index.css";
 import App from "./App.jsx";
-import { BrowserRouter } from "react-router-dom";
+import { BrowserRouter } from "react-router";
 
 const queryClient = new QueryClient();
 

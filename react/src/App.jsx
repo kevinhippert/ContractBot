@@ -1,7 +1,7 @@
 import "./App.css";
 import NavBar from "./components/NavBar";
 import { TopicProvider } from "./contexts/TopicContext";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router";
 import ProtectedRoute from "./components/ProtectedRoute";
 import SessionTimeout from "./components/SessionTimeout";
 import MainView from "./pages/mainView/MainView";
