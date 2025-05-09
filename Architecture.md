@@ -46,6 +46,27 @@ we can envision scenarios in which sharing topic threads among users is a
 perfectly reasonable workflow. Hence the alpha version simply does not commit
 as to what such sharing—if any—is desirable.
 
+### `GET api/user-topics`
+
+Takes authentication and OnBehalfOf query parameters:
+
+- User (e.g. `Frontend_1`)
+- Nonce
+- Hash
+- OnBehalfOf (e.g. `Calico_Seders`)
+
+If no topics pertain to this OnBehalfOf user, return a 404 HTTP status.
+
+Otherwise, return a 200 with a body similar to:
+
+```json
+[
+  "DGQIn+5troxI",
+  "ABC124-993SW",
+  "..."
+]
+```
+
 ### `POST api/add-query`
 
 Takes authentication query parameters:

@@ -1,23 +1,41 @@
 #!/usr/bin/env python
 import os
+from multiprocessing import Process
 from pathlib import Path
 from time import sleep
 import sys
 import yaml
 
-from engine.watch import poll_queries
+from engine.watch import poll_lookups, poll_queries
+
+
+def start_inference(engine, token):
+    while True:
+        poll_queries(engine, token)
+        sleep(1)
+
+
+def start_lookups(engine, token):
+    while True:
+        poll_lookups(engine, token)
+        sleep(1)
+
 
 if __name__ == "__main__":
-    config = Path.home() / ".bossbot.yaml"
+    config = Path.home() / ".bot.yaml"
     if config.exists():
         for k, v in yaml.safe_load(config.read_text()).items():
             os.environ[k] = v
 
     missing = False
     for key in [
-        "BOSSBOT_ENGINE_NAME",
-        "BOSSBOT_ENGINE_TOKEN",
-        "BOSSBOT_MODEL",
+        "ENGINE_NAME_1",
+        "ENGINE_NAME_2",
+        "ENGINE_NAME_3",
+        "ENGINE_TOKEN_1",
+        "ENGINE_TOKEN_2",
+        "ENGINE_TOKEN_3",
+        "ENGINE_MODEL",
         "TOKENIZERS_PARALLELISM",
     ]:
         if not os.getenv(key):
@@ -26,8 +44,14 @@ if __name__ == "__main__":
     if missing:
         sys.exit(1)
 
-    engine = os.getenv("BOSSBOT_ENGINE_NAME", "")
-    token = os.getenv("BOSSBOT_ENGINE_TOKEN", "")
-    while True:
-        poll_queries(engine=engine, token=token)
-        sleep(1)
+    engine_1 = os.getenv("ENGINE_NAME_1", "")
+    token_1 = os.getenv("ENGINE_TOKEN_1", "")
+    engine_2 = os.getenv("ENGINE_NAME_2", "")
+    token_2 = os.getenv("ENGINE_TOKEN_2", "")
+    engine_3 = os.getenv("ENGINE_NAME_3", "")
+    token_3 = os.getenv("ENGINE_TOKEN_3", "")
+
+    proc1 = Process(target=start_inference, args=(engine_1, token_1), name="Inference")
+    proc2 = Process(target=start_lookups, args=(engine_3, token_3), name="Lookups")
+    proc1.start()
+    proc2.start()

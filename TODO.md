@@ -56,7 +56,7 @@ than in this document.
       topics, answers, etc.
 - [x] Command-line tool `search` to show RAG content identified matching queries.
 - [x] `ask()` to inject RAG and history context, then call a model specified by
-      environment variable `BOSSBOT_MODEL`. In `answers.py`.
+      environment variable `ENGINE_MODEL`. In `answers.py`.
 - [x] Command-line tool `answer` to provide developer access to equivalent
       results as API, using the `ask()` function.
 - [x] Runner `watch` polls for questions, produces answers, and cals APIs.
