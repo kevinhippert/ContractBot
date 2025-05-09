@@ -61,3 +61,23 @@ def poll_queries(engine: str, token: str) -> None:
             for Q in data["Queries"]:
                 seq, (query, user, model) = Q.popitem()
                 give_answer(engine, token, topic, user, seq, query, model)
+
+
+def poll_lookups(engine: str) -> None:
+    nonce = make_nonce(16)
+    hash = sha256(f"lookup {nonce}".encode()).hexdigest()
+    response = requests.get(
+        "https://api.bossbot.org/api/get-new-lookup",
+        params={"User": engine, "Nonce": nonce, "Hash": hash},
+    )
+    now = datetime.now().isoformat(timespec="seconds")
+    if response.status_code == 401:
+        print(f"{now} Authentication failed", file=stderr, flush=True)
+
+    elif response.status_code == 404:
+        # No new lookups to process, no need to print anything
+        pass
+
+    elif response.status_code == 200:
+        data = response.json()
+        print(data)  # XXX

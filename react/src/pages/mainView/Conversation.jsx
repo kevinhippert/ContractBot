@@ -18,6 +18,18 @@ function Conversation({ messages, errorMessage, isQuerying }) {
     formatThread(messages);
   }, [messages]);
 
+  const Egg = () => {
+    return (
+      <>
+        <img
+          alt="Software is mysterious!"
+          src="/Ideas-are-illusions.jpg"
+          style={{ height: "14em", paddingLeft: "2em" }}
+        />
+      </>
+    );
+  };
+
   function formatThread(messages) {
     let result = [];
     let messageObj;
@@ -106,22 +118,10 @@ function Conversation({ messages, errorMessage, isQuerying }) {
         </>
       );
     } else if (text.type === "answer") {
-      if (
-        text.text.toLowerCase().includes("easter egg") &
-        (Math.random() < 0.1)
-      ) {
-        return (
-          <>
-            <img
-              alt="Software is mysterious!"
-              src="/Ideas-are-illusions.jpg"
-              style={{ height: "14em", paddingLeft: "2em" }}
-            />
-          </>
-        );
-      }
       return (
         <>
+          {text.text.toLowerCase().includes("easter egg") &&
+            Math.random() < 0.1 && <Egg />}
           <Paper
             sx={{ marginBottom: "5px" }}
             className="answer-class"
