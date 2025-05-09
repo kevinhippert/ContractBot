@@ -30,7 +30,7 @@ jobs:
         run: |
           rsync -a $PWD $INSTANCE:/home/ec2-user --delete
           ssh -o StrictHostKeyChecking=no $INSTANCE -t 'bash -l -c "
-              cd $HOME/BossBot
+              cd $HOME/ContractBot
               bin/make-certs
               ./deploy.sh
           "'

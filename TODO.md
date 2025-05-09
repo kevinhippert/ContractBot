@@ -1,13 +1,13 @@
 # Tasks
 
 NOTE: We have adopted GitHub Issues to track these items, and the canonical
-status of them is maintained at https://github.com/SEIU/BossBot/issues rather
+status of them is maintained at https://github.com/SEIU/ContractBot/issues rather
 than in this document.
 
 ## Deployment
 
-- [x] Create a repository (SEIU/BossBot)
-- [x] Create an instance for BossBot UI to run on.
+- [x] Create a repository (SEIU/ContractBot)
+- [x] Create an instance for ContractBot UI to run on.
 - [x] DNS stuff for https://bossbot.org and https://api.bossbot.org.
 - [x] AWS stuff with load balancer, port forwarding, etc.
 - [x] Deployment script to launch Gunicorn and React servers

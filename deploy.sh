@@ -46,11 +46,11 @@ done
 
 # Expose credentials to React .env
 echo "Set credential environment variables"
-grep Frontend_ $HOME/BossBot/secrets/credentials | sed 's/^/VITE_/' > $HOME/BossBot/react/.env
+grep Frontend_ $HOME/ContractBot/secrets/credentials | sed 's/^/VITE_/' > $HOME/ContractBot/react/.env
 
 # Start the Node server
 echo "Launching the Node server..."
-cd $HOME/BossBot/react
+cd $HOME/ContractBot/react
 npm --silent install --production
 npm install vite # TODO: Is this really a sound approach?
 npm run build
@@ -65,7 +65,7 @@ serve -s dist -l 3000 > $FRONTEND_LOG 2>&1 & disown >/dev/null 2>&1
 
 # Start the FastAPI server
 echo "Launching the FastAPI server..."
-cd $HOME/BossBot
+cd $HOME/ContractBot
 BACKEND_LOG="$HOME/log/backend-$(date +"%Y-%m-%d-%H-%M-%S").log"
 uv run python -m gunicorn \
     --timeout 0 \
