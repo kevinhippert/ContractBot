@@ -3,7 +3,7 @@ from time import sleep
 from fastapi import APIRouter, status
 from fastapi.responses import JSONResponse
 
-from app.models import Answer, LookupMatches, LookupTodo, QueryTodo
+from app.models import Answer, LookupMatches, QueryTodo
 from app.utils.access import authenticate
 from app.utils.queues import QueryQueue
 
@@ -71,7 +71,7 @@ def give_new_answer(
 
 
 @router.get("/api/get-new-lookup", tags=["infer", "lookup"])
-async def get_new_lookup(User: str, Nonce: str, Hash: str) -> LookupTodo | JSONResponse:
+async def get_new_lookup(User: str, Nonce: str, Hash: str) -> JSONResponse:
     if not User.startswith("Inference_"):
         return JSONResponse(
             status_code=status.HTTP_403_FORBIDDEN,
@@ -83,7 +83,7 @@ async def get_new_lookup(User: str, Nonce: str, Hash: str) -> LookupTodo | JSONR
             content={"detail": "Authentication failed"},
         )
     if new := QueryQueue().get_new_lookup():
-        return JSONResponse(status_code=status.HTTP_200_OK, content=new)
+        return JSONResponse(status_code=status.HTTP_200_OK, content=new.model_dump())
     else:
         return JSONResponse(
             status_code=status.HTTP_404_NOT_FOUND, content={"detail": "No new lookup"}
