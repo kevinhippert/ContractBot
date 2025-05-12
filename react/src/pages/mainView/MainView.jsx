@@ -83,11 +83,12 @@ function MainView() {
         setErrorMessage("Sorry, something went wrong. Please try again.");
       }
     } catch (error) {
-      if (error.response.status === 429) {
+      if (error.response?.status === 429) {
         setErrorMessage(error.response.data.detail);
         setIsQuerying({ isQuerying: false, message: null });
         setValue("question", "");
       } else {
+        console.error("There was an error and here it is: ", error);
         setErrorMessage("Sorry, something went wrong. Please try again.");
         setIsQuerying({ isQuerying: false, message: null });
         setValue("question", "");
