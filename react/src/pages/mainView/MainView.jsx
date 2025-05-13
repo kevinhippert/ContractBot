@@ -18,7 +18,7 @@ function MainView() {
   const [currentTopic, setCurrentTopic] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
   const [loadingTopic, setLoadingTopic] = useState(false);
-  const { authorizedUser } = useAuth();
+  const { user } = useAuth();
   const [isQuerying, setIsQuerying] = useState({
     isQuerying: false,
     message: null,
@@ -57,7 +57,7 @@ function MainView() {
     ]);
     let formData = {
       Topic: currentTopic.topicId,
-      User: authorizedUser.userName,
+      User: user.userName,
       Query: question.question,
       Modifiers: { Region: null, Category: question.categories },
       Model: question.model,

@@ -14,12 +14,12 @@ import MenuIcon from "@mui/icons-material/Menu";
 import logo from "../assets/SEIU.png";
 
 export default function NavBar() {
-  const { authorizedUser, setAuthorizedUser } = useAuth();
+  const { user, setUser } = useAuth();
   const navigate = useNavigate();
 
   const handleLogOutClick = () => {
-    setAuthorizedUser(
-      // Reset authorizedUser state and navigate to login page
+    setUser(
+      // Reset user state and navigate to login page
       { userName: null, isAuthenticated: false }
     );
     navigate("/login");
@@ -46,7 +46,7 @@ export default function NavBar() {
         >
           ContractBot
         </Typography>
-        {authorizedUser.isAuthenticated && (
+        {user.isAuthenticated && (
           <Button color="inherit" onClick={handleLogOutClick}>
             Log out
           </Button>
