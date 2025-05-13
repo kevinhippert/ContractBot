@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useTopic, createTopic } from "../../contexts/TopicContext";
+import { useTopic, createTopic } from "../contexts/TopicContext";
 import {
   Box,
   List,
