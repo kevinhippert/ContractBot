@@ -38,6 +38,7 @@ function MainView() {
   });
 
   useEffect(() => {
+    console.log("topics in mainview: ", topics);
     setCurrentTopic(topics.find((topic) => topic.isCurrent));
   }, [topics]);
 
@@ -190,15 +191,14 @@ function MainView() {
 
   const getParams = async () => {
     let params = await createAuthenticationParams();
+    console.log(params);
   };
 
   return (
     <Container
       sx={{
-        // marginTop: "40px",
         "&.MuiContainer-root": {
           padding: 0,
-          // maxWidth: "1600px",
           display: "flex",
           justifyContent: "center",
           marginTop: "100px",
@@ -224,7 +224,7 @@ function MainView() {
           <QuestionInput register={register} isQuerying={isQuerying} />
         </Box>
       </form>
-      {/* <Button onClick={getParams}>get params</Button> // XXX development hack */}
+      <Button onClick={getParams}>get params</Button>
     </Container>
   );
 }
