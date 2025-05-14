@@ -1,11 +1,17 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Alert, Box, Button, Grid, Paper, Typography } from "@mui/material";
+import { Alert, Box, Button, Paper, Typography, Tooltip } from "@mui/material";
+import { createAuthenticationParams } from "../../authentication/authentication";
+import api from "../../api/api";
+import { useTopic } from "../../contexts/TopicContext";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import PlaylistAddIcon from "@mui/icons-material/PlaylistAdd";
 import LinearProgress from "@mui/material/LinearProgress";
 import "../../styles/conversation.css";
 
 function Conversation({ messages, errorMessage, isQuerying }) {
   const [texts, setTexts] = useState([]);
+  const { currentTopic } = useTopic();
   const bottomRef = useRef(null);
   useEffect(() => {
     window.scrollTo({
@@ -28,6 +34,27 @@ function Conversation({ messages, errorMessage, isQuerying }) {
         />
       </>
     );
+  };
+
+  const addLookup = async (fragment) => {
+    // TODO mark "already added" fragments
+    // make addLookup request
+    try {
+      const authParams = await createAuthenticationParams();
+      const url = `/add-lookup?${authParams}`;
+      const body = {
+        Topic: currentTopic.topicId,
+        Seq: currentTopic.seq,
+        Fragment: fragment,
+        Count: 5,
+        Threshold: 1,
+      };
+      const res = await api.post(url, body);
+      console.log("res: ", res);
+    } catch (error) {
+      // handle error
+      console.error("There was an error andn here it is: ", error);
+    }
   };
 
   function formatThread(messages) {
@@ -103,7 +130,7 @@ function Conversation({ messages, errorMessage, isQuerying }) {
     }
   }
 
-  function ShowAnswer({ text, index }) {
+  function Message({ text, index }) {
     if (text.type === "question") {
       return (
         <>
@@ -128,25 +155,27 @@ function Conversation({ messages, errorMessage, isQuerying }) {
             key={index}
             elevation="0"
           >
-            <Typography
-              style={{ display: "inline-block" }}
-              variant={text.variant}
-            >
-              {text.text}
-            </Typography>
-            {text.text.length > 240 && (
-              <Button
-                style={{
-                  position: "fixed",
-                  right: "5%",
-                  display: "inline-block",
-                }}
-                color="primary"
-                onClick={() => alert(text.text)}
+            <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+              <Typography
+                style={{ display: "inline-block" }}
+                variant={text.variant}
               >
-                <FileDownloadIcon />
-              </Button>
-            )}
+                {text.text}
+              </Typography>
+              {text.text.length > 100 && (
+                <Button
+                  sx={{ alignItems: "baseline", minWidth: "auto" }}
+                  color="primary"
+                  onClick={() => addLookup(text.text)}
+                >
+                  <Tooltip
+                    title={`Add reference material for this fragment to Documents page.`}
+                  >
+                    <PlaylistAddIcon />
+                  </Tooltip>
+                </Button>
+              )}
+            </Box>
           </Paper>
         </>
       );
@@ -160,7 +189,7 @@ function Conversation({ messages, errorMessage, isQuerying }) {
           <Box>
             {texts.map((text, index) => (
               <>
-                <ShowAnswer key={index} text={text} />
+                <Message key={index} text={text} />
               </>
             ))}
           </Box>

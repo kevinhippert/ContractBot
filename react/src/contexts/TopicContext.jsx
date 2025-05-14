@@ -8,7 +8,7 @@ const TopicContext = createContext();
 
 export function TopicProvider({ children }) {
   const [topics, setTopics] = useState([]);
-  const [currentTopic, setCurrentTopic] = useState(null); // TODO make sure this is an object
+  const [currentTopic, setCurrentTopic] = useState(null);
   const { user } = useAuth();
 
   useEffect(() => {
@@ -24,7 +24,6 @@ export function TopicProvider({ children }) {
     async function fetchUserTopics() {
       try {
         const authParams = await createAuthenticationParams();
-        console.log("authParams: ", authParams);
         const url = `/user-topics?${authParams}&OnBehalfOf=${user.userName}`;
         const res = await api.get(url);
         if (res.status === 200) {
