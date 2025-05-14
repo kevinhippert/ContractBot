@@ -8,11 +8,16 @@ const TopicContext = createContext();
 
 export function TopicProvider({ children }) {
   const [topics, setTopics] = useState([]);
+  const [currentTopic, setCurrentTopic] = useState(null); // TODO make sure this is an object
   const { user } = useAuth();
 
-  // useEffect(() => {
-  //   console.log("topic context, topics: ", topics);
-  // });
+  useEffect(() => {
+    console.log("topic context, topics: ", topics);
+  }, []);
+
+  useEffect(() => {
+    console.log("topic context, currentTopic: ", currentTopic);
+  }, [currentTopic]);
 
   useEffect(() => {
     // fetch and set topics
@@ -47,6 +52,8 @@ export function TopicProvider({ children }) {
   }, [topics]);
 
   const setNewCurrentTopic = (newCurrentTopic) => {
+    console.log("setNewCurrentTopic");
+    setCurrentTopic(newCurrentTopic);
     setTopics((prevTopics) =>
       prevTopics.map((t) => ({
         ...t,
@@ -56,6 +63,8 @@ export function TopicProvider({ children }) {
   };
 
   const updateCurrentTopic = (updatedTopic) => {
+    console.log("updateCurrentTopic");
+    // Typically used to update the sequence
     setTopics((prevTopics) =>
       prevTopics.map((topic) => {
         if (topic.topicId === updatedTopic.topicId) {
@@ -68,6 +77,8 @@ export function TopicProvider({ children }) {
   };
 
   const updateTopicName = (topicId, newTopicName) => {
+    // TODO this can be part of updateCurrentTopic ?
+    console.log("updateTopicName");
     if (newTopicName.length > 100) {
       newTopicName = newTopicName.slice(0, 100) + "...";
     }
@@ -86,6 +97,7 @@ export function TopicProvider({ children }) {
     topics,
     updateTopicName,
     setTopics,
+    currentTopic,
   };
 
   return (

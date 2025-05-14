@@ -14,8 +14,8 @@ import { useAuth } from "../../contexts/AuthContext";
 // This component basically acts as a giant form, which registers inputs from various child
 // components and handles submissions ond errors
 function QueryView() {
-  const { topics, updateCurrentTopic, updateTopicName } = useTopic();
-  const [currentTopic, setCurrentTopic] = useState(null);
+  const { topics, updateCurrentTopic, updateTopicName, currentTopic } =
+    useTopic();
   const [errorMessage, setErrorMessage] = useState(null);
   const [loadingTopic, setLoadingTopic] = useState(false);
   const { user } = useAuth();
@@ -38,8 +38,9 @@ function QueryView() {
   });
 
   useEffect(() => {
-    setCurrentTopic(topics.find((topic) => topic.isCurrent));
-  }, [topics]);
+    clearMessages();
+    fetchTopicThread(currentTopic.topicId);
+  }, [currentTopic]);
 
   const onSubmit = async (question) => {
     setErrorMessage(null); // Reset server error on new submission
@@ -196,12 +197,6 @@ function QueryView() {
   return (
     <Container>
       <form onSubmit={handleSubmit(onSubmit)}>
-        {/* <Box>
-          <Sidebar
-            clearMessages={clearMessages}
-            fetchTopicThread={fetchTopicThread}
-          />
-        </Box> */}
         <Box>
           <ModelPicker register={register} watch={watch} />
           <Categories control={control} />
