@@ -13,8 +13,12 @@ function MainView() {
       <Sidebar />
       <Box>
         <Box>
-          <Button onClick={() => setView("queries")}>Queries</Button>
-          <Button onClick={() => setView("documents")}>Documents</Button>
+          <Button variant="outlined" onClick={() => setView("queries")}>
+            Queries
+          </Button>
+          <Button variant="outlined" onClick={() => setView("documents")}>
+            Documents
+          </Button>
         </Box>
         {view === "queries" ? <QueryView /> : <DocumentsView />}
       </Box>
