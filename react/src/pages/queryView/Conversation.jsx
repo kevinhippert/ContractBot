@@ -7,7 +7,6 @@ import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import PlaylistAddIcon from "@mui/icons-material/PlaylistAdd";
 import LinearProgress from "@mui/material/LinearProgress";
-import "../../styles/conversation.css";
 
 function Conversation({ messages, errorMessage, isQuerying }) {
   const [texts, setTexts] = useState([]);
@@ -134,14 +133,17 @@ function Conversation({ messages, errorMessage, isQuerying }) {
     if (text.type === "question") {
       return (
         <>
-          <Paper
-            sx={{ marginBottom: "10px", padding: "5px 12px" }}
-            className="question-class"
+          <Box
+            sx={{
+              marginBottom: "10px",
+              padding: "6px 12px",
+              backgroundColor: "#c6a0f063",
+              borderRadius: "4px",
+            }}
             key={index}
-            elevation="2"
           >
             <Typography variant={text.variant}>{text.text}</Typography>
-          </Paper>
+          </Box>
         </>
       );
     } else if (text.type === "answer") {
@@ -149,12 +151,7 @@ function Conversation({ messages, errorMessage, isQuerying }) {
         <>
           {text.text.toLowerCase().includes("easter egg") &&
             Math.random() < 0.1 && <Egg />}
-          <Paper
-            sx={{ marginBottom: "5px" }}
-            className="answer-class"
-            key={index}
-            elevation="0"
-          >
+          <Box sx={{ marginBottom: "5px" }} key={index} elevation="0">
             <Box sx={{ display: "flex", justifyContent: "space-between" }}>
               <Typography
                 style={{ display: "inline-block" }}
@@ -176,7 +173,7 @@ function Conversation({ messages, errorMessage, isQuerying }) {
                 </Button>
               )}
             </Box>
-          </Paper>
+          </Box>
         </>
       );
     }
