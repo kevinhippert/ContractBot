@@ -29,7 +29,7 @@ function DocumentsView() {
   };
 
   return (
-    <Container>
+    <>
       <Typography>{`Reference Documents for ${currentTopic.topicName}`}</Typography>
       {documents.length === 0 ? (
         <Typography>No documents to show</Typography>
@@ -43,7 +43,7 @@ function DocumentsView() {
           </>
         ))
       )}
-    </Container>
+    </>
   );
 }
 

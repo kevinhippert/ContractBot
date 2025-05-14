@@ -11,12 +11,26 @@ function MainView() {
   return (
     <Box sx={{ display: "flex", marginTop: "100px" }}>
       <Sidebar />
-      <Box>
-        <Box>
-          <Button variant="outlined" onClick={() => setView("queries")}>
+      <Box sx={{ width: "100%" }}>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            marginBottom: "20px",
+          }}
+        >
+          <Button
+            sx={{ width: "100%", marginRight: "7px" }}
+            variant={view === "queries" ? "contained" : "outlined"}
+            onClick={() => setView("queries")}
+          >
             Queries
           </Button>
-          <Button variant="outlined" onClick={() => setView("documents")}>
+          <Button
+            sx={{ width: "100%" }}
+            variant={view === "documents" ? "contained" : "outlined"}
+            onClick={() => setView("documents")}
+          >
             Documents
           </Button>
         </Box>

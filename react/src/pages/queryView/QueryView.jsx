@@ -195,7 +195,7 @@ function QueryView() {
   };
 
   return (
-    <Container>
+    <>
       <form onSubmit={handleSubmit(onSubmit)}>
         <Box>
           <ModelPicker register={register} watch={watch} />
@@ -210,7 +210,7 @@ function QueryView() {
         </Box>
       </form>
       {/* <Button onClick={getParams}>get params</Button> */}
-    </Container>
+    </>
   );
 }
 
