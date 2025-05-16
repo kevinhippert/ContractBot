@@ -1,6 +1,8 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Alert, Box, Button, Paper, Typography, Tooltip } from "@mui/material";
 import { createAuthenticationParams } from "../../authentication/authentication";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import api from "../../api/api";
 import { useTopic } from "../../contexts/TopicContext";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
@@ -9,9 +11,9 @@ import PlaylistAddIcon from "@mui/icons-material/PlaylistAdd";
 import LinearProgress from "@mui/material/LinearProgress";
 
 function Conversation({ messages, errorMessage, isQuerying }) {
-  const [texts, setTexts] = useState([]);
   const { currentTopic } = useTopic();
   const bottomRef = useRef(null);
+
   useEffect(() => {
     window.scrollTo({
       top: document.body.scrollHeight,
@@ -19,24 +21,17 @@ function Conversation({ messages, errorMessage, isQuerying }) {
     });
   }, [messages]);
 
-  useEffect(() => {
-    formatThread(messages);
-  }, [messages]);
-
-  const Egg = () => {
-    return (
-      <>
-        <img
-          alt="Software is mysterious!"
-          src="/Ideas-are-illusions.jpg"
-          style={{ height: "14em", paddingLeft: "2em" }}
-        />
-      </>
-    );
+  const Egg = ({ line }) => {
+    return line.toLowerCase().includes("easter egg") && Math.random() < 0.1 ? (
+      <img
+        alt="Software is mysterious!"
+        src="/Ideas-are-illusions.jpg"
+        style={{ height: "14em", paddingLeft: "2em" }}
+      />
+    ) : null;
   };
 
   const addLookup = async (fragment) => {
-    // TODO mark "already added" fragments
     // make addLookup request
     try {
       const authParams = await createAuthenticationParams();
@@ -56,139 +51,73 @@ function Conversation({ messages, errorMessage, isQuerying }) {
     }
   };
 
-  function formatThread(messages) {
-    let result = [];
-    let messageObj;
-    for (let i = 0; i < messages.length; i++) {
-      let message = messages[i];
-      for (let para of message.text ?? []) {
-        para = para.trim();
-        // TODO: figure out how to add inline markup in a JSX compatible way
-        // Change **bold** to <b>bold</b>
-        // para = para.replace(/\*\*(.*?)\*\*/g, "<b>$1</b>");
-        // Change *italic* to <i>italic</i>
-        // para = para.replace(/\*(.*?)\*/g, "<i>$1</i>");
-        // Change _underline_ to <u>underline</u>
-        // para = para.replace(/_(.*?)_/g, "<u>$1</u>");
+  const Question = ({ text }) => {
+    console.log("question text = ", text);
+    return (
+      <>
+        <Box
+          sx={{
+            padding: "6px 12px",
+            backgroundColor: "#c6a0f063",
+            borderRadius: "4px",
+          }}
+        >
+          {text.map((line) => (
+            <Typography>{line}</Typography>
+          ))}
+        </Box>
+      </>
+    );
+  };
 
-        if (para.match(/^#### /)) {
-          // h4 header
-          messageObj = {
-            variant: "h4",
-            text: para.slice(5).replace(/\*\*/g, ""),
-          };
-        } else if (para.match(/^### /)) {
-          // h3 header
-          messageObj = {
-            variant: "h3",
-            text: para.slice(4).replace(/\*\*/g, ""),
-          };
-        } else if (para.match(/^## /)) {
-          // h2 header
-          messageObj = {
-            variant: "h2",
-            text: para.slice(3).replace(/\*\*/g, ""),
-          };
-        } else if (para.match(/^# /)) {
-          // h1 header
-          messageObj = {
-            variant: "h1",
-            text: para.slice(2).replace(/\*\*/g, ""),
-          };
-        } else if (para.match(/^\*\*.*\*\*$/)) {
-          // h4 header with asterisks
-          messageObj = { variant: "h4", text: para.slice(2, para.length - 2) };
-        } else if (para.match(/^\d\./)) {
-          // h6 header from numbered list
-          messageObj = { variant: "h6", text: para.replace(/\*\*/g, "") };
-        } else if (para.match(/^- /)) {
-          // bullet list from hyphen
-          messageObj = {
-            variant: "body1",
-            text: para.replace(/^- /, " • ").replace(/\*\*/g, ""), // Lead is U+2001 (em-quad)
-          };
-        } else if (para.match(/^\* /)) {
-          // bullet list from asterisks
-          messageObj = {
-            variant: "body1",
-            text: para.replace(/^\* /, " • ").replace(/\*\*/g, ""), // Lead is U+2001 (em-quad)
-          };
-        } else if (para.match(/^-+$/)) {
-          // dash line
-          messageObj = {
-            variant: "body1",
-            text: "—————————————————————————————",
-          };
-        } else {
-          messageObj = { variant: "body1", text: para };
-        }
-        message = { ...messageObj, type: message.type };
-        result.push(message);
-      }
-      setTexts(result);
-    }
-  }
-
-  function Message({ text, index }) {
-    if (text.type === "question") {
-      return (
-        <>
-          <Box
+  const Answer = ({ text }) => {
+    return (
+      <Box sx={{ display: "flex", position: "relative" }}>
+        <Box sx={{ flexGrow: 1, overflowY: "auto" }}>
+          {text.map((line) => {
+            return (
+              <>
+                <Egg line={line} />
+                <ReactMarkdown children={line} remarkPlugins={[remarkGfm]} />
+              </>
+            );
+          })}
+        </Box>
+        <Box>
+          <Button
             sx={{
-              marginBottom: "10px",
-              padding: "6px 12px",
-              backgroundColor: "#c6a0f063",
-              borderRadius: "4px",
+              position: "absolute",
+              bottom: "0",
+              right: "0",
+              minWidth: "auto",
             }}
-            key={index}
+            color="primary"
+            onClick={() => addLookup(text.join())}
           >
-            <Typography variant={text.variant}>{text.text}</Typography>
-          </Box>
-        </>
-      );
-    } else if (text.type === "answer") {
-      return (
-        <>
-          {text.text.toLowerCase().includes("easter egg") &&
-            Math.random() < 0.1 && <Egg />}
-          <Box sx={{ marginBottom: "5px" }} key={index} elevation="0">
-            <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-              <Typography
-                style={{ display: "inline-block" }}
-                variant={text.variant}
-              >
-                {text.text}
-              </Typography>
-              {text.text.length > 100 && (
-                <Button
-                  sx={{ alignItems: "baseline", minWidth: "auto" }}
-                  color="primary"
-                  onClick={() => addLookup(text.text)}
-                >
-                  <Tooltip
-                    title={`Add reference material for this fragment to Documents page.`}
-                  >
-                    <PlaylistAddIcon />
-                  </Tooltip>
-                </Button>
-              )}
-            </Box>
-          </Box>
-        </>
-      );
-    }
-  }
+            {/* TODO mark "already added" fragments */}
+            <Tooltip
+              title={`Add reference material for this answer to the Documents tab.`}
+            >
+              <PlaylistAddIcon />
+            </Tooltip>
+          </Button>
+        </Box>
+      </Box>
+    );
+  };
 
   return (
     <>
       {messages.length > 0 && (
         <>
           <Box>
-            {texts.map((text, index) => (
-              <>
-                <Message key={index} text={text} />
-              </>
-            ))}
+            {messages.map((message, index) =>
+              message.type === "question" ? (
+                <Question text={message.text} />
+              ) : (
+                <Answer text={message.text} />
+              )
+            )}
           </Box>
           <>
             {isQuerying.isQuerying && (

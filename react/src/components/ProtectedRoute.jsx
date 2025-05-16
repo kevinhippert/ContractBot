@@ -6,7 +6,6 @@ function ProtectedRoute({ children, path }) {
   const { user } = useAuth();
   const location = useLocation();
 
-  // XXX re-enable authorization before deploying
   if (!user.isAuthenticated) {
     // Redirect to login page if not authorized
     return <Navigate to="/login" state={{ from: location }} replace />;
