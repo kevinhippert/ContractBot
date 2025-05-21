@@ -2,6 +2,7 @@ import React, { createContext, useState, useContext, useEffect } from "react";
 import { createAuthenticationParams } from "../authentication/authentication";
 import { createTopicId } from "../utils/utils";
 import { useAuth } from "./AuthContext";
+import { getTopicDisplayName } from "../utils/utils";
 import api from "../api/api";
 
 const TopicContext = createContext();
@@ -44,7 +45,6 @@ export function TopicProvider({ children }) {
   }, [topics]);
 
   const setNewCurrentTopic = (newCurrentTopic) => {
-    console.log("setNewCurrentTopic");
     setCurrentTopic(newCurrentTopic);
     setTopics((prevTopics) =>
       prevTopics.map((t) => ({
@@ -55,7 +55,6 @@ export function TopicProvider({ children }) {
   };
 
   const updateCurrentTopic = (updatedTopic) => {
-    console.log("updateCurrentTopic");
     // Typically used to update the sequence
     setTopics((prevTopics) =>
       prevTopics.map((topic) => {
@@ -70,14 +69,10 @@ export function TopicProvider({ children }) {
 
   const updateTopicName = (topicId, newTopicName) => {
     // TODO this can be part of updateCurrentTopic ?
-    console.log("updateTopicName");
-    if (newTopicName.length > 100) {
-      newTopicName = newTopicName.slice(0, 100) + "...";
-    }
     setTopics((prevTopics) =>
       prevTopics.map((topic) =>
         topic.topicId === topicId
-          ? { ...topic, topicName: newTopicName }
+          ? { ...topic, topicName: getTopicDisplayName(newTopicName) }
           : topic
       )
     );
@@ -99,7 +94,9 @@ export function TopicProvider({ children }) {
 
 export const createTopic = (id, name = null) => {
   let topicId = id || createTopicId();
-  let topicName = name || `New Topic - ${topicId.slice(0, 3)}`;
+  let topicName = name
+    ? getTopicDisplayName(name)
+    : `New Topic - ${topicId.slice(0, 3)}`;
 
   const newTopic = {
     topicId,
@@ -107,7 +104,6 @@ export const createTopic = (id, name = null) => {
     isCurrent: true,
     seq: 1,
   };
-  console.log("new topic: ", newTopic);
   return newTopic;
 };
 

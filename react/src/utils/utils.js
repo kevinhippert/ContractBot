@@ -14,3 +14,8 @@ export const createTopicId = () => {
   }
   return result;
 };
+
+export const getTopicDisplayName = (name) => {
+  let displayName = name.length > 100 ? name.slice(0, 100) + "..." : name;
+  return displayName;
+};

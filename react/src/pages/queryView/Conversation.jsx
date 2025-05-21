@@ -44,7 +44,7 @@ function Conversation({ messages, errorMessage, isQuerying }) {
         Threshold: 1,
       };
       const res = await api.post(url, body);
-      console.log("res: ", res);
+      // we might do something with this response in the future
     } catch (error) {
       // handle error
       console.error("There was an error andn here it is: ", error);
