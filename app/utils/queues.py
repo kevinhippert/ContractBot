@@ -85,7 +85,7 @@ class QueryQueue:
     def __del__(self):
         self.conn.close()
 
-    def get_user_topics(self, user: str) -> list[str]:
+    def get_user_topics(self, user: str) -> dict[str, str]:
         self.cursor.execute(
             "SELECT DISTINCT Topic "
             "FROM queries "
@@ -93,7 +93,16 @@ class QueryQueue:
             "ORDER BY Timestamp DESC",
             (user,),
         )
-        return [row[0] for row in self.cursor.fetchall()]
+        topics = [row[0] for row in self.cursor.fetchall()]
+        self.cursor.execute(
+            "SELECT Topic, Query "
+            "FROM queries "
+            "WHERE Topic IN (?) "
+            "AND Seq = 1 "
+            "ORDER BY Timestamp DESC",
+            (topics,),
+        )
+        return dict(self.cursor.fetchall())
 
     def add_query(
         self, topic: str, user: str, query: str, model: str
