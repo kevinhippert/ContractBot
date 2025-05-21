@@ -94,13 +94,15 @@ class QueryQueue:
             (user,),
         )
         topics = [row[0] for row in self.cursor.fetchall()]
+        # Cannot use a list as binding parameter.
+        # Since `topics` is generated internally, no SQL injection vulnerability.
+        topic_list = ",".join(f"'{topic}'" for topic in topics)
         self.cursor.execute(
             "SELECT Topic, Query "
             "FROM queries "
-            "WHERE Topic IN (?) "
+            f"WHERE Topic IN ({topic_list}) "
             "AND Seq = 1 "
             "ORDER BY Timestamp DESC",
-            (topics,),
         )
         return dict(self.cursor.fetchall())
 
