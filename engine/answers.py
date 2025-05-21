@@ -189,7 +189,7 @@ def search_fragments(
     n_results: int = 5,
     max_distance: float = 1.0,
     collection_name: str = "BossBot",
-):
+) -> list[Result]:
     client = chromadb.PersistentClient()
     collection = client.get_collection(name=collection_name)
     with redirect_stderr(io.StringIO()) as _f:

@@ -52,6 +52,8 @@ if __name__ == "__main__":
     token_3 = os.getenv("ENGINE_TOKEN_3", "")
 
     proc1 = Process(target=start_inference, args=(engine_1, token_1), name="Inference")
-    proc2 = Process(target=start_lookups, args=(engine_3, token_3), name="Lookups")
+    proc2 = Process(target=start_inference, args=(engine_2, token_2), name="Inference")
+    proc3 = Process(target=start_lookups, args=(engine_3, token_3), name="Lookups")
     proc1.start()
     proc2.start()
+    proc3.start()
