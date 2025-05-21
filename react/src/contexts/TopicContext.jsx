@@ -94,7 +94,7 @@ export function TopicProvider({ children }) {
 
 export const createTopic = (id = null, name = null) => {
   let topicId = id || createTopicId();
-  let topicName = getTopicDisplayName(id, name);
+  let topicName = getTopicDisplayName(topicId, name);
 
   const newTopic = {
     topicId,
