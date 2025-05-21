@@ -52,7 +52,6 @@ function Conversation({ messages, errorMessage, isQuerying }) {
   };
 
   const Question = ({ text }) => {
-    console.log("question text = ", text);
     return (
       <>
         <Box

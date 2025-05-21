@@ -12,14 +12,6 @@ export function TopicProvider({ children }) {
   const { user } = useAuth();
 
   useEffect(() => {
-    console.log("topic context, topics: ", topics);
-  }, []);
-
-  useEffect(() => {
-    console.log("topic context, currentTopic: ", currentTopic);
-  }, [currentTopic]);
-
-  useEffect(() => {
     // fetch and set topics
     async function fetchUserTopics() {
       try {
@@ -27,10 +19,11 @@ export function TopicProvider({ children }) {
         const url = `/user-topics?${authParams}&OnBehalfOf=${user.userName}`;
         const res = await api.get(url);
         if (res.status === 200) {
-          console.log("fetch user topics res: ", res);
-          // TODO we need to fetch topic "names" as well as ids and handle it here
-          const fetchedTopics = res.data.map((id) => createTopic(id));
-          setTopics(fetchedTopics);
+          setTopics(
+            Object.entries(res.data).map(([id, name]) => {
+              return createTopic(id, name);
+            })
+          );
         }
       } catch (error) {
         console.log("Its an error: ", error);
@@ -43,7 +36,7 @@ export function TopicProvider({ children }) {
   }, [user]);
 
   useEffect(() => {
-    if (topics.length === 0) {
+    if (topics?.length === 0) {
       let initialTopic = createTopic();
       setTopics([initialTopic]);
       setNewCurrentTopic(initialTopic);
@@ -104,15 +97,17 @@ export function TopicProvider({ children }) {
   );
 }
 
-export const createTopic = (tId) => {
-  const id = tId || createTopicId();
+export const createTopic = (id, name = null) => {
+  let topicId = id || createTopicId();
+  let topicName = name || `New Topic - ${topicId.slice(0, 3)}`;
 
   const newTopic = {
-    topicId: id,
-    topicName: `New Topic - ${id.slice(0, 3)}`,
+    topicId,
+    topicName,
     isCurrent: true,
     seq: 1,
   };
+  console.log("new topic: ", newTopic);
   return newTopic;
 };
 
