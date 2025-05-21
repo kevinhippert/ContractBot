@@ -63,9 +63,9 @@ def poll_queries(engine: str, token: str) -> None:
                 give_answer(engine, token, topic, user, seq, query, model)
 
 
-def poll_lookups(engine: str) -> None:
+def poll_lookups(engine: str, token: str) -> None:
     nonce = make_nonce(16)
-    hash = sha256(f"lookup {nonce}".encode()).hexdigest()
+    hash = sha256(f"{engine} {nonce} {token}".encode()).hexdigest()
     response = requests.get(
         "https://api.bossbot.org/api/get-new-lookup",
         params={"User": engine, "Nonce": nonce, "Hash": hash},
