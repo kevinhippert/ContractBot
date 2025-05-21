@@ -60,12 +60,12 @@ If no topics pertain to this OnBehalfOf user, return a 404 HTTP status.
 Otherwise, return a 200 with a body similar to:
 
 ```json
-[
-  "DGQIn+5troxI",
-  "ABC124-993SW",
+{
+  "DGQIn+5troxI": "What is the carrying weight on an unladen swallow?",
+  "ABC124-993SW": "What is the meaning of life",
   "..."
-]
-```
+}
+```-
 
 ### `POST api/add-query`
 
