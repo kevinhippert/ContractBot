@@ -15,7 +15,10 @@ export const createTopicId = () => {
   return result;
 };
 
-export const getTopicDisplayName = (name) => {
-  let displayName = name.length > 100 ? name.slice(0, 100) + "..." : name;
-  return displayName;
+export const getTopicDisplayName = (id, name) => {
+  return name
+    ? name.length > 100
+      ? name.slice(0, 100) + "..."
+      : name
+    : `New Topic - ${id.slice(0, 3)}`;
 };

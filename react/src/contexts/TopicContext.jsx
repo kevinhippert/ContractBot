@@ -92,11 +92,9 @@ export function TopicProvider({ children }) {
   );
 }
 
-export const createTopic = (id, name = null) => {
+export const createTopic = (id = null, name = null) => {
   let topicId = id || createTopicId();
-  let topicName = name
-    ? getTopicDisplayName(name)
-    : `New Topic - ${topicId.slice(0, 3)}`;
+  let topicName = getTopicDisplayName(id, name);
 
   const newTopic = {
     topicId,
