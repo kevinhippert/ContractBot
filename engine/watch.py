@@ -5,7 +5,8 @@ from sys import stderr
 
 import requests
 
-from engine.answers import ask
+from app.models import LookupMatches, LookupTodo
+from engine.answers import ask, search_fragments
 
 
 def give_answer(
@@ -79,5 +80,21 @@ def poll_lookups(engine: str, token: str) -> None:
         pass
 
     elif response.status_code == 200:
-        data = response.json()
-        print(data)  # XXX
+        fragment: LookupTodo = response.json()
+        results = search_fragments(
+            fragment.Fragment, fragment.Count, fragment.Threshold
+        )
+        print(
+            f"{now} Identified {len(results)} matches "
+            f"for fragment {fragment.Fingerprint}"
+        )
+        lookup_matches = LookupMatches(
+            Fingerprint=fragment.Fingerprint, Matches=[r.doc for r in results]
+        )
+        nonce = make_nonce(16)
+        hash = sha256(f"{engine} {nonce} {token}".encode()).hexdigest()
+        response = requests.post(
+            "https://api.bossbot.org/api/give-new-matches",
+            params={"User": engine, "Nonce": nonce, "Hash": hash},
+            json=lookup_matches.model_dump(),
+        )
