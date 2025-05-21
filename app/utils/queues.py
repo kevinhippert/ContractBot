@@ -245,6 +245,7 @@ class QueryQueue:
             ),
         )
         timestamp = self.cursor.fetchone()[0]
+        self.conn.commit()
         return fingerprint, timestamp
 
     def answer_lookup(self, fingerprint: str, matches: list[str]) -> None:
