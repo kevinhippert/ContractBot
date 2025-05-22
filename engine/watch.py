@@ -5,7 +5,7 @@ from sys import stderr
 
 import requests
 
-from app.models import LookupMatches
+from app.models import LookupMatches, LookupTodo
 from engine.answers import ask, search_fragments
 
 
@@ -80,14 +80,21 @@ def poll_lookups(engine: str, token: str) -> None:
         pass
 
     elif response.status_code == 200:
-        # Keys match attributes in LookupTodo
-        fragment = response.json()
+        _fragment = response.json()
+        fragment = LookupTodo(
+            Fingerprint=_fragment["Fingerprint"],
+            Fragment=_fragment["Fragment"],
+            Count=_fragment["Count"],
+            Threshold=_fragment["Threshold"],
+        )
         results = search_fragments(
-            fragment["Fragment"], fragment["Count"], fragment["Threshold"]
+            fragment.Fragment, fragment.Count, fragment.Threshold
         )
         print(
             f"{now} Identified {len(results)} matches "
-            f"for fragment {fragment.Fingerprint}"
+            f"for fragment {fragment.Fingerprint}",
+            file=stderr,
+            flush=True,
         )
         lookup_matches = LookupMatches(
             Fingerprint=fragment.Fingerprint, Matches=[r.doc for r in results]

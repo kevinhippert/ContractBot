@@ -92,7 +92,7 @@ function Conversation({ messages, errorMessage, isQuerying }) {
               minWidth: "auto",
             }}
             color="primary"
-            onClick={() => addLookup(text.join())}
+            onClick={() => addLookup(text.join("\n"))}
           >
             {/* TODO mark "already added" fragments */}
             <Tooltip
