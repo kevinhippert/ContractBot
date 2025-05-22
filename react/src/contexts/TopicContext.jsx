@@ -72,7 +72,7 @@ export function TopicProvider({ children }) {
     setTopics((prevTopics) =>
       prevTopics.map((topic) =>
         topic.topicId === topicId
-          ? { ...topic, topicName: getTopicDisplayName(newTopicName) }
+          ? { ...topic, topicName: getTopicDisplayName(topicId, newTopicName) }
           : topic
       )
     );
