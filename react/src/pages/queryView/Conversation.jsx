@@ -26,7 +26,7 @@ function Conversation({ messages, errorMessage, isQuerying }) {
       <img
         alt="Software is mysterious!"
         src="/Ideas-are-illusions.jpg"
-        style={{ height: "14em", paddingLeft: "2em" }}
+        style={{ height: "14em", margin: "10px 10px 10px 0" }}
       />
     ) : null;
   };
@@ -44,7 +44,7 @@ function Conversation({ messages, errorMessage, isQuerying }) {
         Threshold: 1,
       };
       const res = await api.post(url, body);
-      console.log("res: ", res);
+      // we might do something with this response in the future
     } catch (error) {
       // handle error
       console.error("There was an error andn here it is: ", error);
@@ -52,7 +52,6 @@ function Conversation({ messages, errorMessage, isQuerying }) {
   };
 
   const Question = ({ text }) => {
-    console.log("question text = ", text);
     return (
       <>
         <Box
@@ -71,14 +70,33 @@ function Conversation({ messages, errorMessage, isQuerying }) {
   };
 
   const Answer = ({ text }) => {
+    console.log("ANSWER: ", text);
     return (
       <Box sx={{ display: "flex", position: "relative" }}>
         <Box sx={{ flexGrow: 1, overflowY: "auto" }}>
           {text.map((line) => {
             return (
               <>
-                <Egg line={line} />
-                <ReactMarkdown children={line} remarkPlugins={[remarkGfm]} />
+                <Box sx={{ display: "flex" }}>
+                  <Egg line={line} />
+                  <ReactMarkdown children={line} remarkPlugins={[remarkGfm]} />
+                  {line.length > 240 && (
+                    <Button
+                      sx={{
+                        minWidth: "auto",
+                      }}
+                      color="primary"
+                      onClick={() => addLookup(text.join())}
+                    >
+                      {/* TODO mark "already added" fragments */}
+                      <Tooltip
+                        title={`Add reference material for this answer to the Documents tab.`}
+                      >
+                        <PlaylistAddIcon />
+                      </Tooltip>
+                    </Button>
+                  )}
+                </Box>
               </>
             );
           })}
@@ -102,6 +120,7 @@ function Conversation({ messages, errorMessage, isQuerying }) {
             </Tooltip>
           </Button>
         </Box>
+
       </Box>
     );
   };

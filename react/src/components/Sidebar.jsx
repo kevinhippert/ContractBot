@@ -34,7 +34,7 @@ export default function Sidebar() {
         new topic
       </Button>
       <nav>
-        {topics.length && (
+        {topics?.length && (
           <List>
             {topics.map((topic) => (
               <ListItem
