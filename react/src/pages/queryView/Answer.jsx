@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useRef, useCallback, useEffect } from "react";
 import api from "../../api/api";
 import { Alert, Box, Button, Paper, Typography, Tooltip } from "@mui/material";
 import { createAuthenticationParams } from "../../authentication/authentication";
@@ -7,8 +7,73 @@ import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import PlaylistAddIcon from "@mui/icons-material/PlaylistAdd";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import RightClickMenu from "../../components/RightClickMenu";
 
 function Answer({ text }) {
+  const contentRef = useRef(null);
+  const [rightClickMenu, setRightClickMenu] = useState({
+    visible: false,
+    x: 0,
+    y: 0,
+    selectedText: "",
+  });
+
+  // 1. Capture text selection and right-click
+  const handleRightClickMenu = useCallback(
+    (e) => {
+      console.log("right click happened");
+      // Prevent default browser context menu
+      e.preventDefault();
+
+      const selection = window.getSelection();
+      const text = selection.toString().trim();
+
+      if (text.length > 0) {
+        setRightClickMenu({
+          visible: true,
+          x: e.clientX, // Mouse X coordinate
+          y: e.clientY, // Mouse Y coordinate
+          selectedText: text,
+        });
+      } else {
+        // If no text is selected, just close any active menu
+        setRightClickMenu({ ...rightClickMenu, visible: false });
+      }
+    },
+    [rightClickMenu]
+  ); // Added rightClickMenu to dependency array for spreading
+
+  // 2. Close context menu when clicking anywhere else
+  useEffect(() => {
+    const handleClickOutside = () => {
+      if (rightClickMenu.visible) {
+        setRightClickMenu({ ...rightClickMenu, visible: false });
+      }
+    };
+
+    window.addEventListener("click", handleClickOutside);
+    return () => {
+      window.removeEventListener("click", handleClickOutside);
+    };
+  }, [rightClickMenu]);
+
+  // 3. Handlers for context menu options
+  const handleAnalyzeText = (text) => {
+    console.log("Sending text for analysis:", text);
+    // TODO: Implement your server-side API call here
+    alert("Text sent for analysis (check console)!");
+  };
+
+  const handleOpenFeedbackModal = (text) => {
+    setTextForFeedback(text);
+    setIsFeedbackModalOpen(true);
+  };
+
+  const closeFeedbackModal = () => {
+    setIsFeedbackModalOpen(false);
+    setTextForFeedback("");
+  };
+
   const Egg = ({ line }) => {
     return line.toLowerCase().includes("easter egg") && Math.random() < 0.1 ? (
       <img
@@ -40,7 +105,18 @@ function Answer({ text }) {
   };
 
   return (
-    <Box sx={{ display: "flex", position: "relative" }}>
+    <Box
+      sx={{ display: "flex", position: "relative" }}
+      ref={contentRef}
+      onContextMenu={handleRightClickMenu}
+      style={{
+        border: "1px solid #ddd",
+        padding: "20px",
+        minHeight: "200px",
+        userSelect: "text", // Ensure text can be selected
+        cursor: "default",
+      }}
+    >
       <Box sx={{ flexGrow: 1, overflowY: "auto" }}>
         {text.map((line) => {
           return (
@@ -70,6 +146,18 @@ function Answer({ text }) {
           </Button>
         </Box>
       </Box>
+      {rightClickMenu.visible && (
+        <RightClickMenu
+          x={rightClickMenu.x}
+          y={rightClickMenu.y}
+          selectedText={rightClickMenu.selectedText}
+          onClose={() =>
+            setRightClickMenu({ ...rightClickMenu, visible: false })
+          }
+          onAnalyze={handleAnalyzeText}
+          onFeedback={handleOpenFeedbackModal}
+        />
+      )}
     </Box>
   );
 }
