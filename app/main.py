@@ -8,7 +8,7 @@ app.include_router(infer.router)
 app.include_router(login.router)
 app.include_router(query.router)
 
-origins = ["http://localhost:3000", "http://127.0.0.1:3000", "*"]
+origins = ["https://bosbot.org", "http://localhost:3000", "http://127.0.0.1:3000", "*"]
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
