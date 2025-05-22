@@ -230,6 +230,14 @@ class QueryQueue:
 
     def add_lookup(self, lookup: Lookup) -> tuple[str, Timestamp]:
         fingerprint = sha1(lookup.Fragment.encode()).hexdigest()
+        # This fingerprint might already exist
+        self.cursor.execute(
+            "SELECT Timestamp FROM lookups WHERE Fingerprint =?",
+            (fingerprint,),
+        )
+        if timestamp := self.cursor.fetchone():
+            return fingerprint, timestamp[0]
+
         self.cursor.execute(
             "INSERT INTO lookups (Topic, Seq, Fragment, Fingerprint, Count, Threshold) "
             "VALUES (?,?,?,?,?,?)"
