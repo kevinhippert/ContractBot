@@ -70,6 +70,7 @@ function Conversation({ messages, errorMessage, isQuerying }) {
   };
 
   const Answer = ({ text }) => {
+    console.log("ANSWER: ", text);
     return (
       <Box sx={{ display: "flex", position: "relative" }}>
         <Box sx={{ flexGrow: 1, overflowY: "auto" }}>

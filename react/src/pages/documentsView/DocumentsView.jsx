@@ -2,10 +2,12 @@ import React, { useState, useEffect } from "react";
 import api from "../../api/api";
 import { createAuthenticationParams } from "../../authentication/authentication";
 import { useTopic } from "../../contexts/TopicContext";
-import { Box, Button, Container, Typography } from "@mui/material/";
+import { Box, Paper, Button, Container, Typography } from "@mui/material/";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 function DocumentsView() {
-  const [documents, setDocuments] = useState([]);
+  const [lookups, setLookups] = useState([]);
   const { currentTopic } = useTopic();
 
   useEffect(() => {
@@ -18,7 +20,7 @@ function DocumentsView() {
       const url = `/get-lookups?${authParams}&Topic=${currentTopic.topicId}`;
       const res = await api.get(url);
       if (res.data) {
-        setDocuments(res.data.Lookups);
+        setLookups(res.data.Lookups);
       } else {
         console.log("No data in response: ", res);
       }
@@ -28,19 +30,72 @@ function DocumentsView() {
     }
   };
 
+  const Query = ({ text }) => {
+    return (
+      <Box>
+        <Typography>Query: {text}</Typography>
+      </Box>
+    );
+  };
+
+  const Fragment = ({ text }) => {
+    let frag = text.slice(0, 100) + "...";
+    return (
+      <>
+        <Typography>Reference fragment: </Typography>
+        <ReactMarkdown children={frag} remarkPlugins={[remarkGfm]} />
+      </>
+    );
+  };
+
+  const Document = ({ text }) => {
+    let docLines = text.split("\n");
+    let doc = docLines.map((line) => (
+      <ReactMarkdown children={line} remarkPlugins={[remarkGfm]} />
+    ));
+    return (
+      <Paper
+        elevation={0}
+        sx={{
+          backgroundColor: "#f4f4f4",
+          padding: "2px 20px",
+          marginBottom: "15px",
+        }}
+      >
+        {doc}
+      </Paper>
+    );
+  };
+
   return (
     <>
-      <Typography>{`Reference Documents for ${currentTopic.topicName}`}</Typography>
-      {documents.length === 0 ? (
+      <Typography variant="h6">{`Reference Documents for ${currentTopic.topicName}`}</Typography>
+      {lookups.length === 0 ? (
         <Typography>No documents to show</Typography>
       ) : (
-        documents.map((document) => (
-          <>
-            <Typography>{document.Query}</Typography>
-            {/* {document.Fragments.map((fragment) => (
-              // ugh
-            ))} */}
-          </>
+        lookups.map((lookup, lookupIndex) => (
+          <Box key={`doc-${lookupIndex}`}>
+            <Query text={lookup.Query} />
+            {lookup.Fragments.map((fragmentObject, fragmentObjIndex) => (
+              <Box key={`fragment-obj-${lookupIndex}-${fragmentObjIndex}`}>
+                {Object.entries(fragmentObject).map(([frag, docs]) => (
+                  <Box
+                    key={`fragment-entry-${lookupIndex}-${fragmentObjIndex}-${frag}`}
+                  >
+                    <Fragment text={frag} />
+
+                    {docs.map((doc, docIndex) => (
+                      <Box
+                        key={`fragment-value-${lookupIndex}-${fragmentObjIndex}-${frag}-${docIndex}`}
+                      >
+                        <Document text={doc} />
+                      </Box>
+                    ))}
+                  </Box>
+                ))}
+              </Box>
+            ))}
+          </Box>
         ))
       )}
     </>
