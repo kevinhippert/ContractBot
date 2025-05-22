@@ -101,6 +101,26 @@ function Conversation({ messages, errorMessage, isQuerying }) {
             );
           })}
         </Box>
+        <Box>
+          <Button
+            sx={{
+              position: "absolute",
+              bottom: "0",
+              right: "0",
+              minWidth: "auto",
+            }}
+            color="primary"
+            onClick={() => addLookup(text.join("\n"))}
+          >
+            {/* TODO mark "already added" fragments */}
+            <Tooltip
+              title={`Add reference material for this answer to the Documents tab.`}
+            >
+              <PlaylistAddIcon />
+            </Tooltip>
+          </Button>
+        </Box>
+
       </Box>
     );
   };
