@@ -53,7 +53,7 @@ function Conversation({ messages, errorMessage, isQuerying }) {
 
   const Question = ({ text }) => {
     return (
-      <>
+      <Box>
         <Box
           sx={{
             padding: "6px 12px",
@@ -65,15 +65,14 @@ function Conversation({ messages, errorMessage, isQuerying }) {
             <Typography>{line}</Typography>
           ))}
         </Box>
-      </>
+      </Box>
     );
   };
 
   const Answer = ({ text }) => {
-    console.log("ANSWER: ", text);
     return (
       <Box sx={{ display: "flex", position: "relative" }}>
-        <Box sx={{ flexGrow: 1, overflowY: "auto" }}>
+        <Box>
           {text.map((line) => {
             return (
               <>
@@ -106,7 +105,10 @@ function Conversation({ messages, errorMessage, isQuerying }) {
   };
 
   return (
-    <>
+    <Box
+      sx={{ flexGrow: 1, overflowY: "auto", minHeight: 0 }}
+      className="scrollable-content"
+    >
       {messages.length > 0 && (
         <>
           <Box>
@@ -132,7 +134,7 @@ function Conversation({ messages, errorMessage, isQuerying }) {
           <div ref={bottomRef} />
         </>
       )}
-    </>
+    </Box>
   );
 }
 

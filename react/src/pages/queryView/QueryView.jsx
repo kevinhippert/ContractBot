@@ -195,22 +195,41 @@ function QueryView() {
   };
 
   return (
-    <>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <Box>
+    <Box
+      className="middle-content"
+      sx={{
+        flexGrow: 1,
+        display: "flex",
+        flexDirection: "column",
+        height: "100%",
+        overflow: "hidden",
+      }}
+    >
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="my-form"
+        style={{
+          flexGrow: 1,
+          display: "flex",
+          flexDirection: "column",
+          height: "100%",
+          overflow: "hidden",
+        }}
+      >
+        <Box sx={{ flexShrink: 0 }} className="more-buttons-div">
           <ModelPicker register={register} watch={watch} />
           <Categories control={control} />
           {loadingTopic && <Typography>Loading topic...</Typography>}
-          <Conversation
-            messages={messages}
-            errorMessage={errorMessage}
-            isQuerying={isQuerying}
-          />
-          <QuestionInput register={register} isQuerying={isQuerying} />
         </Box>
+        <Conversation
+          messages={messages}
+          errorMessage={errorMessage}
+          isQuerying={isQuerying}
+        />
+        <QuestionInput register={register} isQuerying={isQuerying} />
       </form>
       {/* <Button onClick={getParams}>get params</Button> */}
-    </>
+    </Box>
   );
 }
 
