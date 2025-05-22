@@ -26,7 +26,7 @@ function Conversation({ messages, errorMessage, isQuerying }) {
       <img
         alt="Software is mysterious!"
         src="/Ideas-are-illusions.jpg"
-        style={{ height: "14em", paddingLeft: "2em" }}
+        style={{ height: "14em", margin: "10px 10px 10px 0" }}
       />
     ) : null;
   };
@@ -76,30 +76,29 @@ function Conversation({ messages, errorMessage, isQuerying }) {
           {text.map((line) => {
             return (
               <>
-                <Egg line={line} />
-                <ReactMarkdown children={line} remarkPlugins={[remarkGfm]} />
+                <Box sx={{ display: "flex" }}>
+                  <Egg line={line} />
+                  <ReactMarkdown children={line} remarkPlugins={[remarkGfm]} />
+                  {line.length > 240 && (
+                    <Button
+                      sx={{
+                        minWidth: "auto",
+                      }}
+                      color="primary"
+                      onClick={() => addLookup(text.join())}
+                    >
+                      {/* TODO mark "already added" fragments */}
+                      <Tooltip
+                        title={`Add reference material for this answer to the Documents tab.`}
+                      >
+                        <PlaylistAddIcon />
+                      </Tooltip>
+                    </Button>
+                  )}
+                </Box>
               </>
             );
           })}
-        </Box>
-        <Box>
-          <Button
-            sx={{
-              position: "absolute",
-              bottom: "0",
-              right: "0",
-              minWidth: "auto",
-            }}
-            color="primary"
-            onClick={() => addLookup(text.join())}
-          >
-            {/* TODO mark "already added" fragments */}
-            <Tooltip
-              title={`Add reference material for this answer to the Documents tab.`}
-            >
-              <PlaylistAddIcon />
-            </Tooltip>
-          </Button>
         </Box>
       </Box>
     );
