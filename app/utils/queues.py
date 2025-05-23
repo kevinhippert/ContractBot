@@ -107,7 +107,7 @@ class QueryQueue:
         return dict(self.cursor.fetchall())
 
     def add_query(
-        self, topic: str, user: str, query: str, model: str
+        self, topic: str, user: str, query: str, modifiers: dict, model: str
     ) -> tuple[int, str]:
         # Dereference alias names for Ollama models
         model = MODELS.get(model) or MODELS["default"]
@@ -119,12 +119,16 @@ class QueryQueue:
         if last_seq := self.cursor.fetchone():
             seq = last_seq[0] + 1
 
+        # Enhance the query with categories if provided
+        if categories := modifiers.get("Category"):
+            prefix = "\n".join(f"Category: {cat.upper()}" for cat in categories)
+            query = f"{prefix}\n{query}"
+
         self.cursor.execute(
-            "INSERT INTO queries (Topic, Seq, User, Query, Model) VALUES (?,?,?,?,?)",
+            "INSERT INTO queries (Topic, Seq, User, Query, Model) "
+            "VALUES (?,?,?,?,?) "
+            "RETURNING Timestamp",
             (topic, seq, user, query, model),
-        )
-        self.cursor.execute(
-            "SELECT Timestamp FROM queries WHERE Topic =? AND Seq =?", (topic, seq)
         )
         received = self.cursor.fetchone()[0]
         self.conn.commit()
