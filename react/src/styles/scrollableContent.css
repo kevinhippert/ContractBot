@@ -1,0 +1,19 @@
+.main-view {
+  height: 100vh;
+}
+
+.non-scrolling-content {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+.scrollable-content {
+  flex-grow: 1;
+  overflow-y: auto;
+  min-height: 0;
+  -webkit-overflow-scrolling: touch;
+  padding-right: 10px;
+}

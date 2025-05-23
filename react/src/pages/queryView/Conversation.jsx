@@ -53,7 +53,7 @@ function Conversation({ messages, errorMessage, isQuerying }) {
 
   const Question = ({ text }) => {
     return (
-      <>
+      <Box>
         <Box
           sx={{
             padding: "6px 12px",
@@ -65,68 +65,50 @@ function Conversation({ messages, errorMessage, isQuerying }) {
             <Typography>{line}</Typography>
           ))}
         </Box>
-      </>
+      </Box>
     );
   };
 
   const Answer = ({ text }) => {
-    console.log("ANSWER: ", text);
     return (
-      <Box sx={{ display: "flex", position: "relative" }}>
-        <Box sx={{ flexGrow: 1, overflowY: "auto" }}>
-          {text.map((line) => {
-            return (
-              <>
-                <Box sx={{ display: "flex" }}>
-                  <Egg line={line} />
-                  <ReactMarkdown children={line} remarkPlugins={[remarkGfm]} />
-                  {line.length > 240 && (
-                    <Button
-                      sx={{
-                        minWidth: "auto",
-                      }}
-                      color="primary"
-                      onClick={() => addLookup(text.join())}
+      <Box>
+        {text.map((line) => {
+          return (
+            <>
+              <Box sx={{ display: "flex" }}>
+                <Egg line={line} />
+                <ReactMarkdown children={line} remarkPlugins={[remarkGfm]} />
+                {line.length > 240 && (
+                  <Button
+                    sx={{
+                      minWidth: "auto",
+                    }}
+                    color="primary"
+                    onClick={() => addLookup(line)}
+                  >
+                    {/* TODO mark "already added" fragments */}
+                    <Tooltip
+                      title={`Add reference material for this answer to the Documents tab.`}
                     >
-                      {/* TODO mark "already added" fragments */}
-                      <Tooltip
-                        title={`Add reference material for this answer to the Documents tab.`}
-                      >
-                        <PlaylistAddIcon />
-                      </Tooltip>
-                    </Button>
-                  )}
-                </Box>
-              </>
-            );
-          })}
-        </Box>
-        <Box>
-          <Button
-            sx={{
-              position: "absolute",
-              bottom: "0",
-              right: "0",
-              minWidth: "auto",
-            }}
-            color="primary"
-            onClick={() => addLookup(line)}
-          >
-            {/* TODO mark "already added" fragments */}
-            <Tooltip
-              title={`Add reference material for this answer to the Documents tab.`}
-            >
-              <PlaylistAddIcon />
-            </Tooltip>
-          </Button>
-        </Box>
-
+                      <PlaylistAddIcon />
+                    </Tooltip>
+                  </Button>
+                )}
+              </Box>
+            </>
+          );
+        })}
       </Box>
     );
   };
 
   return (
-    <>
+    <Box
+      sx={{
+        marginBottom: "200px",
+      }}
+      className="scrollable-content"
+    >
       {messages.length > 0 && (
         <>
           <Box>
@@ -152,7 +134,7 @@ function Conversation({ messages, errorMessage, isQuerying }) {
           <div ref={bottomRef} />
         </>
       )}
-    </>
+    </Box>
   );
 }
 

@@ -195,22 +195,22 @@ function QueryView() {
   };
 
   return (
-    <>
-      <form onSubmit={handleSubmit(onSubmit)}>
+    <Box className="non-scrolling-content">
+      <form onSubmit={handleSubmit(onSubmit)} className="non-scrolling-content">
         <Box>
           <ModelPicker register={register} watch={watch} />
           <Categories control={control} />
           {loadingTopic && <Typography>Loading topic...</Typography>}
-          <Conversation
-            messages={messages}
-            errorMessage={errorMessage}
-            isQuerying={isQuerying}
-          />
-          <QuestionInput register={register} isQuerying={isQuerying} />
         </Box>
+        <Conversation
+          messages={messages}
+          errorMessage={errorMessage}
+          isQuerying={isQuerying}
+        />
+        <QuestionInput register={register} isQuerying={isQuerying} />
       </form>
       {/* <Button onClick={getParams}>get params</Button> */}
-    </>
+    </Box>
   );
 }
 
