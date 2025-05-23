@@ -85,7 +85,7 @@ function Conversation({ messages, errorMessage, isQuerying }) {
                         minWidth: "auto",
                       }}
                       color="primary"
-                      onClick={() => addLookup(text.join())}
+                      onClick={() => addLookup(line)}
                     >
                       {/* TODO mark "already added" fragments */}
                       <Tooltip
@@ -119,7 +119,6 @@ function Conversation({ messages, errorMessage, isQuerying }) {
             </Tooltip>
           </Button>
         </Box>
-
       </Box>
     );
   };
