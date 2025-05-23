@@ -9,29 +9,20 @@ function MainView() {
   const [view, setView] = useState("queries");
 
   return (
-    <Box
-      sx={{ display: "flex", marginTop: "100px", height: "100vh" }}
-      className="main-view container"
-    >
+    <Box sx={{ display: "flex", marginTop: "100px" }} className="main-view">
       <Sidebar />
       <Box
         sx={{
           width: "100%",
           margin: "0 20px 20px 40px",
-          flexGrow: 1,
-          display: "flex",
-          flexDirection: "column",
-          height: "100%",
-          overflow: "hidden",
         }}
-        className="main-content"
+        className="non-scrolling-content"
       >
         <Box
           sx={{
             display: "flex",
             justifyContent: "space-between",
             marginBottom: "20px",
-            flexShrink: 0,
           }}
           className="buttons-div"
         >

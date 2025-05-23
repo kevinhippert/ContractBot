@@ -1,4 +1,5 @@
 import "./App.css";
+import "../src/styles/scrollableContent.css";
 import NavBar from "./components/NavBar";
 import { TopicProvider } from "./contexts/TopicContext";
 import { Routes, Route } from "react-router";

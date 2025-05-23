@@ -28,10 +28,7 @@ export default function Sidebar() {
   };
 
   return (
-    <Box
-      sx={{ width: "250px", overflowY: "auto", flexShrink: 0 }}
-      className="sidebar"
-    >
+    <Box sx={{ width: "250px" }} className="sidebar">
       <Button onClick={handleNewTopicClick}>
         <AddIcon />
         new topic

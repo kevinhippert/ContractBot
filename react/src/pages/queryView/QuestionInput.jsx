@@ -14,7 +14,6 @@ function QuestionInput({ register, isQuerying }) {
   return (
     <Box
       sx={{
-        marginTop: "10px",
         position: "fixed",
         bottom: "15px",
         width: "100%",

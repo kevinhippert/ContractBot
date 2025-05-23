@@ -195,28 +195,9 @@ function QueryView() {
   };
 
   return (
-    <Box
-      className="middle-content"
-      sx={{
-        flexGrow: 1,
-        display: "flex",
-        flexDirection: "column",
-        height: "100%",
-        overflow: "hidden",
-      }}
-    >
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="my-form"
-        style={{
-          flexGrow: 1,
-          display: "flex",
-          flexDirection: "column",
-          height: "100%",
-          overflow: "hidden",
-        }}
-      >
-        <Box sx={{ flexShrink: 0 }} className="more-buttons-div">
+    <Box className="non-scrolling-content">
+      <form onSubmit={handleSubmit(onSubmit)} className="non-scrolling-content">
+        <Box className="more-buttons-div">
           <ModelPicker register={register} watch={watch} />
           <Categories control={control} />
           {loadingTopic && <Typography>Loading topic...</Typography>}
