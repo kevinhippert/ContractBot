@@ -47,7 +47,6 @@ function DocumentsView() {
         <Typography>
           <i>Reference fragment:</i> {frag}
         </Typography>
-        {/* <ReactMarkdown children={frag} remarkPlugins={[remarkGfm]} /> */}
       </>
     );
   };

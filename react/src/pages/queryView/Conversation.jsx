@@ -71,36 +71,33 @@ function Conversation({ messages, errorMessage, isQuerying }) {
 
   const Answer = ({ text }) => {
     return (
-      <Box sx={{ display: "flex", position: "relative" }}>
-        <Box>
-          {text.map((line) => {
-            console.log(line, line.length);
-            return (
-              <>
-                <Box sx={{ display: "flex" }}>
-                  <Egg line={line} />
-                  <ReactMarkdown children={line} remarkPlugins={[remarkGfm]} />
-                  {line.length > 240 && (
-                    <Button
-                      sx={{
-                        minWidth: "auto",
-                      }}
-                      color="primary"
-                      onClick={() => addLookup(line)}
+      <Box>
+        {text.map((line) => {
+          return (
+            <>
+              <Box sx={{ display: "flex" }}>
+                <Egg line={line} />
+                <ReactMarkdown children={line} remarkPlugins={[remarkGfm]} />
+                {line.length > 240 && (
+                  <Button
+                    sx={{
+                      minWidth: "auto",
+                    }}
+                    color="primary"
+                    onClick={() => addLookup(line)}
+                  >
+                    {/* TODO mark "already added" fragments */}
+                    <Tooltip
+                      title={`Add reference material for this answer to the Documents tab.`}
                     >
-                      {/* TODO mark "already added" fragments */}
-                      <Tooltip
-                        title={`Add reference material for this answer to the Documents tab.`}
-                      >
-                        <PlaylistAddIcon />
-                      </Tooltip>
-                    </Button>
-                  )}
-                </Box>
-              </>
-            );
-          })}
-        </Box>
+                      <PlaylistAddIcon />
+                    </Tooltip>
+                  </Button>
+                )}
+              </Box>
+            </>
+          );
+        })}
       </Box>
     );
   };
