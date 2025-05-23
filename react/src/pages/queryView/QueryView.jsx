@@ -197,7 +197,7 @@ function QueryView() {
   return (
     <Box className="non-scrolling-content">
       <form onSubmit={handleSubmit(onSubmit)} className="non-scrolling-content">
-        <Box className="more-buttons-div">
+        <Box>
           <ModelPicker register={register} watch={watch} />
           <Categories control={control} />
           {loadingTopic && <Typography>Loading topic...</Typography>}

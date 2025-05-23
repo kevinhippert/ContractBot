@@ -2,25 +2,12 @@
   height: 100vh;
 }
 
-.sidebar {
-  overflow-y: auto;
-  flex-shrink: 0;
-}
-
 .non-scrolling-content {
   flex-grow: 1;
   display: flex;
   flex-direction: column;
   height: 100%;
   overflow: hidden;
-}
-
-.buttons-div {
-  flex-shrink: 0;
-}
-
-.more-buttons-div {
-  flex-shrink: 0;
 }
 
 .scrollable-content {

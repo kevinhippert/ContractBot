@@ -24,7 +24,6 @@ function MainView() {
             justifyContent: "space-between",
             marginBottom: "20px",
           }}
-          className="buttons-div"
         >
           <Button
             sx={{ width: "100%", marginRight: "7px" }}
