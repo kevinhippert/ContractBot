@@ -125,7 +125,13 @@ function Conversation({ messages, errorMessage, isQuerying }) {
 
   return (
     <Box
-      sx={{ flexGrow: 1, overflowY: "auto", minHeight: 0 }}
+      sx={{
+        flexGrow: 1,
+        overflowY: "auto",
+        minHeight: 0,
+        boxSizing: "border-box",
+        marginBottom: "200px",
+      }}
       className="scrollable-content"
     >
       {messages.length > 0 && (

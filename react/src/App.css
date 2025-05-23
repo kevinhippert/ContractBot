@@ -3,4 +3,10 @@ body {
   margin: 0;
   height: 100%;
   overflow: hidden;
+  box-sizing: content-box;
+}
+*,
+*::before,
+*::after {
+  box-sizing: inherit; /* All elements inherit border-box behavior */
 }
