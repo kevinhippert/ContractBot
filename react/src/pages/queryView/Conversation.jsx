@@ -74,6 +74,7 @@ function Conversation({ messages, errorMessage, isQuerying }) {
       <Box sx={{ display: "flex", position: "relative" }}>
         <Box>
           {text.map((line) => {
+            console.log(line, line.length);
             return (
               <>
                 <Box sx={{ display: "flex" }}>
@@ -99,25 +100,6 @@ function Conversation({ messages, errorMessage, isQuerying }) {
               </>
             );
           })}
-        </Box>
-        <Box>
-          <Button
-            sx={{
-              position: "absolute",
-              bottom: "0",
-              right: "0",
-              minWidth: "auto",
-            }}
-            color="primary"
-            onClick={() => addLookup(line)}
-          >
-            {/* TODO mark "already added" fragments */}
-            <Tooltip
-              title={`Add reference material for this answer to the Documents tab.`}
-            >
-              <PlaylistAddIcon />
-            </Tooltip>
-          </Button>
         </Box>
       </Box>
     );

@@ -33,17 +33,21 @@ function DocumentsView() {
   const Query = ({ text }) => {
     return (
       <Box>
-        <Typography>Query: {text}</Typography>
+        <Typography>
+          <i>Query:</i> {text}
+        </Typography>
       </Box>
     );
   };
 
   const Fragment = ({ text }) => {
-    let frag = text.slice(0, 100) + "...";
+    let frag = text.slice(0, 200) + "...";
     return (
       <>
-        <Typography>Reference fragment: </Typography>
-        <ReactMarkdown children={frag} remarkPlugins={[remarkGfm]} />
+        <Typography>
+          <i>Reference fragment:</i> {frag}
+        </Typography>
+        {/* <ReactMarkdown children={frag} remarkPlugins={[remarkGfm]} /> */}
       </>
     );
   };
@@ -59,7 +63,7 @@ function DocumentsView() {
         sx={{
           backgroundColor: "#f4f4f4",
           padding: "2px 20px",
-          marginBottom: "15px",
+          margin: "15px 0",
         }}
       >
         {doc}
@@ -69,7 +73,7 @@ function DocumentsView() {
 
   return (
     <Box className="scrollable-content" sx={{ paddingBottom: "100px" }}>
-      <Typography variant="h6">{`Reference Documents for ${currentTopic.topicName}`}</Typography>
+      <Typography variant="h6">{`Reference Documents`}</Typography>
       {lookups.length === 0 ? (
         <Typography>No documents to show</Typography>
       ) : (
@@ -84,13 +88,21 @@ function DocumentsView() {
                   >
                     <Fragment text={frag} />
 
-                    {docs.map((doc, docIndex) => (
-                      <Box
-                        key={`fragment-value-${lookupIndex}-${fragmentObjIndex}-${frag}-${docIndex}`}
-                      >
-                        <Document text={doc} />
-                      </Box>
-                    ))}
+                    {docs.length > 0 ? (
+                      docs.map((doc, docIndex) => (
+                        <Box
+                          key={`fragment-value-${lookupIndex}-${fragmentObjIndex}-${frag}-${docIndex}`}
+                        >
+                          <Document text={doc} />
+                        </Box>
+                      ))
+                    ) : (
+                      <Document
+                        text={
+                          "No reference documents were found for this text fragment."
+                        }
+                      />
+                    )}
                   </Box>
                 ))}
               </Box>
