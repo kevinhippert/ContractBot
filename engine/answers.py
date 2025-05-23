@@ -102,6 +102,40 @@ If the header "RELEVANT DOCUMENTS:" is absent, the query will concern general
 knowlege rather than be specific to union contract negotiations.
 """
 
+CATEGORIES = {
+    "WAGES": "In answering this query, focus on issues around wages.",
+    "BENEFITS": "In answering this query, focus on issues around benefits.",
+    "PTO": "In answering this query, focus on issues around paid time off.",
+    "HEALTHCARE": "In answering this query, focus on issues around healthcare.",
+    "BUILDING SERVICES": (
+        "In answering this query, focus on issues around building services."
+    ),
+    "PUBLIC": (
+        "In answering this query, focus on issues around public sector employment."
+    ),
+    "PRIVATE": (
+        "In answering this query, focus on issues around private sector employment."
+    ),
+    "IMMIGRATION": (
+        "In answering this query, focus on issues around immigration, "
+        "visa status, and work permits."
+    ),
+    "GRIEVANCES": (
+        "In answering this query, focus on issues around grievances and complaints."
+    ),
+    "CONTRACT LANGUAGE": (
+        "In answering this query, focus on issues around contract language."
+    ),
+    "EDUCATION": (
+        "In answering this query, focus on issues around continuing education "
+        "for employment."
+    ),
+    "WORKSITE": (
+        "In answering this query, focus on issues around worksite conditions "
+        "and worksite safety."
+    ),
+}
+
 
 class Answers:
     def __init__(self, db_file=Path.home() / ".answers.db"):
@@ -239,6 +273,25 @@ def parse_response(response: str) -> tuple[list[str], list[str]]:
     return think, answer
 
 
+def expand_categories(query: str) -> str:
+    # Expand categories embedded in the query
+    lines = []
+    to_body = False
+    for line in query.splitlines():
+        if not to_body and line.startswith("Category:"):
+            if (cat := line.split(":", 1)[1].strip()) in CATEGORIES:
+                lines.append(CATEGORIES[cat])
+            else:
+                lines.append(line)
+        else:
+            if not to_body:
+                lines.append("\nQUERY:")
+                to_body = True
+            lines.append(line)
+
+    return "\n".join(lines)
+
+
 def ask(
     query: str,
     topic: str,
@@ -258,7 +311,7 @@ def ask(
 
     start = monotonic()
     # If invalid or alias given for model, use default
-    _query = f"QUERY:\n{query}"
+    _query = expand_categories(query)
     model = MODELS.get(model) or MODELS["default"]
     context = "" if no_context else get_context(topic)
     rag_docs = "" if no_rag else get_rag(query)

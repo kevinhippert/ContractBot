@@ -4,16 +4,18 @@ import { Controller } from "react-hook-form";
 
 function Categories({ control }) {
   const categories = [
-    "wages",
     "benefits",
-    "PTO",
-    "healthcare",
     "building services",
-    "public",
-    "private",
-    "immigration",
-    "grievances",
     "contract language",
+    "education",
+    "grievances",
+    "healthcare",
+    "immigration",
+    "private",
+    "PTO",
+    "public",
+    "wages",
+    "worksite",
   ];
 
   return (
