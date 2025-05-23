@@ -15,4 +15,5 @@
   overflow-y: auto;
   min-height: 0;
   -webkit-overflow-scrolling: touch;
+  padding-right: 10px;
 }

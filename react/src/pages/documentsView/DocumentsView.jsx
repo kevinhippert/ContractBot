@@ -68,7 +68,7 @@ function DocumentsView() {
   };
 
   return (
-    <>
+    <Box className="scrollable-content" sx={{ paddingBottom: "100px" }}>
       <Typography variant="h6">{`Reference Documents for ${currentTopic.topicName}`}</Typography>
       {lookups.length === 0 ? (
         <Typography>No documents to show</Typography>
@@ -98,7 +98,7 @@ function DocumentsView() {
           </Box>
         ))
       )}
-    </>
+    </Box>
   );
 }
 
