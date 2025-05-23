@@ -11,7 +11,7 @@ import {
 } from "@mui/material/";
 import AddIcon from "@mui/icons-material/Add";
 
-export default function Sidebar() {
+export default function Sidebar({ view }) {
   // [{topicId: "abc123", topicName: "What is life?", isCurrent: true, seq: 2}, ...]
   const { topics, setTopics, setNewCurrentTopic } = useTopic();
 
@@ -29,10 +29,6 @@ export default function Sidebar() {
 
   return (
     <Box sx={{ width: "250px" }}>
-      <Button onClick={handleNewTopicClick}>
-        <AddIcon />
-        new topic
-      </Button>
       <nav>
         {topics?.length && (
           <List>
@@ -55,6 +51,12 @@ export default function Sidebar() {
           </List>
         )}
       </nav>
+      {view === "queries" && (
+        <Button onClick={handleNewTopicClick}>
+          <AddIcon />
+          new topic
+        </Button>
+      )}
     </Box>
   );
 }

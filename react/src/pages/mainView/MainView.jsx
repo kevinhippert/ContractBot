@@ -10,7 +10,7 @@ function MainView() {
 
   return (
     <Box sx={{ display: "flex", marginTop: "100px" }} className="main-view">
-      <Sidebar />
+      <Sidebar view={view} />
       <Box
         sx={{
           width: "100%",
