@@ -65,7 +65,7 @@ Otherwise, return a 200 with a body similar to:
   "ABC124-993SW": "What is the meaning of life",
   "..."
 }
-```-
+```
 
 ### `POST api/add-query`
 

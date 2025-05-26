@@ -1,3 +1,5 @@
+from typing import Literal
+
 from pydantic import BaseModel
 
 
@@ -63,6 +65,22 @@ class LookupMatches(BaseModel):
     # Used by Inference Engine (different from LookupMatch)"
     Fingerprint: str
     Matches: list[str]
+
+
+class Recommendation(BaseModel):
+    Topic: str
+    OnBehalfOf: str
+    Query: str
+    Response: str
+    Comment: str
+    Type: Literal[
+        "Suggest Improvement",
+        "Promote Answer",
+        "Make Correction",
+        "Note Missing Info",
+        "Note Unclear Phrasing",
+        "Note Off Topic",
+    ]
 
 
 # This plays off the two meanings of "models".  Pydantic models are above,

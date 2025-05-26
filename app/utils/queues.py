@@ -3,7 +3,16 @@ import sqlite3
 from typing import NewType
 
 
-from app.models import Answer, Lookup, LookupMatch, LookupTodo, Match, MODELS, QueryTodo
+from app.models import (
+    Answer,
+    Lookup,
+    LookupMatch,
+    LookupTodo,
+    Match,
+    MODELS,
+    QueryTodo,
+    Recommendation,
+)
 
 priority_queue: list[str] = []
 Timestamp = NewType("Timestamp", str)
@@ -79,6 +88,23 @@ class QueryQueue:
         self.cursor.execute(
             "CREATE INDEX IF NOT EXISTS "
             "idx_lookup_matches_fingerprint ON lookup_matches(Fingerprint)"
+        )
+        self.conn.commit()
+
+        # Table for recommendations
+        self.cursor.execute(
+            """
+            CREATE TABLE IF NOT EXISTS recommendations (
+                Topic TEXT NOT NULL,
+                OnBehalfOf TEXT NOT NULL,
+                Query TEXT NOT NULL,
+                Response TEXT NOT NULL',
+                Comment TEXT NOT NULL,
+                Type TEXT NOT NULL,
+                Status TEXT NOT NULL DEFAULT 'Available'
+                Timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            )
+            """
         )
         self.conn.commit()
 
@@ -376,3 +402,13 @@ class QueryQueue:
             [(fingerprint, match) for match in matches],
         )
         self.conn.commit()
+
+    def recommend(self, rec: Recommendation) -> str:
+        self.cursor.execute(
+            "INSERT INTO recommendations (Topic, OnBehalfOf, Query, Response, Comment, Type) "
+            "VALUES (?,?,?,?,?,?) "
+            "RETURNING Timestamp",
+            (rec.Topic, rec.OnBehalfOf, rec.Query, rec.Response, rec.Comment, rec.Type),
+        )
+        self.conn.commit()
+        return self.cursor.fetchone()[0]
