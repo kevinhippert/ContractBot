@@ -87,8 +87,8 @@ export function FeedbackModal({ open, handleClose, feedbackModalData }) {
   return (
     <>
       <Dialog
-        sx={{ "& .MuiDialog-paper": { width: "80%", maxHeight: 435 } }}
-        maxWidth="xs"
+        sx={{ "& .MuiDialog-paper": { width: "80%", maxHeight: 575 } }}
+        // maxWidth="xs"
         open={open}
       >
         <DialogContent dividers>
@@ -136,7 +136,7 @@ export function FeedbackModal({ open, handleClose, feedbackModalData }) {
             variant="outlined"
             placeholder="Suggested language or additional feedback"
             multiline
-            maxRows={10}
+            rows={8}
             onChange={handleCommentChange}
           />
         </DialogContent>
