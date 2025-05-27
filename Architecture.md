@@ -65,7 +65,7 @@ Otherwise, return a 200 with a body similar to:
   "ABC124-993SW": "What is the meaning of life",
   "..."
 }
-```-
+```
 
 ### `POST api/add-query`
 
@@ -254,7 +254,7 @@ Response should resemble:
     {
       "Query": "What's the meaning of life?",
       "Fragments": [
-        {
+{
           "Employees can accrue comp time...": [
             "Match 1 - whole bunch of info, with line breaks embedded",
             "Match 2 - yet more info",
@@ -273,6 +273,57 @@ Response should resemble:
       "Fragments": []
     }
   ]
+}
+```
+
+### `POST /api/recommend`
+
+As with other authentication, we use a nonce, a shared secret, and create a
+hash. The query parameters for the route are:
+
+- User (e.g. `Frontend_1`)
+- Nonce
+- Hash
+
+In the body (discussed), we indicate the `OnBehalfOf` user, but the
+authenticating user will simply be `Frontend_1` or similar.
+
+The purpose of this route is for a user to _recommend_ a section of text as
+particularly useful, and hence that it should be used in future RAG fragment
+matching.
+
+Multiple kinds texts can be recommended, and negative recommendations are
+permitted as well.  Either paragraphs from existing answers or answers
+composed by users themselves can be incorporated into future model answers.  A
+body should resemble:
+
+```json
+{
+    "Topic": "DGQIn+5troxI",
+    "OnBehalfOf": "Calico_Seders", // Not Frontend_1, but regular user
+    "Query": "What's the meaning of life?",
+    "Response": "It don't mean a thing if you ain't got that swing.",
+    "Comment": "Duke Ellington frequently lent his wisdom to song lyrics.
+               He correctly noted that you need that swing to mean anything.",
+    "Type": "Suggest Improvement"
+}
+```
+
+Types can include:
+
+- Suggest Improvement
+- Promote Answer
+- Make Correction
+- Note Missing Info
+- Note Unclear Phrasing
+- Note Off Topic
+
+Response will be a 200 HTTP status code if it is stored successfully, and
+resemble:
+
+```json
+{
+  "Timestamp": "2025-03-25T01:02:03"
 }
 ```
 

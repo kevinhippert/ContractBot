@@ -4,7 +4,7 @@ from time import sleep
 from fastapi import APIRouter, status
 from fastapi.responses import JSONResponse
 
-from app.models import Answer, Lookup, Query, QueryAck
+from app.models import Answer, Lookup, Query, QueryAck, Recommendation
 from app.utils.access import authenticate
 from app.utils.queues import priority_queue, QueryQueue
 
@@ -221,4 +221,28 @@ async def get_lookups(User: str, Nonce: str, Hash: str, Topic: str) -> JSONRespo
     return JSONResponse(
         status_code=status.HTTP_200_OK,
         content=QueryQueue().find_topic_lookups(Topic),
+    )
+
+
+@router.post("/api/recommend", tags=["query", "recommend"])
+async def recommend(
+    User: str, Nonce: str, Hash: str, rec: Recommendation
+) -> JSONResponse:
+    """
+    Annotate generated answers for improvement of the models with RAG
+    """
+    if not User.startswith("Frontend_"):
+        return JSONResponse(
+            status_code=status.HTTP_403_FORBIDDEN,
+            content={"detail": "Only Frontend users can access this endpoint"},
+        )
+    if not authenticate(User, Nonce, Hash):
+        return JSONResponse(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            content={"detail": "Authentication failed"},
+        )
+
+    return JSONResponse(
+        status_code=status.HTTP_200_OK,
+        content={"Timestamp:": QueryQueue().recommend(rec)},
     )
