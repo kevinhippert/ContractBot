@@ -103,36 +103,76 @@ knowlege rather than be specific to union contract negotiations.
 """
 
 CATEGORIES = {
-    "WAGES": "In answering this query, focus on issues around wages.",
-    "BENEFITS": "In answering this query, focus on issues around benefits.",
-    "PTO": "In answering this query, focus on issues around paid time off.",
-    "HEALTHCARE": "In answering this query, focus on issues around healthcare.",
+    "WAGES": (
+        "Focus the response on wage provisions. Include details on base pay scales, "
+        "step increases, cost-of-living adjustments, shift differentials, overtime "
+        "premiums, and reference relevant collective bargaining agreements where "
+        "applicable."
+    ),
+    "BENEFITS": (
+        "Focus the response on employee benefit provisions. Include details on "
+        "pensions or 401(k)s, annuity funds, life and disability insurance, wellness "
+        "funds, supplemental benefit trusts, and reference relevant collective "
+        "bargaining agreements where applicable."
+    ),
+    "PTO": (
+        "Focus the response on paid-time-off provisions. Include details on vacation "
+        "accrual, sick leave, personal days, holidays, carry-over rules, payout at "
+        "separation, and reference relevant collective bargaining agreements where "
+        "applicable."
+    ),
+    "HEALTHCARE": (
+        "Focus the response on healthcare-sector employment contracts. Include "
+        "details on job classifications (e.g., RNs, LPNs, CNAs, home-care aides), "
+        "staffing ratios, patient-care standards, licensure or certification "
+        "requirements, shift differentials, hazard pay, and reference relevant "
+        "collective bargaining agreements where applicable."
+    ),
     "BUILDING SERVICES": (
-        "In answering this query, focus on issues around building services."
+        "Focus the response on building-service unit contracts. Include details on "
+        "classifications (janitorial, security, maintenance), staffing ratios, and "
+        "industry wage/benefit standards, and reference relevant collective "
+        "bargaining agreements where applicable."
     ),
     "PUBLIC": (
-        "In answering this query, focus on issues around public sector employment."
+        "Focus the response on public-sector bargaining contracts. Include details "
+        "on statutory references, civil-service rules, agency-shop clauses, budget "
+        "appropriation contingencies, and reference relevant collective bargaining "
+        "agreements where applicable."
     ),
     "PRIVATE": (
-        "In answering this query, focus on issues around private sector employment."
+        "Focus the response on private-sector bargaining contracts. Include details "
+        "on NLRA compliance, management-rights clauses, just-cause standards, "
+        "employer policies, and reference relevant collective bargaining agreements "
+        "where applicable."
     ),
     "IMMIGRATION": (
-        "In answering this query, focus on issues around immigration, "
-        "visa status, and work permits."
+        "Focus the response on immigration and work-authorization provisions. Include "
+        "details on work-authorization and reverification procedures, handling of SSA "
+        "no-match or other mismatch notices, processes for employee name or Social "
+        "Security number changes, employer participation in E-Verify or similar "
+        "programs, protections during contractor transitions, employer and worker "
+        "rights in worksite enforcement actions (raids, audits, detention), "
+        "immigration-related leave, and reference relevant collective bargaining "
+        "agreements where applicable."
     ),
     "GRIEVANCES": (
-        "In answering this query, focus on issues around grievances and complaints."
+        "Focus the response on grievance and arbitration procedures. Include details "
+        "on filing timelines, step hierarchy, representative roles, standards of "
+        "review, and reference relevant collective bargaining agreements where "
+        "applicable."
     ),
     "CONTRACT LANGUAGE": (
-        "In answering this query, focus on issues around contract language."
+        "Focus the response on drafting or interpreting contract language from "
+        "collective bargaining agreements. Include precedent clauses, interpretive "
+        "guidance, analogous articles, and reference relevant collective bargaining "
+        "agreements where applicable."
     ),
     "EDUCATION": (
-        "In answering this query, focus on issues around continuing education "
-        "for employment."
-    ),
-    "WORKSITE": (
-        "In answering this query, focus on issues around worksite conditions "
-        "and worksite safety."
+        "Focus the response on education and training provisions. Include details on "
+        "tuition reimbursement, apprenticeship programs, certifications, professional-"
+        "development leave, and reference relevant collective bargaining agreements "
+        "where applicable."
     ),
 }
 

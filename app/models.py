@@ -71,7 +71,7 @@ class Recommendation(BaseModel):
     Topic: str
     OnBehalfOf: str
     Query: str
-    Response: str
+    Fragment: str
     Comment: str
     Type: Literal[
         "Suggest Improvement",
