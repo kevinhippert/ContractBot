@@ -7,6 +7,7 @@ import api from "../../api/api";
 import { useTopic } from "../../contexts/TopicContext";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import InsertCommentIcon from "@mui/icons-material/InsertComment";
 import PlaylistAddIcon from "@mui/icons-material/PlaylistAdd";
 import LinearProgress from "@mui/material/LinearProgress";
 
@@ -80,20 +81,36 @@ function Conversation({ messages, errorMessage, isQuerying }) {
                 <Egg line={line} />
                 <ReactMarkdown children={line} remarkPlugins={[remarkGfm]} />
                 {line.length > 240 && (
-                  <Button
-                    sx={{
-                      minWidth: "auto",
-                    }}
-                    color="primary"
-                    onClick={() => addLookup(line, message.seq)}
-                  >
-                    {/* TODO mark "already added" fragments */}
-                    <Tooltip
-                      title={`Add reference material for this answer to the Documents tab.`}
+                  <>
+                    <Button
+                      sx={{
+                        minWidth: "auto",
+                      }}
+                      color="primary"
+                      onClick={() => addLookup(line)}
                     >
-                      <PlaylistAddIcon />
-                    </Tooltip>
-                  </Button>
+                      {/* TODO mark "already added" fragments */}
+                      <Tooltip
+                        title={`Add reference material for this answer to the Documents tab.`}
+                      >
+                        <PlaylistAddIcon />
+                      </Tooltip>
+                    </Button>
+                    <Button
+                      sx={{
+                        minWidth: "auto",
+                      }}
+                      color="primary"
+                      onClick={() => addLookup(line)}
+                    >
+                      {/* TODO mark "already added" fragments */}
+                      <Tooltip
+                        title={`Add reference material for this answer to the Documents tab.`}
+                      >
+                        <PlaylistAddIcon />
+                      </Tooltip>
+                    </Button>
+                  </>
                 )}
               </Box>
             </>
