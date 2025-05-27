@@ -9,9 +9,11 @@ import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 import Dialog from "@mui/material/Dialog";
-import RadioGroup from "@mui/material/RadioGroup";
 import Radio from "@mui/material/Radio";
+import RadioGroup from "@mui/material/RadioGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
+import FormControl from "@mui/material/FormControl";
+import FormLabel from "@mui/material/FormLabel";
 
 // {
 //     "Topic": "DGQIn+5troxI",
@@ -24,11 +26,16 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 // }
 
 export function FeedbackModal({ open, handleClose, feedbackModalData }) {
-  const [feedbackFormData, setFeedbackFormData] = useState(feedbackModalData);
+  const [feedbackFormData, setFeedbackFormData] = useState({});
 
   useEffect(() => {
-    console.log(feedbackFormData);
-  }, [feedbackFormData]);
+    console.log(feedbackModalData);
+    console.log("feedbackFormData: ", feedbackFormData);
+  }, [open, feedbackFormData]);
+
+  useEffect(() => {
+    setFeedbackFormData(feedbackModalData);
+  }, []);
 
   const handleCancel = () => {
     handleClose();
@@ -38,6 +45,14 @@ export function FeedbackModal({ open, handleClose, feedbackModalData }) {
     // send feedback
   };
 
+  const handleTypeChange = (e) => {
+    const type = e.target.value;
+    setFeedbackFormData((prevData) => ({
+      ...prevData,
+      Type: type,
+    }));
+  };
+
   return (
     <Dialog
       sx={{ "& .MuiDialog-paper": { width: "80%", maxHeight: 435 } }}
@@ -45,7 +60,47 @@ export function FeedbackModal({ open, handleClose, feedbackModalData }) {
       open={open}
     >
       <DialogTitle>Send Feedback</DialogTitle>
-      <DialogContent dividers>stuff</DialogContent>
+      <DialogContent dividers>
+        <FormControl>
+          <RadioGroup
+            aria-labelledby="demo-radio-buttons-group-label"
+            defaultValue="Suggest Improvement"
+            value={feedbackFormData.Type}
+            onChange={handleTypeChange}
+          >
+            <FormControlLabel
+              value="Suggest Improvement"
+              control={<Radio />}
+              label="Suggest Improvement"
+            />
+            <FormControlLabel
+              value="Promote Answer"
+              control={<Radio />}
+              label="Promote Answer"
+            />
+            <FormControlLabel
+              value="Make Correction"
+              control={<Radio />}
+              label="Make Correction"
+            />
+            <FormControlLabel
+              value="Note Missing Info"
+              control={<Radio />}
+              label="Note Missing Info"
+            />
+            <FormControlLabel
+              value="Note Unclear Phrasing"
+              control={<Radio />}
+              label="Note Unclear Phrasing"
+            />
+            <FormControlLabel
+              value="Note Off Topic"
+              control={<Radio />}
+              label="Note Off Topic"
+            />
+          </RadioGroup>
+        </FormControl>
+      </DialogContent>
       <DialogActions>
         <Button autoFocus onClick={handleCancel}>
           Cancel

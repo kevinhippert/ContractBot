@@ -38,7 +38,7 @@ function Conversation({ messages, errorMessage, isQuerying }) {
       Query: query[0],
       Fragment: fragment,
       Comment: "",
-      Type: "",
+      Type: "Suggest Improvement",
     });
     setFeedbackModalOpen(true);
   };
@@ -108,7 +108,7 @@ function Conversation({ messages, errorMessage, isQuerying }) {
                         minWidth: "auto",
                       }}
                       color="primary"
-                      onClick={() => addLookup(line)}
+                      onClick={() => addLookup(line, answer.seq)}
                     >
                       {/* TODO mark "already added" fragments */}
                       <Tooltip
