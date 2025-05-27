@@ -21,7 +21,7 @@ Timestamp = NewType("Timestamp", str)
 
 
 class QueryQueue:
-    def __init__(self, db_file: str = str(Path.home() / ".queue.db")):
+    def __init__(self, db_file=Path.home() / "persist" / "queue.db"):
         self.conn = sqlite3.connect(db_file)
         self.cursor = self.conn.cursor()
 
