@@ -98,7 +98,7 @@ class QueryQueue:
                 Topic TEXT NOT NULL,
                 OnBehalfOf TEXT NOT NULL,
                 Query TEXT NOT NULL,
-                Fragment TEXT NOT NULL',
+                Fragment TEXT NOT NULL,
                 Comment TEXT NOT NULL,
                 Type TEXT NOT NULL,
                 Status TEXT NOT NULL DEFAULT 'Available',
