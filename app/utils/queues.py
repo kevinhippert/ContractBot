@@ -1,5 +1,7 @@
+from datetime import datetime, timedelta
 from hashlib import sha1
 import sqlite3
+from pathlib import Path
 from typing import NewType
 
 
@@ -19,7 +21,7 @@ Timestamp = NewType("Timestamp", str)
 
 
 class QueryQueue:
-    def __init__(self, db_file: str = ".queue.db"):
+    def __init__(self, db_file: str = str(Path.home() / ".queue.db")):
         self.conn = sqlite3.connect(db_file)
         self.cursor = self.conn.cursor()
 
@@ -414,3 +416,32 @@ class QueryQueue:
         ts = self.cursor.fetchone()[0]
         self.conn.commit()
         return ts
+
+    def redact(self, days: int = 14) -> None:
+        """
+        Do not retain older data on frontend EC2 system.
+
+        Queries, answers, and RAG contents only retained for longer time on the
+        secured Inference Engine that has limited exposure to outside world, and
+        does not utilize 3rd party cloude services.
+
+        TODO: When and where should we actually call this method?
+        """
+        cutoff = datetime.now() - timedelta(days=days)
+        self.cursor.execute(
+            "DELETE FROM queries WHERE Timestamp <= ?",
+            (cutoff,),
+        )
+        self.cursor.execute(
+            "DELETE FROM lookups WHERE Timestamp <= ?",
+            (cutoff,),
+        )
+        self.cursor.execute(
+            "DELETE FROM lookup_matches WHERE Match IN (SELECT Match FROM lookups WHERE Timestamp <= ?)",
+            (cutoff,),
+        )
+        self.cursor.execute(
+            "DELETE FROM recommendations WHERE Timestamp <= ?",
+            (cutoff,),
+        )
+        self.conn.commit()
