@@ -411,5 +411,6 @@ class QueryQueue:
             "RETURNING Timestamp",
             (rec.Topic, rec.OnBehalfOf, rec.Query, rec.Fragment, rec.Comment, rec.Type),
         )
+        ts = self.cursor.fetchone()[0]
         self.conn.commit()
-        return self.cursor.fetchone()[0]
+        return ts
