@@ -1,32 +1,22 @@
 import React, { useState, useEffect } from "react";
-import PropTypes from "prop-types";
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import List from "@mui/material/List";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemText from "@mui/material/ListItemText";
-import DialogTitle from "@mui/material/DialogTitle";
-import DialogContent from "@mui/material/DialogContent";
-import DialogActions from "@mui/material/DialogActions";
-import Dialog from "@mui/material/Dialog";
-import Radio from "@mui/material/Radio";
-import RadioGroup from "@mui/material/RadioGroup";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import FormControl from "@mui/material/FormControl";
-import FormLabel from "@mui/material/FormLabel";
-
-// {
-//     "Topic": "DGQIn+5troxI",
-//     "OnBehalfOf": "Calico_Seders", // Not Frontend_1, but regular user
-//     "Query": "What's the meaning of life?",
-//     "Fragment": "It don't mean a thing if you ain't got that swing.",
-//     "Comment": "Duke Ellington frequently lent his wisdom to song lyrics.
-//                He correctly noted that you need that swing to mean anything.",
-//     "Type": "Suggest Improvement"
-// }
+import { createAuthenticationParams } from "../../authentication/authentication";
+import api from "../../api/api";
+import {
+  Button,
+  DialogContent,
+  DialogActions,
+  Dialog,
+  Radio,
+  RadioGroup,
+  FormControlLabel,
+  FormControl,
+  TextField,
+} from "@mui/material";
 
 export function FeedbackModal({ open, handleClose, feedbackModalData }) {
-  const [feedbackFormData, setFeedbackFormData] = useState({});
+  const [feedbackFormData, setFeedbackFormData] = useState(
+    feedbackModalData || {}
+  );
 
   useEffect(() => {
     console.log(feedbackModalData);
@@ -35,14 +25,22 @@ export function FeedbackModal({ open, handleClose, feedbackModalData }) {
 
   useEffect(() => {
     setFeedbackFormData(feedbackModalData);
-  }, []);
+  }, [feedbackModalData]);
 
   const handleCancel = () => {
     handleClose();
   };
 
-  const handleOk = () => {
-    // send feedback
+  const handleSendFeedback = async () => {
+    try {
+      const authParams = await createAuthenticationParams();
+      const url = `/recommend?${authParams}`;
+      const res = await api.post(url, feedbackFormData);
+      console.log(res);
+    } catch (error) {
+      // handle error
+      console.error("There was a problem and here it is: ", error);
+    }
   };
 
   const handleTypeChange = (e) => {
@@ -53,13 +51,20 @@ export function FeedbackModal({ open, handleClose, feedbackModalData }) {
     }));
   };
 
+  const handleCommentChange = (e) => {
+    const comment = e.target.value;
+    setFeedbackFormData((prevData) => ({
+      ...prevData,
+      Comment: comment,
+    }));
+  };
+
   return (
     <Dialog
       sx={{ "& .MuiDialog-paper": { width: "80%", maxHeight: 435 } }}
       maxWidth="xs"
       open={open}
     >
-      <DialogTitle>Send Feedback</DialogTitle>
       <DialogContent dividers>
         <FormControl>
           <RadioGroup
@@ -84,28 +89,38 @@ export function FeedbackModal({ open, handleClose, feedbackModalData }) {
               label="Make Correction"
             />
             <FormControlLabel
-              value="Note Missing Info"
+              value="Add Missing Info"
               control={<Radio />}
-              label="Note Missing Info"
+              label="Add Missing Info"
             />
             <FormControlLabel
-              value="Note Unclear Phrasing"
+              value="Clarify Phrasing"
               control={<Radio />}
-              label="Note Unclear Phrasing"
+              label="Clarify Phrasing"
             />
             <FormControlLabel
-              value="Note Off Topic"
+              value="Flag as Off Topic"
               control={<Radio />}
-              label="Note Off Topic"
+              label="Flag as Off Topic"
             />
           </RadioGroup>
         </FormControl>
+        <TextField
+          sx={{ width: "100%", marginTop: "10px" }}
+          variant="outlined"
+          placeholder="Suggested language or additional feedback"
+          multiline
+          maxRows={10}
+          onChange={handleCommentChange}
+        />
       </DialogContent>
       <DialogActions>
-        <Button autoFocus onClick={handleCancel}>
+        <Button variant="outlined" autoFocus onClick={handleCancel}>
           Cancel
         </Button>
-        <Button onClick={handleOk}>Ok</Button>
+        <Button variant="contained" onClick={handleSendFeedback}>
+          Send Feedback
+        </Button>
       </DialogActions>
     </Dialog>
   );
