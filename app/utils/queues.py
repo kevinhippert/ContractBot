@@ -98,11 +98,11 @@ class QueryQueue:
                 Topic TEXT NOT NULL,
                 OnBehalfOf TEXT NOT NULL,
                 Query TEXT NOT NULL,
-                Response TEXT NOT NULL',
+                Fragment TEXT NOT NULL',
                 Comment TEXT NOT NULL,
                 Type TEXT NOT NULL,
-                Status TEXT NOT NULL DEFAULT 'Available'
-                Timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                Status TEXT NOT NULL DEFAULT 'Available',
+                Timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
             )
             """
         )
@@ -405,10 +405,11 @@ class QueryQueue:
 
     def recommend(self, rec: Recommendation) -> str:
         self.cursor.execute(
-            "INSERT INTO recommendations (Topic, OnBehalfOf, Query, Response, Comment, Type) "
+            "INSERT INTO recommendations "
+            "(Topic, OnBehalfOf, Query, Fragment, Comment, Type) "
             "VALUES (?,?,?,?,?,?) "
             "RETURNING Timestamp",
-            (rec.Topic, rec.OnBehalfOf, rec.Query, rec.Response, rec.Comment, rec.Type),
+            (rec.Topic, rec.OnBehalfOf, rec.Query, rec.Fragment, rec.Comment, rec.Type),
         )
         self.conn.commit()
         return self.cursor.fetchone()[0]

@@ -302,7 +302,7 @@ body should resemble:
     "Topic": "DGQIn+5troxI",
     "OnBehalfOf": "Calico_Seders", // Not Frontend_1, but regular user
     "Query": "What's the meaning of life?",
-    "Response": "It don't mean a thing if you ain't got that swing.",
+    "Fragment": "It don't mean a thing if you ain't got that swing.",
     "Comment": "Duke Ellington frequently lent his wisdom to song lyrics.
                He correctly noted that you need that swing to mean anything.",
     "Type": "Suggest Improvement"
