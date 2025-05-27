@@ -101,7 +101,7 @@ function Conversation({ messages, errorMessage, isQuerying }) {
               <Box sx={{ display: "flex" }}>
                 <Egg line={line} />
                 <ReactMarkdown children={line} remarkPlugins={[remarkGfm]} />
-                {line.length > 100 && (
+                {line.length > 240 && (
                   <>
                     <Button
                       sx={{
