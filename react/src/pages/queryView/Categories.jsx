@@ -6,6 +6,10 @@ import {
   MenuItem,
   Chip,
   OutlinedInput,
+  InputLabel,
+  FormControl,
+  Checkbox,
+  ListItemText,
 } from "@mui/material";
 import { Controller } from "react-hook-form";
 
@@ -25,45 +29,41 @@ function Categories({ control }) {
   ];
 
   return (
-    <>
-      <Controller
-        name="categories"
-        control={control}
-        defaultValue={[]}
-        render={({ field: { onChange, value } }) => {
-          const handleCategoryClick = (category) => {
-            const updatedCategories = value.includes(category)
-              ? value.filter((c) => c !== category)
-              : [...value, category];
-            onChange(updatedCategories);
-          };
-
-          return (
-            <Box sx={{ margin: "18px 0" }}>
-              <Select
-                multiple
-                // value={personName}
-                onChange={handleCategoryClick}
-                input={<OutlinedInput id="select-multiple-chip" label="Chip" />}
-                renderValue={(selected) => (
-                  <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
-                    {selected.map((value) => (
-                      <Chip key={value} label={value} />
-                    ))}
-                  </Box>
-                )}
-              >
-                {categories.map((category) => (
-                  <MenuItem key={category} value={category}>
-                    {category}
-                  </MenuItem>
-                ))}
-              </Select>
-            </Box>
-          );
-        }}
-      />
-    </>
+    <Box sx={{ width: "50%" }}>
+      <FormControl>
+        <InputLabel id="categories-label">Categories</InputLabel>
+        <Controller
+          name="categories"
+          control={control}
+          defaultValue={[]}
+          render={({ field: { onChange, value }, fieldState: { error } }) => (
+            <Select
+              labelId="categories-label" // Link label to select
+              id="categories-select"
+              multiple
+              value={value || []} // Ensure value is always an array, even if undefined initially
+              onChange={(event) => {
+                // MUI Select for multiple selection passes the array of selected values directly
+                onChange(event.target.value); // Pass the updated array directly to react-hook-form's onChange
+              }}
+              input={
+                <OutlinedInput id="select-multiple-chip" label="Categories" />
+              } // Label for the input itself
+              renderValue={(selected) => selected.join(", ")}
+              error={!!error} // Apply error state
+              // helperText={error ? error.message : null} // Display validation message if needed
+            >
+              {categories.map((category) => (
+                <MenuItem key={category} value={category}>
+                  <Checkbox checked={value && value.includes(category)} />
+                  <ListItemText primary={category} />
+                </MenuItem>
+              ))}
+            </Select>
+          )}
+        />
+      </FormControl>
+    </Box>
   );
 }
 

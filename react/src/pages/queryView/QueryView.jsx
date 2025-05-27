@@ -200,8 +200,8 @@ function QueryView() {
         <Box>
           <ModelPicker register={register} watch={watch} />
           <Categories control={control} />
-          {loadingTopic && <Typography>Loading topic...</Typography>}
         </Box>
+        {loadingTopic && <Typography>Loading topic...</Typography>}
         <Conversation
           messages={messages}
           errorMessage={errorMessage}
