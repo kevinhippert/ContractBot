@@ -1,5 +1,12 @@
 import React from "react";
-import { Button, Box } from "@mui/material";
+import {
+  Button,
+  Box,
+  Select,
+  MenuItem,
+  Chip,
+  OutlinedInput,
+} from "@mui/material";
 import { Controller } from "react-hook-form";
 
 function Categories({ control }) {
@@ -33,16 +40,25 @@ function Categories({ control }) {
 
           return (
             <Box sx={{ margin: "18px 0" }}>
-              {categories.map((category) => (
-                <Button
-                  key={category}
-                  sx={{ marginRight: "7px", marginBottom: "7px" }}
-                  onClick={() => handleCategoryClick(category)}
-                  variant={value.includes(category) ? "contained" : "outlined"} //add visual feedback
-                >
-                  {category}
-                </Button>
-              ))}
+              <Select
+                multiple
+                // value={personName}
+                onChange={handleCategoryClick}
+                input={<OutlinedInput id="select-multiple-chip" label="Chip" />}
+                renderValue={(selected) => (
+                  <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
+                    {selected.map((value) => (
+                      <Chip key={value} label={value} />
+                    ))}
+                  </Box>
+                )}
+              >
+                {categories.map((category) => (
+                  <MenuItem key={category} value={category}>
+                    {category}
+                  </MenuItem>
+                ))}
+              </Select>
             </Box>
           );
         }}
