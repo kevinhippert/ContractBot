@@ -11,17 +11,17 @@ import {
   FormControlLabel,
   FormControl,
   TextField,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 
 export function FeedbackModal({ open, handleClose, feedbackModalData }) {
   const [feedbackFormData, setFeedbackFormData] = useState(
     feedbackModalData || {}
   );
-
-  useEffect(() => {
-    console.log(feedbackModalData);
-    console.log("feedbackFormData: ", feedbackFormData);
-  }, [open, feedbackFormData]);
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
+  const [alertSeverity, setAlertSeverity] = useState("info");
 
   useEffect(() => {
     setFeedbackFormData(feedbackModalData);
@@ -36,11 +36,36 @@ export function FeedbackModal({ open, handleClose, feedbackModalData }) {
       const authParams = await createAuthenticationParams();
       const url = `/recommend?${authParams}`;
       const res = await api.post(url, feedbackFormData);
-      console.log(res);
+      handleClose();
+
+      if (res.status === 200) {
+        showAlert(
+          "Your feedback has been sent. Thank you for your contribution!",
+          "success"
+        );
+      } else {
+        showAlert(
+          "There was a problem submitting your feedback. Please try again later",
+          "error"
+        );
+      }
     } catch (error) {
-      // handle error
+      showAlert(
+        "There was a problem submitting your feedback. Please try again later",
+        "error"
+      );
       console.error("There was a problem and here it is: ", error);
     }
+  };
+
+  const showAlert = (message, severity) => {
+    setAlertMessage(message);
+    setAlertSeverity(severity);
+    setAlertOpen(true);
+  };
+
+  const closeAlert = () => {
+    setAlertOpen(false);
   };
 
   const handleTypeChange = (e) => {
@@ -60,68 +85,86 @@ export function FeedbackModal({ open, handleClose, feedbackModalData }) {
   };
 
   return (
-    <Dialog
-      sx={{ "& .MuiDialog-paper": { width: "80%", maxHeight: 435 } }}
-      maxWidth="xs"
-      open={open}
-    >
-      <DialogContent dividers>
-        <FormControl>
-          <RadioGroup
-            aria-labelledby="demo-radio-buttons-group-label"
-            defaultValue="Suggest Improvement"
-            value={feedbackFormData.Type}
-            onChange={handleTypeChange}
-          >
-            <FormControlLabel
-              value="Suggest Improvement"
-              control={<Radio />}
-              label="Suggest Improvement"
-            />
-            <FormControlLabel
-              value="Promote Answer"
-              control={<Radio />}
-              label="Promote Answer"
-            />
-            <FormControlLabel
-              value="Make Correction"
-              control={<Radio />}
-              label="Make Correction"
-            />
-            <FormControlLabel
-              value="Add Missing Info"
-              control={<Radio />}
-              label="Add Missing Info"
-            />
-            <FormControlLabel
-              value="Clarify Phrasing"
-              control={<Radio />}
-              label="Clarify Phrasing"
-            />
-            <FormControlLabel
-              value="Flag as Off Topic"
-              control={<Radio />}
-              label="Flag as Off Topic"
-            />
-          </RadioGroup>
-        </FormControl>
-        <TextField
-          sx={{ width: "100%", marginTop: "10px" }}
-          variant="outlined"
-          placeholder="Suggested language or additional feedback"
-          multiline
-          maxRows={10}
-          onChange={handleCommentChange}
-        />
-      </DialogContent>
-      <DialogActions>
-        <Button variant="outlined" autoFocus onClick={handleCancel}>
-          Cancel
-        </Button>
-        <Button variant="contained" onClick={handleSendFeedback}>
-          Send Feedback
-        </Button>
-      </DialogActions>
-    </Dialog>
+    <>
+      <Dialog
+        sx={{ "& .MuiDialog-paper": { width: "80%", maxHeight: 435 } }}
+        maxWidth="xs"
+        open={open}
+      >
+        <DialogContent dividers>
+          <FormControl>
+            <RadioGroup
+              aria-labelledby="demo-radio-buttons-group-label"
+              defaultValue="Suggest Improvement"
+              value={feedbackFormData.Type}
+              onChange={handleTypeChange}
+            >
+              <FormControlLabel
+                value="Suggest Improvement"
+                control={<Radio />}
+                label="Suggest Improvement"
+              />
+              <FormControlLabel
+                value="Promote Answer"
+                control={<Radio />}
+                label="Promote Answer"
+              />
+              <FormControlLabel
+                value="Make Correction"
+                control={<Radio />}
+                label="Make Correction"
+              />
+              <FormControlLabel
+                value="Add Missing Info"
+                control={<Radio />}
+                label="Add Missing Info"
+              />
+              <FormControlLabel
+                value="Clarify Phrasing"
+                control={<Radio />}
+                label="Clarify Phrasing"
+              />
+              <FormControlLabel
+                value="Flag as Off Topic"
+                control={<Radio />}
+                label="Flag as Off Topic"
+              />
+            </RadioGroup>
+          </FormControl>
+          <TextField
+            sx={{ width: "100%", marginTop: "10px" }}
+            variant="outlined"
+            placeholder="Suggested language or additional feedback"
+            multiline
+            maxRows={10}
+            onChange={handleCommentChange}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button variant="outlined" autoFocus onClick={handleCancel}>
+            Cancel
+          </Button>
+          <Button variant="contained" onClick={handleSendFeedback}>
+            Send Feedback
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Snackbar
+        open={alertOpen}
+        autoHideDuration={6000}
+        onClose={closeAlert}
+        anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+      >
+        <Alert
+          // variant="filled"
+          onClose={closeAlert}
+          severity={alertSeverity}
+          sx={{ width: "100%" }}
+        >
+          {alertMessage}
+        </Alert>
+      </Snackbar>
+    </>
   );
 }
