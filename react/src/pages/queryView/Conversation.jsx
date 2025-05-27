@@ -31,14 +31,14 @@ function Conversation({ messages, errorMessage, isQuerying }) {
     ) : null;
   };
 
-  const addLookup = async (fragment) => {
+  const addLookup = async (fragment, seq) => {
     // make addLookup request
     try {
       const authParams = await createAuthenticationParams();
       const url = `/add-lookup?${authParams}`;
       const body = {
         Topic: currentTopic.topicId,
-        Seq: currentTopic.seq,
+        Seq: seq,
         Fragment: fragment,
         Count: 5,
         Threshold: 1,
@@ -69,7 +69,8 @@ function Conversation({ messages, errorMessage, isQuerying }) {
     );
   };
 
-  const Answer = ({ text }) => {
+  const Answer = ({ message }) => {
+    let text = message.text;
     return (
       <Box>
         {text.map((line) => {
@@ -84,7 +85,7 @@ function Conversation({ messages, errorMessage, isQuerying }) {
                       minWidth: "auto",
                     }}
                     color="primary"
-                    onClick={() => addLookup(line)}
+                    onClick={() => addLookup(line, message.seq)}
                   >
                     {/* TODO mark "already added" fragments */}
                     <Tooltip
@@ -116,7 +117,7 @@ function Conversation({ messages, errorMessage, isQuerying }) {
               message.type === "question" ? (
                 <Question text={message.text} />
               ) : (
-                <Answer text={message.text} />
+                <Answer message={message} />
               )
             )}
           </Box>
