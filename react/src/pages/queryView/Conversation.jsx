@@ -10,8 +10,11 @@ import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import InsertCommentIcon from "@mui/icons-material/InsertComment";
 import PlaylistAddIcon from "@mui/icons-material/PlaylistAdd";
 import LinearProgress from "@mui/material/LinearProgress";
+import { FeedbackModal } from "./FeedbackModal";
 
 function Conversation({ messages, errorMessage, isQuerying }) {
+  const [feedbackModalOpen, setFeedbackModalOpen] = useState(false);
+  const [feedbackModalData, setFeedbackModalData] = useState({});
   const { currentTopic } = useTopic();
   const bottomRef = useRef(null);
 
@@ -21,6 +24,15 @@ function Conversation({ messages, errorMessage, isQuerying }) {
       behavior: "smooth",
     });
   }, [messages]);
+
+  const handleClose = () => {
+    setFeedbackModalOpen(false);
+  };
+
+  const handleFeedbackModalOpen = (answer, fragment) => {
+    console.log("answer: ", answer);
+    console.log("frag: ", fragment);
+  };
 
   const Egg = ({ line }) => {
     return line.toLowerCase().includes("easter egg") && Math.random() < 0.1 ? (
@@ -101,13 +113,10 @@ function Conversation({ messages, errorMessage, isQuerying }) {
                         minWidth: "auto",
                       }}
                       color="primary"
-                      onClick={() => addLookup(line)}
+                      onClick={() => handleFeedbackModalOpen(message, line)}
                     >
-                      {/* TODO mark "already added" fragments */}
-                      <Tooltip
-                        title={`Add reference material for this answer to the Documents tab.`}
-                      >
-                        <PlaylistAddIcon />
+                      <Tooltip title={`Give feedback on this response`}>
+                        <InsertCommentIcon />
                       </Tooltip>
                     </Button>
                   </>
@@ -121,38 +130,41 @@ function Conversation({ messages, errorMessage, isQuerying }) {
   };
 
   return (
-    <Box
-      sx={{
-        marginBottom: "200px",
-      }}
-      className="scrollable-content"
-    >
-      {messages.length > 0 && (
-        <>
-          <Box>
-            {messages.map((message, index) =>
-              message.type === "question" ? (
-                <Question text={message.text} />
-              ) : (
-                <Answer message={message} />
-              )
-            )}
-          </Box>
+    <>
+      <Box
+        sx={{
+          marginBottom: "200px",
+        }}
+        className="scrollable-content"
+      >
+        {messages.length > 0 && (
           <>
-            {isQuerying.isQuerying && (
-              <>
-                <Typography sx={{ marginBottom: "5px", padding: "10px" }}>
-                  {isQuerying.message}
-                </Typography>
-                <LinearProgress />
-              </>
-            )}
-            {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
+            <Box>
+              {messages.map((message, index) =>
+                message.type === "question" ? (
+                  <Question text={message.text} />
+                ) : (
+                  <Answer message={message} />
+                )
+              )}
+            </Box>
+            <>
+              {isQuerying.isQuerying && (
+                <>
+                  <Typography sx={{ marginBottom: "5px", padding: "10px" }}>
+                    {isQuerying.message}
+                  </Typography>
+                  <LinearProgress />
+                </>
+              )}
+              {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
+            </>
+            <div ref={bottomRef} />
           </>
-          <div ref={bottomRef} />
-        </>
-      )}
-    </Box>
+        )}
+      </Box>
+      <FeedbackModal open={feedbackModalOpen} handleClose={handleClose} />
+    </>
   );
 }
 
