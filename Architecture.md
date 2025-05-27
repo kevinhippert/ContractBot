@@ -314,9 +314,9 @@ Types can include:
 - Suggest Improvement
 - Promote Answer
 - Make Correction
-- Note Missing Info
-- Note Unclear Phrasing
-- Note Off Topic
+- Add Missing Info
+- Clarify Phrasing
+- Flag as Off Topic
 
 Response will be a 200 HTTP status code if it is stored successfully, and
 resemble:
