@@ -2,7 +2,15 @@ import React, { useState, useEffect } from "react";
 import api from "../../api/api";
 import { createAuthenticationParams } from "../../authentication/authentication";
 import { useTopic } from "../../contexts/TopicContext";
-import { Box, Paper, Button, Container, Typography } from "@mui/material/";
+import {
+  Box,
+  Paper,
+  Button,
+  Container,
+  Typography,
+  Chip,
+  Divider,
+} from "@mui/material/";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import Table from "@mui/material/Table";
@@ -40,20 +48,26 @@ function DocumentsView() {
   const Query = ({ queryText }) => {
     let { text } = formatQuery(queryText);
     return (
-      <Box sx={{ margin: "4px 0" }}>
+      <Box
+        sx={{
+          margin: "4px 0",
+          display: "flex",
+          justifyContent: "space-between",
+        }}
+      >
         <Typography>
-          <i>Query:</i> {text}
+          Query: <i>{text}</i>
         </Typography>
       </Box>
     );
   };
 
   const Fragment = ({ text }) => {
-    let frag = text.slice(0, 200) + "...";
+    let frag = text;
     return (
       <>
         <Typography>
-          <i>Reference fragment:</i> {frag}
+          Reference fragment: <i>{frag}</i>
         </Typography>
       </>
     );
@@ -142,7 +156,8 @@ function DocumentsView() {
 
   return (
     <Box className="scrollable-content" sx={{ paddingBottom: "100px" }}>
-      <Typography variant="h6">{`Reference Documents`}</Typography>
+      <Typography variant="h6">Reference Documents</Typography>
+      <Divider sx={{ margin: "15px 0" }} />
       {lookups.length === 0 ? (
         <Typography>No documents to show</Typography>
       ) : (
