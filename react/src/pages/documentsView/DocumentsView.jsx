@@ -5,20 +5,14 @@ import { useTopic } from "../../contexts/TopicContext";
 import {
   Box,
   Paper,
-  Button,
-  Container,
   Typography,
-  Chip,
   Divider,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableRow,
 } from "@mui/material/";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
 import { formatQuery } from "../../utils/utils";
 
 function DocumentsView() {
@@ -74,16 +68,7 @@ function DocumentsView() {
   };
 
   const Document = ({ text }) => {
-    let metaData;
-    let docLines;
-    let column1RowCount;
-    const firstColumnWidth = "20%";
-    if (text.includes(".....")) {
-      let result = text.split(".....");
-      metaData = result[0].split("\n");
-      docLines = result[1].split("\n");
-      column1RowCount = metaData.length;
-    } else {
+    if (!text.includes(".....")) {
       return (
         <Paper
           elevation={0}
@@ -101,6 +86,12 @@ function DocumentsView() {
         </Paper>
       );
     }
+
+    const result = text.split(".....");
+    const metaData = result[0].split("\n");
+    const docLines = result[1].split("\n");
+    const column1RowCount = metaData.length;
+    const firstColumnWidth = "20%";
 
     return (
       <Box sx={{ margin: "16px 0" }}>
@@ -129,13 +120,13 @@ function DocumentsView() {
                     {row}
                   </TableCell>
 
-                  {/* Second Column Cell (only rendered in the first row) */}
+                  {/* Second Column ONE BIG CELL */}
                   {index === 0 && (
                     <TableCell
                       rowSpan={column1RowCount}
                       sx={{
-                        verticalAlign: "top", // Align content to the top of the spanned cell
-                        borderLeft: "1px solid #ddd", // Visual separator
+                        verticalAlign: "top",
+                        borderLeft: "1px solid #ddd",
                       }}
                     >
                       {docLines.map((line) => (
