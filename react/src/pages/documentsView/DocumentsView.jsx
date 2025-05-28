@@ -52,20 +52,59 @@ function DocumentsView() {
   };
 
   const Document = ({ text }) => {
-    let docLines = text.split("\n");
-    let doc = docLines.map((line) => (
-      <ReactMarkdown children={line} remarkPlugins={[remarkGfm]} />
-    ));
+    let metaData;
+    let docLines;
+    if (text.includes(".....")) {
+      let result = text.split(".....");
+      metaData = result[0].split("\n");
+      docLines = result[1].split("\n");
+    } else {
+      return (
+        <Paper
+          elevation={0}
+          sx={{
+            backgroundColor: "#f4f4f4",
+            margin: "15px 0",
+            display: "flex",
+            width: "100%",
+            borderRadius: "8px",
+          }}
+        >
+          <Box sx={{ padding: "10px 10px" }}>
+            <Typography>{text}</Typography>
+          </Box>
+        </Paper>
+      );
+    }
+
     return (
       <Paper
         elevation={0}
         sx={{
           backgroundColor: "#f4f4f4",
-          padding: "2px 20px",
           margin: "15px 0",
+          display: "flex",
+          width: "100%",
+          borderRadius: "8px",
         }}
       >
-        {doc}
+        <Box
+          sx={{
+            padding: "10px 10px",
+            width: "20%",
+            flexGrow: 0,
+            flexShrink: 0,
+          }}
+        >
+          {metaData.map((line) => (
+            <ReactMarkdown children={line} remarkPlugins={[remarkGfm]} />
+          ))}
+        </Box>
+        <Box sx={{ padding: "10px 10px" }}>
+          {docLines.map((line) => (
+            <ReactMarkdown children={line} remarkPlugins={[remarkGfm]} />
+          ))}
+        </Box>
       </Paper>
     );
   };
