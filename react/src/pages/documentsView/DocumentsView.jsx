@@ -11,6 +11,7 @@ import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
+import { formatQuery } from "../../utils/utils";
 
 function DocumentsView() {
   const [lookups, setLookups] = useState([]);
@@ -36,7 +37,8 @@ function DocumentsView() {
     }
   };
 
-  const Query = ({ text }) => {
+  const Query = ({ queryText }) => {
+    let { text } = formatQuery(queryText);
     return (
       <Box sx={{ margin: "4px 0" }}>
         <Typography>
@@ -105,7 +107,7 @@ function DocumentsView() {
                     component="th"
                     scope="row"
                     sx={{
-                      padding: "10px 16px",
+                      padding: "6px 9px",
                       width: firstColumnWidth,
                       wordBreak: "break-word",
                     }}
@@ -146,7 +148,7 @@ function DocumentsView() {
       ) : (
         lookups.map((lookup, lookupIndex) => (
           <Box key={`doc-${lookupIndex}`}>
-            <Query text={lookup.Query} />
+            <Query queryText={lookup.Query} />
             {lookup.Fragments.map((fragmentObject, fragmentObjIndex) => (
               <Box key={`fragment-obj-${lookupIndex}-${fragmentObjIndex}`}>
                 {Object.entries(fragmentObject).map(([frag, docs]) => (

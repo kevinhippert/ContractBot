@@ -20,6 +20,7 @@ import InsertCommentIcon from "@mui/icons-material/InsertComment";
 import PlaylistAddIcon from "@mui/icons-material/PlaylistAdd";
 import LinearProgress from "@mui/material/LinearProgress";
 import { FeedbackModal } from "./FeedbackModal";
+import { formatQuery } from "../../utils/utils";
 
 function Conversation({ messages, errorMessage, isQuerying }) {
   const [feedbackModalOpen, setFeedbackModalOpen] = useState(false);
@@ -82,17 +83,7 @@ function Conversation({ messages, errorMessage, isQuerying }) {
   };
 
   const Question = ({ question }) => {
-    const regex = /:\s*([A-Z\s]+)\n/g;
-
-    let text = question.text[0];
-    let categories = [];
-    if (text.includes(".....")) {
-      let result = text.split(".....");
-      text = result[1];
-      categories = Array.from(result[0].matchAll(regex), (match) =>
-        match[1].trim()
-      );
-    }
+    const { text, categories } = formatQuery(question.text[0]);
     return (
       <Box>
         <Box
