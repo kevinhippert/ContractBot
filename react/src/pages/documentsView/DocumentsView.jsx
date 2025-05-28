@@ -2,9 +2,18 @@ import React, { useState, useEffect } from "react";
 import api from "../../api/api";
 import { createAuthenticationParams } from "../../authentication/authentication";
 import { useTopic } from "../../contexts/TopicContext";
-import { Box, Paper, Button, Container, Typography } from "@mui/material/";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
+import {
+  Box,
+  Paper,
+  Typography,
+  Divider,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableRow,
+} from "@mui/material/";
+import { formatQuery } from "../../utils/utils";
 
 function DocumentsView() {
   const [lookups, setLookups] = useState([]);
@@ -30,55 +39,122 @@ function DocumentsView() {
     }
   };
 
-  const Query = ({ text }) => {
+  const Query = ({ queryText }) => {
+    let { text } = formatQuery(queryText);
     return (
-      <Box>
+      <Box
+        sx={{
+          margin: "4px 0",
+          display: "flex",
+          justifyContent: "space-between",
+        }}
+      >
         <Typography>
-          <i>Query:</i> {text}
+          Query: <i>{text}</i>
         </Typography>
       </Box>
     );
   };
 
   const Fragment = ({ text }) => {
-    let frag = text.slice(0, 200) + "...";
+    let frag = text;
     return (
       <>
         <Typography>
-          <i>Reference fragment:</i> {frag}
+          Reference fragment: <i>{frag}</i>
         </Typography>
       </>
     );
   };
 
   const Document = ({ text }) => {
-    let docLines = text.split("\n");
-    let doc = docLines.map((line) => (
-      <ReactMarkdown children={line} remarkPlugins={[remarkGfm]} />
-    ));
+    if (!text.includes(".....")) {
+      return (
+        <Paper
+          elevation={0}
+          sx={{
+            backgroundColor: "#f4f4f4",
+            margin: "15px 0",
+            display: "flex",
+            width: "100%",
+            borderRadius: "8px",
+          }}
+        >
+          <Box sx={{ padding: "10px 10px" }}>
+            <Typography>{text}</Typography>
+          </Box>
+        </Paper>
+      );
+    }
+
+    const result = text.split(".....");
+    const metaData = result[0].split("\n");
+    const docLines = result[1].split("\n");
+    const column1RowCount = metaData.length;
+    const firstColumnWidth = "20%";
+
     return (
-      <Paper
-        elevation={0}
-        sx={{
-          backgroundColor: "#f4f4f4",
-          padding: "2px 20px",
-          margin: "15px 0",
-        }}
-      >
-        {doc}
-      </Paper>
+      <Box sx={{ margin: "16px 0" }}>
+        <TableContainer
+          component={Paper}
+          elevation={0}
+          sx={{ border: "1px solid #ddd" }}
+        >
+          <Table
+            sx={{ minWidth: 400, tableLayout: "fixed" }}
+            aria-label="custom table with merged cell"
+          >
+            <TableBody>
+              {metaData.map((row, index) => (
+                <TableRow key={row.id}>
+                  {/* First Column Cells */}
+                  <TableCell
+                    component="th"
+                    scope="row"
+                    sx={{
+                      padding: "6px 9px",
+                      width: firstColumnWidth,
+                      wordBreak: "break-word",
+                    }}
+                  >
+                    {row}
+                  </TableCell>
+
+                  {/* Second Column ONE BIG CELL */}
+                  {index === 0 && (
+                    <TableCell
+                      rowSpan={column1RowCount}
+                      sx={{
+                        verticalAlign: "top",
+                        borderLeft: "1px solid #ddd",
+                      }}
+                    >
+                      {docLines.map((line) => (
+                        <Typography sx={{ fontFamily: "serif" }}>
+                          {line}
+                        </Typography>
+                      ))}
+                    </TableCell>
+                  )}
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Box>
     );
   };
 
   return (
     <Box className="scrollable-content" sx={{ paddingBottom: "100px" }}>
-      <Typography variant="h6">{`Reference Documents`}</Typography>
+      <Typography variant="h6">Reference Documents</Typography>
+      <Divider sx={{ margin: "15px 0" }} />
       {lookups.length === 0 ? (
         <Typography>No documents to show</Typography>
       ) : (
         lookups.map((lookup, lookupIndex) => (
           <Box key={`doc-${lookupIndex}`}>
-            <Query text={lookup.Query} />
+            <Query queryText={lookup.Query} />
             {lookup.Fragments.map((fragmentObject, fragmentObjIndex) => (
               <Box key={`fragment-obj-${lookupIndex}-${fragmentObjIndex}`}>
                 {Object.entries(fragmentObject).map(([frag, docs]) => (
