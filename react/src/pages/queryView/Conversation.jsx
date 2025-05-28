@@ -87,9 +87,9 @@ function Conversation({ messages, errorMessage, isQuerying }) {
     let text = question.text[0];
     let categories = [];
     if (text.includes(".....")) {
-      let foo = text.split(".....");
-      text = foo[1];
-      categories = Array.from(foo[0].matchAll(regex), (match) =>
+      let result = text.split(".....");
+      text = result[1];
+      categories = Array.from(result[0].matchAll(regex), (match) =>
         match[1].trim()
       );
     }
