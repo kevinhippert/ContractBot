@@ -5,6 +5,12 @@ import { useTopic } from "../../contexts/TopicContext";
 import { Box, Paper, Button, Container, Typography } from "@mui/material/";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
 
 function DocumentsView() {
   const [lookups, setLookups] = useState([]);
@@ -54,10 +60,13 @@ function DocumentsView() {
   const Document = ({ text }) => {
     let metaData;
     let docLines;
+    let column1RowCount;
+    const firstColumnWidth = "20%";
     if (text.includes(".....")) {
       let result = text.split(".....");
       metaData = result[0].split("\n");
       docLines = result[1].split("\n");
+      column1RowCount = metaData.length;
     } else {
       return (
         <Paper
@@ -78,34 +87,52 @@ function DocumentsView() {
     }
 
     return (
-      <Paper
-        elevation={0}
-        sx={{
-          backgroundColor: "#f4f4f4",
-          margin: "15px 0",
-          display: "flex",
-          width: "100%",
-          borderRadius: "8px",
-        }}
-      >
-        <Box
-          sx={{
-            padding: "10px 10px",
-            width: "20%",
-            flexGrow: 0,
-            flexShrink: 0,
-          }}
+      <Box sx={{ margin: "16px 0" }}>
+        <TableContainer
+          component={Paper}
+          elevation={0}
+          sx={{ border: "1px solid #ddd" }}
         >
-          {metaData.map((line) => (
-            <ReactMarkdown children={line} remarkPlugins={[remarkGfm]} />
-          ))}
-        </Box>
-        <Box sx={{ padding: "10px 10px" }}>
-          {docLines.map((line) => (
-            <ReactMarkdown children={line} remarkPlugins={[remarkGfm]} />
-          ))}
-        </Box>
-      </Paper>
+          <Table
+            sx={{ minWidth: 400, tableLayout: "fixed" }}
+            aria-label="custom table with merged cell"
+          >
+            <TableBody>
+              {metaData.map((row, index) => (
+                <TableRow key={row.id}>
+                  {/* First Column Cells */}
+                  <TableCell
+                    component="th"
+                    scope="row"
+                    sx={{
+                      padding: "10px 16px",
+                      width: firstColumnWidth,
+                      wordBreak: "break-word",
+                    }}
+                  >
+                    {row}
+                  </TableCell>
+
+                  {/* Second Column Cell (only rendered in the first row) */}
+                  {index === 0 && (
+                    <TableCell
+                      rowSpan={column1RowCount}
+                      sx={{
+                        verticalAlign: "top", // Align content to the top of the spanned cell
+                        borderLeft: "1px solid #ddd", // Visual separator
+                      }}
+                    >
+                      {docLines.map((line) => (
+                        <Typography>{line}</Typography>
+                      ))}
+                    </TableCell>
+                  )}
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Box>
     );
   };
 
