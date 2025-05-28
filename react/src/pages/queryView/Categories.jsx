@@ -53,6 +53,7 @@ function Categories({ control }) {
                 <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
                   {selected.map((chipValue) => (
                     <Chip
+                      variant="outlined"
                       key={chipValue}
                       label={chipValue}
                       onDelete={(event) => {

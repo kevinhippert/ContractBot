@@ -16,6 +16,9 @@ export const createTopicId = () => {
 };
 
 export const getTopicDisplayName = (id, name) => {
+  if (name.includes(".....")) {
+    name = name.split(".....")[1];
+  }
   return name
     ? name.length > 100
       ? name.slice(0, 100) + "..."
