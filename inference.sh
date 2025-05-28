@@ -13,9 +13,13 @@ fi
 MODELS="
     deepseek-r1:7b
     deepseek-r1:32b
-    deepseek-r1-70b
+    deepseek-r1:70b
     gemma3:27b
-    qwq
+    qwq:32b
+    qwen3:32b
+    llama3.3:70b
+    phi4:14b
+
 "
 for model in $MODELS; do
     ollama pull $model

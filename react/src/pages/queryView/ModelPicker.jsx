@@ -10,7 +10,7 @@ export default function ModelPicker({ register, watch }) {
   const selectedModel = watch("model");
   const models = [
     {
-      name: "qwq",
+      name: "qwq:32b",
       description:
         "Alternative | Sometimes better than default | ~50s for response",
       value: "alternate",
@@ -30,6 +30,21 @@ export default function ModelPicker({ register, watch }) {
       name: "deepseek-r1:7b",
       description: "Fastest | Lower quality answers | ~15s for response",
       value: "fastest",
+    },
+    {
+      name: "qwen3:32b",
+      description: "Experimental | TBD Quality | TBD response",
+      value: "qwen3:32b",
+    },
+    {
+      name: "llama3.3:70b",
+      description: "Experimental | TBD Quality | slower response",
+      value: "llama3.3:70b",
+    },
+    {
+      name: "phi4:14b",
+      description: "Experimental | TBD Quality | faster response",
+      value: "phi4:14b",
     },
   ];
 
