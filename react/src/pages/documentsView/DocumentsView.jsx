@@ -38,7 +38,7 @@ function DocumentsView() {
 
   const Query = ({ text }) => {
     return (
-      <Box>
+      <Box sx={{ margin: "4px 0" }}>
         <Typography>
           <i>Query:</i> {text}
         </Typography>
@@ -123,7 +123,9 @@ function DocumentsView() {
                       }}
                     >
                       {docLines.map((line) => (
-                        <Typography>{line}</Typography>
+                        <Typography sx={{ fontFamily: "serif" }}>
+                          {line}
+                        </Typography>
                       ))}
                     </TableCell>
                   )}
