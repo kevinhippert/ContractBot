@@ -29,8 +29,8 @@ function Categories({ control }) {
   ];
 
   return (
-    <Box sx={{ width: "50%" }}>
-      <FormControl>
+    <Box sx={{ width: "50%", margin: "10px 0" }}>
+      <FormControl sx={{ width: "100%" }}>
         <InputLabel id="categories-label">Categories</InputLabel>
         <Controller
           name="categories"
