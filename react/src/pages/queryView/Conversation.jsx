@@ -1,5 +1,13 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Alert, Box, Button, Paper, Typography, Tooltip } from "@mui/material";
+import {
+  Alert,
+  Box,
+  Button,
+  Paper,
+  Typography,
+  Tooltip,
+  Chip,
+} from "@mui/material";
 import { createAuthenticationParams } from "../../authentication/authentication";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -73,19 +81,42 @@ function Conversation({ messages, errorMessage, isQuerying }) {
     }
   };
 
-  const Question = ({ text }) => {
+  const Question = ({ question }) => {
+    const regex = /:\s*([A-Z\s]+)\n/g;
+
+    let text = question.text[0];
+    let categories = [];
+    if (text.includes(".....")) {
+      let result = text.split(".....");
+      text = result[1];
+      categories = Array.from(result[0].matchAll(regex), (match) =>
+        match[1].trim()
+      );
+    }
     return (
       <Box>
         <Box
           sx={{
             padding: "6px 12px",
-            backgroundColor: "#c6a0f063",
+            backgroundColor: "secondary.main",
+            color: "secondary.contrastText",
             borderRadius: "4px",
+            display: "flex",
+            justifyContent: "space-between",
           }}
         >
-          {text.map((line) => (
-            <Typography>{line}</Typography>
-          ))}
+          <Typography>{text}</Typography>
+          <Box>
+            {categories.map((category, index) => (
+              <Chip
+                variant="outlined"
+                color="primary"
+                label={category}
+                key={index}
+                sx={{ margin: "2px", backgroundColor: "white" }}
+              />
+            ))}
+          </Box>
         </Box>
       </Box>
     );
@@ -153,7 +184,7 @@ function Conversation({ messages, errorMessage, isQuerying }) {
             <Box>
               {messages.map((message, index) =>
                 message.type === "question" ? (
-                  <Question text={message.text} />
+                  <Question question={message} />
                 ) : (
                   <Answer answer={message} query={messages[index - 1].text} />
                 )

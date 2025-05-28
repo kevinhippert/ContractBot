@@ -59,7 +59,7 @@ export default function ModelPicker({ register, watch }) {
   };
 
   return (
-    <>
+    <Box sx={{ width: "50%" }}>
       <InputLabel onClick={toggleShowSelector}>
         {selectedModel ? `Model: ${getSelectedModelLabel()}` : "Model"}
       </InputLabel>
@@ -73,6 +73,6 @@ export default function ModelPicker({ register, watch }) {
             ))}
         </select>
       )}
-    </>
+    </Box>
   );
 }
