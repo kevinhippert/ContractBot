@@ -1,6 +1,5 @@
 import React from "react";
 import {
-  Button,
   Box,
   Select,
   MenuItem,
@@ -29,7 +28,7 @@ function Categories({ control }) {
   ];
 
   return (
-    <Box sx={{ width: "50%", margin: "10px 0" }}>
+    <Box sx={{ width: "100%", margin: "10px 0" }}>
       <FormControl sx={{ width: "100%" }}>
         <InputLabel id="categories-label">Categories</InputLabel>
         <Controller
@@ -41,24 +40,45 @@ function Categories({ control }) {
               labelId="categories-label" // Link label to select
               id="categories-select"
               multiple
-              value={value || []} // Ensure value is always an array, even if undefined initially
+              value={value || []} // value is always an array, even if undefined initially
               onChange={(event) => {
-                // MUI Select for multiple selection passes the array of selected values directly
-                onChange(event.target.value); // Pass the updated array directly to react-hook-form's onChange
+                onChange(event.target.value); // pass the updated array directly to react-hook-form's onChange
               }}
               input={
                 <OutlinedInput id="select-multiple-chip" label="Categories" />
-              } // Label for the input itself
-              renderValue={(selected) => selected.join(", ")}
-              error={!!error} // Apply error state
-              // helperText={error ? error.message : null} // Display validation message if needed
+              }
+              renderValue={(
+                selected // CHIPS
+              ) => (
+                <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
+                  {selected.map((chipValue) => (
+                    <Chip
+                      key={chipValue}
+                      label={chipValue}
+                      onDelete={(event) => {
+                        // remove Chip by clicking the X
+                        event.stopPropagation();
+                        onChange(value.filter((val) => val !== chipValue));
+                      }}
+                      onMouseDown={(event) => {
+                        event.stopPropagation(); // keep dropdown from opening when clicking Chip
+                      }}
+                    />
+                  ))}
+                </Box>
+              )}
+              error={!!error}
             >
-              {categories.map((category) => (
-                <MenuItem key={category} value={category}>
-                  <Checkbox checked={value && value.includes(category)} />
-                  <ListItemText primary={category} />
-                </MenuItem>
-              ))}
+              {categories.map(
+                (
+                  category // dropdown menu
+                ) => (
+                  <MenuItem key={category} value={category}>
+                    <Checkbox checked={value && value.includes(category)} />
+                    <ListItemText primary={category} />
+                  </MenuItem>
+                )
+              )}
             </Select>
           )}
         />
