@@ -79,7 +79,8 @@ function Conversation({ messages, errorMessage, isQuerying }) {
         <Box
           sx={{
             padding: "6px 12px",
-            backgroundColor: "#c6a0f063",
+            backgroundColor: "secondary.main",
+            color: "secondary.contrastText",
             borderRadius: "4px",
           }}
         >

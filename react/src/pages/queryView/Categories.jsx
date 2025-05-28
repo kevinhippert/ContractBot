@@ -63,6 +63,7 @@ function Categories({ control }) {
                       onMouseDown={(event) => {
                         event.stopPropagation(); // keep dropdown from opening when clicking Chip
                       }}
+                      color="primary"
                     />
                   ))}
                 </Box>
