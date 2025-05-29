@@ -13,10 +13,6 @@ export function TopicProvider({ children }) {
   const { user } = useAuth();
 
   useEffect(() => {
-    console.log("currentTopic: ", currentTopic);
-  }, [currentTopic]);
-
-  useEffect(() => {
     // fetch and set topics
     async function fetchUserTopics() {
       try {
