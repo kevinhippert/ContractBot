@@ -3,7 +3,6 @@ import { formatQuery } from "../utils/utils";
 import { Box, Chip, Typography } from "@mui/material";
 
 function Question({ query }) {
-  console.log(query);
   const { text, categories } = formatQuery(query);
   return (
     <Box>

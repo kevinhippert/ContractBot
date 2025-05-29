@@ -26,7 +26,6 @@ function FragmentAccordion({ frags }) {
   }, [frags]);
 
   const Document = ({ text }) => {
-    console.log("text: ", text);
     if (!text.includes(".....")) {
       return (
         <Paper

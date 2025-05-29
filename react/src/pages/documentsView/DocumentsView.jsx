@@ -21,8 +21,7 @@ function DocumentsView() {
       const url = `/get-lookups?${authParams}&Topic=${currentTopic.topicId}`;
       const res = await api.get(url);
       if (res.data) {
-        // setLookups(res.data.Lookups);
-        transformLookupData(res.data.Lookups);
+        setLookups(transformLookupData(res.data.Lookups));
       } else {
         console.log("No data in response: ", res);
       }
@@ -33,23 +32,30 @@ function DocumentsView() {
   };
 
   const transformLookupData = (lookups) => {
-    let newLookupsStructure = [];
+    // temporary object to aggregate fragments by Query
+    const aggregatedQueries = {};
 
     lookups.forEach((lookup) => {
-      let currentQuery = "";
-      let currentLookup = {};
-      if (lookup["Query"] !== currentQuery) {
-        newLookupsStructure.push(currentLookup);
-        currentQuery = lookup["Query"];
-        currentLookup[lookup["Query"]] = lookup["Fragments"];
+      const query = lookup.Query;
+      const fragments = lookup.Fragments; // This is an array of fragment objects
+
+      // If the query already exists in our aggregated object,
+      // concatenate the new fragments to the existing ones.
+      if (aggregatedQueries[query]) {
+        aggregatedQueries[query] = aggregatedQueries[query].concat(fragments);
       } else {
-        let fragsToAppend = lookup["Fragments"];
-        let fragsAppended =
-          currentLookup[lookup["Fragments"]].push(fragsToAppend);
-        currentLookup[lookup["Fragments"]] = fragsAppended;
+        // If the query is new, add it with its fragments array.
+        aggregatedQueries[query] = fragments;
       }
     });
-    setLookups(newLookupsStructure);
+
+    // convert the aggregated object into the desired array of objects format
+    const newLookupsStructure = Object.entries(aggregatedQueries).map(
+      ([query, fragments]) => {
+        return { [query]: fragments };
+      }
+    );
+    return newLookupsStructure;
   };
 
   return (
@@ -58,10 +64,10 @@ function DocumentsView() {
         Reference Documents
       </Typography>
       {lookups.map((lookup) =>
-        Object.entries(lookup).map(([query, fragment]) => (
+        Object.entries(lookup).map(([query, fragmentOjbect]) => (
           <Box key={query}>
             <Question query={query} />
-            {Object.values(fragment).map((frags) => (
+            {Object.values(fragmentOjbect).map((frags) => (
               <FragmentAccordion frags={frags} />
             ))}
           </Box>
