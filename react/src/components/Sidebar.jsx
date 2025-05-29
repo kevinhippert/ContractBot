@@ -28,7 +28,13 @@ export default function Sidebar({ view }) {
   };
 
   return (
-    <Box sx={{ width: "250px" }}>
+    <Box
+      sx={{
+        marginTop: "85px",
+        width: "300px",
+      }}
+      className="scrollable-content"
+    >
       <nav>
         {topics?.length && (
           <List sx={{ padding: "0px" }}>
@@ -67,7 +73,10 @@ export default function Sidebar({ view }) {
         )}
       </nav>
       {view === "queries" && (
-        <Button onClick={handleNewTopicClick}>
+        <Button
+          onClick={handleNewTopicClick}
+          sx={{ margin: "7px 0", flexShrink: 0 }}
+        >
           <AddIcon />
           new topic
         </Button>
