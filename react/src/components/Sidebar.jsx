@@ -57,8 +57,7 @@ export default function Sidebar({ view }) {
                     "&.Mui-selected": {
                       backgroundColor: "secondary.main",
                       color: "secondary.contrastText",
-                      borderRight: "4px solid",
-                      borderColor: "secondary.dark",
+
                       "&:hover": {
                         backgroundColor: "secondary.dark",
                       },
@@ -75,7 +74,7 @@ export default function Sidebar({ view }) {
       {view === "queries" && (
         <Button
           onClick={handleNewTopicClick}
-          sx={{ margin: "7px 0", flexShrink: 0 }}
+          sx={{ margin: "7px 0", flexShrink: 0, width: "100%" }}
         >
           <AddIcon />
           new topic
