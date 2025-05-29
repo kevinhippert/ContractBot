@@ -176,7 +176,7 @@ function DocumentsView() {
           <Box key={query}>
             <Query queryText={query} />
             {Object.values(fragment).map((docs) => (
-              <FragmentAccordion docs={docs} />
+              <FragmentAccordion document={docs} />
             ))}
           </Box>
         ))
