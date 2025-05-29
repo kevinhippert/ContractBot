@@ -31,7 +31,7 @@ export default function Sidebar({ view }) {
     <Box sx={{ width: "250px" }}>
       <nav>
         {topics?.length && (
-          <List>
+          <List sx={{ padding: "0px" }}>
             {topics.map((topic) => (
               <ListItem
                 disablePadding

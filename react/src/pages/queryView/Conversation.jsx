@@ -117,10 +117,10 @@ function Conversation({ messages, errorMessage, isQuerying }) {
     let text = answer.text;
     return (
       <Box>
-        {text.map((line) => {
+        {text.map((line, index) => {
           return (
             <>
-              <Box sx={{ display: "flex" }}>
+              <Box key={index} sx={{ display: "flex" }}>
                 <Egg line={line} />
                 <ReactMarkdown children={line} remarkPlugins={[remarkGfm]} />
                 {line.length > 240 && (
