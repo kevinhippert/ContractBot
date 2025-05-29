@@ -13,6 +13,10 @@ export function TopicProvider({ children }) {
   const { user } = useAuth();
 
   useEffect(() => {
+    console.log("currentTopic: ", currentTopic);
+  }, [currentTopic]);
+
+  useEffect(() => {
     // fetch and set topics
     async function fetchUserTopics() {
       try {
@@ -37,14 +41,20 @@ export function TopicProvider({ children }) {
   }, [user]);
 
   useEffect(() => {
-    if (topics?.length === 0) {
+    console.log("checking topics length, current topic is: ", currentTopic);
+    console.log("topics are: ", topics);
+    if (user.isAuthenticated && topics?.length === 0) {
       let initialTopic = createTopic();
       setTopics([initialTopic]);
       setNewCurrentTopic(initialTopic);
+    } else if (user.isAuthenticated) {
+      console.log("user is authenticated and there are topics: ", topics);
+      setCurrentTopic(topics[0]);
     }
   }, [topics]);
 
   const setNewCurrentTopic = (newCurrentTopic) => {
+    console.log("setNewCurrentTopic: ", newCurrentTopic);
     setCurrentTopic(newCurrentTopic);
     setTopics((prevTopics) =>
       prevTopics.map((t) => ({

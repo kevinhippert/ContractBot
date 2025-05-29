@@ -39,7 +39,7 @@ function QueryView() {
 
   useEffect(() => {
     clearMessages();
-    fetchTopicThread(currentTopic.topicId);
+    fetchTopicThread(currentTopic?.topicId);
   }, [currentTopic]);
 
   const onSubmit = async (question) => {
