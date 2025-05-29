@@ -2,17 +2,7 @@ import React, { useState, useEffect } from "react";
 import api from "../../api/api";
 import { createAuthenticationParams } from "../../authentication/authentication";
 import { useTopic } from "../../contexts/TopicContext";
-import {
-  Box,
-  Paper,
-  Typography,
-  Divider,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableRow,
-} from "@mui/material/";
+import { Box, Paper, Typography, Divider } from "@mui/material/";
 import { formatQuery } from "../../utils/utils";
 import FragmentAccordion from "./FragmentAccordion";
 
@@ -78,95 +68,6 @@ function DocumentsView() {
     );
   };
 
-  const Fragment = ({ text }) => {
-    let frag = text;
-    return (
-      <>
-        <Typography>
-          Reference fragment: <i>{frag}</i>
-        </Typography>
-      </>
-    );
-  };
-
-  const Document = ({ text }) => {
-    if (!text.includes(".....")) {
-      return (
-        <Paper
-          elevation={0}
-          sx={{
-            backgroundColor: "#f4f4f4",
-            margin: "15px 0",
-            display: "flex",
-            width: "100%",
-            borderRadius: "8px",
-          }}
-        >
-          <Box sx={{ padding: "10px 10px" }}>
-            <Typography>{text}</Typography>
-          </Box>
-        </Paper>
-      );
-    }
-
-    const result = text.split(".....");
-    const metaData = result[0].split("\n");
-    const docLines = result[1].split("\n");
-    const column1RowCount = metaData.length;
-    const firstColumnWidth = "20%";
-
-    return (
-      <Box sx={{ margin: "16px 0" }}>
-        <TableContainer
-          component={Paper}
-          elevation={0}
-          sx={{ border: "1px solid #ddd" }}
-        >
-          <Table
-            sx={{ minWidth: 400, tableLayout: "fixed" }}
-            aria-label="custom table with merged cell"
-          >
-            <TableBody>
-              {metaData.map((row, index) => (
-                <TableRow key={row.id}>
-                  {/* First Column Cells */}
-                  <TableCell
-                    component="th"
-                    scope="row"
-                    sx={{
-                      padding: "6px 9px",
-                      width: firstColumnWidth,
-                      wordBreak: "break-word",
-                    }}
-                  >
-                    {row}
-                  </TableCell>
-
-                  {/* Second Column ONE BIG CELL */}
-                  {index === 0 && (
-                    <TableCell
-                      rowSpan={column1RowCount}
-                      sx={{
-                        verticalAlign: "top",
-                        borderLeft: "1px solid #ddd",
-                      }}
-                    >
-                      {docLines.map((line) => (
-                        <Typography sx={{ fontFamily: "serif" }}>
-                          {line}
-                        </Typography>
-                      ))}
-                    </TableCell>
-                  )}
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </Box>
-    );
-  };
-
   return (
     <Box className="scrollable-content" sx={{ paddingBottom: "100px" }}>
       <Typography variant="h6">Reference Documents</Typography>
@@ -175,8 +76,8 @@ function DocumentsView() {
         Object.entries(lookup).map(([query, fragment]) => (
           <Box key={query}>
             <Query queryText={query} />
-            {Object.values(fragment).map((docs) => (
-              <FragmentAccordion document={docs} />
+            {Object.values(fragment).map((frags) => (
+              <FragmentAccordion frags={frags} />
             ))}
           </Box>
         ))

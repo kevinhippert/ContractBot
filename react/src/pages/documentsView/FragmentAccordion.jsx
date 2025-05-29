@@ -7,24 +7,109 @@ import {
   Typography,
   Button,
   Box,
+  TableContainer,
+  Table,
+  TableBody,
+  TableCell,
+  TableRow,
+  Paper,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
-function FragmentAccordion({ document }) {
+function FragmentAccordion({ frags }) {
   const [frag, setFrag] = useState("");
-  const [results, setResults] = useState([]);
+  const [documents, setDocuments] = useState([]);
 
   useEffect(() => {
-    console.log(frag);
-    console.log(results);
-  }, [frag, results]);
+    console.log("frag: ", frag);
+    console.log("documents: ", documents);
+  }, [frag, documents]);
 
   useEffect(() => {
-    if (document) {
-      setFrag(Object.keys(document));
-      setResults(document[frag]);
+    if (frags) {
+      setFrag(Object.keys(frags));
+      setDocuments(frags[frag]);
     }
-  }, [document]);
+  }, [frags]);
+
+  const Document = ({ text }) => {
+    console.log("text: ", text);
+    if (!text.includes(".....")) {
+      return (
+        <Paper
+          elevation={0}
+          sx={{
+            backgroundColor: "#f4f4f4",
+            margin: "15px 0",
+            display: "flex",
+            width: "100%",
+            borderRadius: "8px",
+          }}
+        >
+          <Box sx={{ padding: "10px 10px" }}>
+            <Typography>{text}</Typography>
+          </Box>
+        </Paper>
+      );
+    }
+
+    const result = text.split(".....");
+    const metaData = result[0].split("\n");
+    const docLines = result[1].split("\n");
+    const column1RowCount = metaData.length;
+    const firstColumnWidth = "20%";
+
+    return (
+      <Box sx={{ margin: "16px 0" }}>
+        <TableContainer
+          component={Paper}
+          elevation={0}
+          sx={{ border: "1px solid #ddd" }}
+        >
+          <Table
+            sx={{ minWidth: 400, tableLayout: "fixed" }}
+            aria-label="custom table with merged cell"
+          >
+            <TableBody>
+              {metaData.map((row, index) => (
+                <TableRow key={row.id}>
+                  {/* First Column Cells */}
+                  <TableCell
+                    component="th"
+                    scope="row"
+                    sx={{
+                      padding: "6px 9px",
+                      width: firstColumnWidth,
+                      wordBreak: "break-word",
+                    }}
+                  >
+                    {row}
+                  </TableCell>
+
+                  {/* Second Column ONE BIG CELL */}
+                  {index === 0 && (
+                    <TableCell
+                      rowSpan={column1RowCount}
+                      sx={{
+                        verticalAlign: "top",
+                        borderLeft: "1px solid #ddd",
+                      }}
+                    >
+                      {docLines.map((line) => (
+                        <Typography sx={{ fontFamily: "serif" }}>
+                          {line}
+                        </Typography>
+                      ))}
+                    </TableCell>
+                  )}
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Box>
+    );
+  };
 
   return (
     <Box>
@@ -34,11 +119,10 @@ function FragmentAccordion({ document }) {
           aria-controls="panel1-content"
           id="panel1-header"
         >
-          <Typography component="span">{frag}</Typography>
+          <Typography component="span">Reference fragment: {frag}</Typography>
         </AccordionSummary>
         <AccordionDetails>
-          {results &&
-            results.map((result) => <Typography>{result}</Typography>)}
+          {documents && documents.map((text) => <Document text={text} />)}
         </AccordionDetails>
       </Accordion>
     </Box>
