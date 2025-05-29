@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from "react";
 import {
   Accordion,
-  AccordionActions,
   AccordionSummary,
   AccordionDetails,
   Typography,
-  Button,
   Box,
   TableContainer,
   Table,
@@ -21,13 +19,8 @@ function FragmentAccordion({ frags }) {
   const [documents, setDocuments] = useState([]);
 
   useEffect(() => {
-    console.log("frag: ", frag);
-    console.log("documents: ", documents);
-  }, [frag, documents]);
-
-  useEffect(() => {
     if (frags) {
-      setFrag(Object.keys(frags));
+      setFrag(Object.keys(frags)[0]);
       setDocuments(frags[frag]);
     }
   }, [frags]);
@@ -112,14 +105,16 @@ function FragmentAccordion({ frags }) {
   };
 
   return (
-    <Box>
+    <Box sx={{ marginBottom: "5px" }}>
       <Accordion>
         <AccordionSummary
           expandIcon={<ExpandMoreIcon />}
           aria-controls="panel1-content"
           id="panel1-header"
         >
-          <Typography component="span">Reference fragment: {frag}</Typography>
+          <Typography>
+            Reference fragment: <i>{frag}</i>
+          </Typography>
         </AccordionSummary>
         <AccordionDetails>
           {documents && documents.map((text) => <Document text={text} />)}

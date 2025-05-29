@@ -5,6 +5,7 @@ import { useTopic } from "../../contexts/TopicContext";
 import { Box, Paper, Typography, Divider } from "@mui/material/";
 import { formatQuery } from "../../utils/utils";
 import FragmentAccordion from "./FragmentAccordion";
+import Question from "../../components/Question";
 
 function DocumentsView() {
   const [lookups, setLookups] = useState([]);
@@ -21,7 +22,7 @@ function DocumentsView() {
       const res = await api.get(url);
       if (res.data) {
         // setLookups(res.data.Lookups);
-        restructureLookups(res.data.Lookups);
+        transformLookupData(res.data.Lookups);
       } else {
         console.log("No data in response: ", res);
       }
@@ -31,7 +32,7 @@ function DocumentsView() {
     }
   };
 
-  const restructureLookups = (lookups) => {
+  const transformLookupData = (lookups) => {
     let newLookupsStructure = [];
 
     lookups.forEach((lookup) => {
@@ -51,31 +52,15 @@ function DocumentsView() {
     setLookups(newLookupsStructure);
   };
 
-  const Query = ({ queryText }) => {
-    let { text } = formatQuery(queryText);
-    return (
-      <Box
-        sx={{
-          margin: "4px 0",
-          display: "flex",
-          justifyContent: "space-between",
-        }}
-      >
-        <Typography>
-          Query: <i>{text}</i>
-        </Typography>
-      </Box>
-    );
-  };
-
   return (
     <Box className="scrollable-content" sx={{ paddingBottom: "100px" }}>
-      <Typography variant="h6">Reference Documents</Typography>
-      <Divider sx={{ margin: "15px 0" }} />
+      <Typography variant="h6" sx={{ marginBottom: "20px" }}>
+        Reference Documents
+      </Typography>
       {lookups.map((lookup) =>
         Object.entries(lookup).map(([query, fragment]) => (
           <Box key={query}>
-            <Query queryText={query} />
+            <Question query={query} />
             {Object.values(fragment).map((frags) => (
               <FragmentAccordion frags={frags} />
             ))}
