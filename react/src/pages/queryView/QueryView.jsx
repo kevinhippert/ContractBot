@@ -11,11 +11,10 @@ import { createAuthenticationParams } from "../../authentication/authentication"
 import ModelPicker from "./ModelPicker";
 import { useAuth } from "../../contexts/AuthContext";
 
-// This component basically acts as a giant form, which registers inputs from various child
+// This component acts as a giant form, which registers inputs from various child
 // components and handles submissions ond errors
 function QueryView() {
-  const { topics, updateCurrentTopic, updateTopicName, currentTopic } =
-    useTopic();
+  const { updateCurrentTopic, updateTopicName, currentTopic } = useTopic();
   const [errorMessage, setErrorMessage] = useState(null);
   const [loadingTopic, setLoadingTopic] = useState(false);
   const { user } = useAuth();
@@ -39,7 +38,9 @@ function QueryView() {
 
   useEffect(() => {
     clearMessages();
-    fetchTopicThread(currentTopic?.topicId);
+    if (currentTopic) {
+      fetchTopicThread(currentTopic.topicId);
+    }
   }, [currentTopic]);
 
   const onSubmit = async (question) => {

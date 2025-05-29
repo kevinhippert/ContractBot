@@ -41,20 +41,21 @@ export function TopicProvider({ children }) {
   }, [user]);
 
   useEffect(() => {
-    console.log("checking topics length, current topic is: ", currentTopic);
-    console.log("topics are: ", topics);
-    if (user.isAuthenticated && topics?.length === 0) {
-      let initialTopic = createTopic();
-      setTopics([initialTopic]);
-      setNewCurrentTopic(initialTopic);
-    } else if (user.isAuthenticated) {
-      console.log("user is authenticated and there are topics: ", topics);
-      setCurrentTopic(topics[0]);
+    if (user.isAuthenticated) {
+      if (topics.length === 0) {
+        // no topics exist yet, create a new one and set to current
+        let initialTopic = createTopic();
+        setTopics([initialTopic]);
+        setNewCurrentTopic(initialTopic);
+      } else if (!currentTopic) {
+        // user just logged in, set first topic to current
+        setCurrentTopic(topics[0]);
+      }
     }
   }, [topics]);
 
+  // only for setting a new topic which must be added to the array of topics
   const setNewCurrentTopic = (newCurrentTopic) => {
-    console.log("setNewCurrentTopic: ", newCurrentTopic);
     setCurrentTopic(newCurrentTopic);
     setTopics((prevTopics) =>
       prevTopics.map((t) => ({
