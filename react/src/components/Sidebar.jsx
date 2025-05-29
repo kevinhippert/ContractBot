@@ -13,7 +13,7 @@ import AddIcon from "@mui/icons-material/Add";
 
 export default function Sidebar({ view }) {
   // [{topicId: "abc123", topicName: "What is life?", isCurrent: true, seq: 2}, ...]
-  const { topics, setTopics, setNewCurrentTopic } = useTopic();
+  const { topics, setTopics, setNewCurrentTopic, currentTopic } = useTopic();
 
   // create a new topic, add to the list of topics, set as current topic
   const handleNewTopicClick = () => {
@@ -31,20 +31,35 @@ export default function Sidebar({ view }) {
     <Box sx={{ width: "250px" }}>
       <nav>
         {topics?.length && (
-          <List>
+          <List sx={{ padding: "0px" }}>
             {topics.map((topic) => (
               <ListItem
                 disablePadding
                 key={topic.topicId}
                 onClick={(e) => handleSelectTopic(topic)}
               >
-                <ListItemButton>
-                  <ListItemText
-                    primary={topic.topicName}
-                    sx={{
-                      color: topic.isCurrent ? "purple" : "inherit",
-                    }}
-                  />
+                <ListItemButton
+                  selected={currentTopic?.topicId === topic.topicId}
+                  sx={{
+                    // styles for un-selected ListItemButton
+                    color: "secondary.contrastText",
+                    "&:hover": {
+                      backgroundColor: "action.hover",
+                    },
+                    // styles for "selected" ListnItemButton
+                    // MUI adds the .Mui-selected class when 'selected' is true
+                    "&.Mui-selected": {
+                      backgroundColor: "secondary.main",
+                      color: "secondary.contrastText",
+                      borderRight: "4px solid",
+                      borderColor: "secondary.dark",
+                      "&:hover": {
+                        backgroundColor: "secondary.dark",
+                      },
+                    },
+                  }}
+                >
+                  <ListItemText primary={topic.topicName} />
                 </ListItemButton>
               </ListItem>
             ))}
