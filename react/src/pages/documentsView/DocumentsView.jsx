@@ -14,6 +14,7 @@ import {
   TableRow,
 } from "@mui/material/";
 import { formatQuery } from "../../utils/utils";
+import FragmentAccordion from "./FragmentAccordion";
 
 function DocumentsView() {
   const [lookups, setLookups] = useState([]);
@@ -29,7 +30,8 @@ function DocumentsView() {
       const url = `/get-lookups?${authParams}&Topic=${currentTopic.topicId}`;
       const res = await api.get(url);
       if (res.data) {
-        setLookups(res.data.Lookups);
+        // setLookups(res.data.Lookups);
+        restructureLookups(res.data.Lookups);
       } else {
         console.log("No data in response: ", res);
       }
@@ -37,6 +39,26 @@ function DocumentsView() {
       // handle error
       console.error("There was an error and here it is: ", error);
     }
+  };
+
+  const restructureLookups = (lookups) => {
+    let newLookupsStructure = [];
+
+    lookups.forEach((lookup) => {
+      let currentQuery = "";
+      let currentLookup = {};
+      if (lookup["Query"] !== currentQuery) {
+        newLookupsStructure.push(currentLookup);
+        currentQuery = lookup["Query"];
+        currentLookup[lookup["Query"]] = lookup["Fragments"];
+      } else {
+        let fragsToAppend = lookup["Fragments"];
+        let fragsAppended =
+          currentLookup[lookup["Fragments"]].push(fragsToAppend);
+        currentLookup[lookup["Fragments"]] = fragsAppended;
+      }
+    });
+    setLookups(newLookupsStructure);
   };
 
   const Query = ({ queryText }) => {
@@ -149,38 +171,12 @@ function DocumentsView() {
     <Box className="scrollable-content" sx={{ paddingBottom: "100px" }}>
       <Typography variant="h6">Reference Documents</Typography>
       <Divider sx={{ margin: "15px 0" }} />
-      {lookups.length === 0 ? (
-        <Typography>No documents to show</Typography>
-      ) : (
-        lookups.map((lookup, lookupIndex) => (
-          <Box key={`doc-${lookupIndex}`}>
-            <Query queryText={lookup.Query} />
-            {lookup.Fragments.map((fragmentObject, fragmentObjIndex) => (
-              <Box key={`fragment-obj-${lookupIndex}-${fragmentObjIndex}`}>
-                {Object.entries(fragmentObject).map(([frag, docs]) => (
-                  <Box
-                    key={`fragment-entry-${lookupIndex}-${fragmentObjIndex}-${frag}`}
-                  >
-                    <Fragment text={frag} />
-
-                    {docs.length > 0 ? (
-                      docs.map((doc, docIndex) => (
-                        <Box
-                          key={`fragment-value-${lookupIndex}-${fragmentObjIndex}-${frag}-${docIndex}`}
-                        >
-                          <Document text={doc} />
-                        </Box>
-                      ))
-                    ) : (
-                      <Document
-                        text={
-                          "No reference documents were found for this text fragment."
-                        }
-                      />
-                    )}
-                  </Box>
-                ))}
-              </Box>
+      {lookups.map((lookup) =>
+        Object.entries(lookup).map(([query, fragment]) => (
+          <Box key={query}>
+            <Query queryText={query} />
+            {Object.values(fragment).map((docs) => (
+              <FragmentAccordion docs={docs} />
             ))}
           </Box>
         ))
