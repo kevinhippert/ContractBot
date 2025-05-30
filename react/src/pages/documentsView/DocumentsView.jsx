@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import api from "../../api/api";
 import { createAuthenticationParams } from "../../authentication/authentication";
 import { useTopic } from "../../contexts/TopicContext";
@@ -50,19 +52,19 @@ function DocumentsView() {
         }}
       >
         <Typography>
-          Query: <i>{text}</i>
+          <b>Query:</b> {text}
+          <br/><b>Answer Fragment:</b>
         </Typography>
       </Box>
     );
   };
 
   const Fragment = ({ text }) => {
-    let frag = text;
     return (
       <>
-        <Typography>
-          Reference fragment: <i>{frag}</i>
-        </Typography>
+        <Box sx={{ margin: "0px 24px" }}>
+        <ReactMarkdown children={text} remarkPlugins={[remarkGfm]} />
+        </Box>
       </>
     );
   };
@@ -91,14 +93,14 @@ function DocumentsView() {
     const metaData = result[0].split("\n");
     const docLines = result[1].split("\n");
     const column1RowCount = metaData.length;
-    const firstColumnWidth = "20%";
+    const firstColumnWidth = "25%";
 
     return (
-      <Box sx={{ margin: "16px 0" }}>
+      <Box sx={{ margin: "12px 0" }}>
         <TableContainer
           component={Paper}
           elevation={0}
-          sx={{ border: "1px solid #ddd" }}
+          sx={{ border: "1px solid #ddd", borderRadius: "6px", backgroundColor: "#f8f4fd" }}
         >
           <Table
             sx={{ minWidth: 400, tableLayout: "fixed" }}
@@ -112,7 +114,7 @@ function DocumentsView() {
                     component="th"
                     scope="row"
                     sx={{
-                      padding: "6px 9px",
+                      padding: "2px 9px",
                       width: firstColumnWidth,
                       wordBreak: "break-word",
                     }}
@@ -161,6 +163,7 @@ function DocumentsView() {
                   <Box
                     key={`fragment-entry-${lookupIndex}-${fragmentObjIndex}-${frag}`}
                   >
+
                     <Fragment text={frag} />
 
                     {docs.length > 0 ? (
