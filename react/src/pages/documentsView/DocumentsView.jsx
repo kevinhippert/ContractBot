@@ -53,7 +53,8 @@ function DocumentsView() {
       >
         <Typography>
           <b>Query:</b> {text}
-          <br/><b>Answer Fragment:</b>
+          <br />
+          <b>Answer Fragment:</b>
         </Typography>
       </Box>
     );
@@ -63,7 +64,7 @@ function DocumentsView() {
     return (
       <>
         <Box sx={{ margin: "0px 24px" }}>
-        <ReactMarkdown children={text} remarkPlugins={[remarkGfm]} />
+          <ReactMarkdown children={text} remarkPlugins={[remarkGfm]} />
         </Box>
       </>
     );
@@ -96,11 +97,15 @@ function DocumentsView() {
     const firstColumnWidth = "25%";
 
     return (
-      <Box sx={{ margin: "12px 0" }}>
+      <Box sx={{ margin: "12px 0", boxShadow: "3px 2px 2px #dddddd" }}>
         <TableContainer
           component={Paper}
           elevation={0}
-          sx={{ border: "1px solid #ddd", borderRadius: "6px", backgroundColor: "#f8f4fd" }}
+          sx={{
+            border: "1px solid #ddd",
+            borderRadius: "6px",
+            backgroundColor: "#f8f4fd",
+          }}
         >
           <Table
             sx={{ minWidth: 400, tableLayout: "fixed" }}
@@ -114,7 +119,7 @@ function DocumentsView() {
                     component="th"
                     scope="row"
                     sx={{
-                      padding: "2px 9px",
+                      padding: "4px 9px",
                       width: firstColumnWidth,
                       wordBreak: "break-word",
                     }}
@@ -163,7 +168,6 @@ function DocumentsView() {
                   <Box
                     key={`fragment-entry-${lookupIndex}-${fragmentObjIndex}-${frag}`}
                   >
-
                     <Fragment text={frag} />
 
                     {docs.length > 0 ? (
