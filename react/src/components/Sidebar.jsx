@@ -74,7 +74,8 @@ export default function Sidebar({ view }) {
       {view === "queries" && (
         <Button
           onClick={handleNewTopicClick}
-          sx={{ margin: "7px 0", flexShrink: 0, width: "100%" }}
+          sx={{ margin: "5px 5px 15px 5px", flexShrink: 0, width: "100%" }}
+          variant="outlined"
         >
           <AddIcon />
           new topic

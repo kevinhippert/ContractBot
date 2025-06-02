@@ -1,31 +1,10 @@
-import React, { useEffect, useState, useRef } from "react";
-import { useTopic } from "../../contexts/TopicContext";
+import React, { useEffect, useRef } from "react";
 import LinearProgress from "@mui/material/LinearProgress";
 import Answer from "./Answer";
-import {
-  Alert,
-  Box,
-  Button,
-  Paper,
-  Typography,
-  Tooltip,
-  Chip,
-} from "@mui/material";
-import { createAuthenticationParams } from "../../authentication/authentication";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
-import api from "../../api/api";
-import { useAuth } from "../../contexts/AuthContext";
-import InsertCommentIcon from "@mui/icons-material/InsertComment";
-import PlaylistAddIcon from "@mui/icons-material/PlaylistAdd";
-import { FeedbackModal } from "./FeedbackModal";
+import { Alert, Box, Typography, Chip } from "@mui/material";
 import { formatQuery } from "../../utils/utils";
 
 function Conversation({ messages, errorMessage, isQuerying }) {
-  const [feedbackModalOpen, setFeedbackModalOpen] = useState(false);
-  const [feedbackModalData, setFeedbackModalData] = useState({});
-  const { currentTopic } = useTopic();
-  const { user } = useAuth();
   const bottomRef = useRef(null);
 
   useEffect(() => {
@@ -34,32 +13,6 @@ function Conversation({ messages, errorMessage, isQuerying }) {
       behavior: "smooth",
     });
   }, [messages]);
-
-  const handleClose = () => {
-    setFeedbackModalOpen(false);
-  };
-
-  const handleFeedbackModalOpen = (answer, fragment, query) => {
-    setFeedbackModalData({
-      Topic: answer.topic,
-      OnBehalfOf: user.userName,
-      Query: query[0],
-      Fragment: fragment,
-      Comment: "",
-      Type: "Suggest Improvement",
-    });
-    setFeedbackModalOpen(true);
-  };
-
-  const Egg = ({ line }) => {
-    return line.toLowerCase().includes("easter egg") && Math.random() < 0.1 ? (
-      <img
-        alt="Software is mysterious!"
-        src="/Ideas-are-illusions.jpg"
-        style={{ height: "14em", margin: "10px 10px 10px 0" }}
-      />
-    ) : null;
-  };
 
   const Question = ({ question }) => {
     const { text, categories } = formatQuery(question.text[0]);
@@ -105,9 +58,10 @@ function Conversation({ messages, errorMessage, isQuerying }) {
             <Box>
               {messages.map((message, index) =>
                 message.type === "question" ? (
-                  <Question question={message} />
+                  <Question question={message} key={index} />
                 ) : (
                   <Answer
+                    key={index}
                     text={message.text}
                     query={messages[index - 1].text}
                   />
@@ -129,11 +83,6 @@ function Conversation({ messages, errorMessage, isQuerying }) {
           </>
         )}
       </Box>
-      <FeedbackModal
-        open={feedbackModalOpen}
-        handleClose={handleClose}
-        feedbackModalData={feedbackModalData}
-      />
     </>
   );
 }

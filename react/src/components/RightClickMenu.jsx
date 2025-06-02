@@ -1,6 +1,5 @@
-import React, { useState, useRef, useEffect, useCallback } from "react";
+import React from "react";
 import { Dialog, List, MenuItem } from "@mui/material";
-import ReactDOM from "react-dom"; // For portals
 
 const RightClickMenu = ({
   x,
@@ -10,9 +9,8 @@ const RightClickMenu = ({
   onGetLookups,
   onGiveFeedback,
 }) => {
-  const open = Boolean(selectedText && x !== null && y !== null); // Ensure coordinates are valid
+  const open = Boolean(selectedText && x !== null && y !== null); // ensure coordinates are valid
 
-  // Helper to call action and then close the menu
   const handleAction = (actionCallback) => {
     actionCallback(selectedText);
     onClose();
@@ -35,19 +33,17 @@ const RightClickMenu = ({
             zIndex: 1000,
             minWidth: "150px",
           },
-          // You can apply onContextMenu directly to the Paper component if you need to
-          // prevent the browser context menu *if* someone right-clicks *on* your menu items.
-          // However, onClose usually suffices for dismissing.
           onContextMenu: (e) => {
-            e.preventDefault(); // Prevent browser context menu on our custom menu
-            onClose(); // Close if right-clicked on itself
+            e.preventDefault(); // prevent browser context menu this component
+            e.stopPropagation();
+            onClose(); // close if right-clicked on itself
           },
         },
       }}
     >
       <List sx={{ padding: 0 }}>
         <MenuItem onClick={() => handleAction(onGetLookups)}>
-          Get reference documents
+          Request Reference Documents
         </MenuItem>
         <MenuItem onClick={() => handleAction(onGiveFeedback)}>
           Give Feedback

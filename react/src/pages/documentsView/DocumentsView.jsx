@@ -113,7 +113,7 @@ function DocumentsView() {
           >
             <TableBody>
               {metaData.map((row, index) => (
-                <TableRow key={row.id}>
+                <TableRow key={index}>
                   {/* First Column Cells */}
                   <TableCell
                     component="th"
@@ -136,8 +136,8 @@ function DocumentsView() {
                         borderLeft: "1px solid #ddd",
                       }}
                     >
-                      {docLines.map((line) => (
-                        <Typography sx={{ fontFamily: "serif" }}>
+                      {docLines.map((line, index) => (
+                        <Typography sx={{ fontFamily: "serif" }} key={index}>
                           {line}
                         </Typography>
                       ))}

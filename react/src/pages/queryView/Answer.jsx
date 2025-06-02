@@ -1,11 +1,11 @@
 import React, { useState, useRef, useCallback, useEffect } from "react";
 import api from "../../api/api";
 import { Alert, Box, Snackbar } from "@mui/material";
-import { createAuthenticationParams } from "../../authentication/authentication";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import RightClickMenu from "../../components/RightClickMenu";
 import Egg from "../../components/Egg";
+import { createAuthenticationParams } from "../../authentication/authentication";
 import { useTopic } from "../../contexts/TopicContext";
 import { FeedbackModal } from "./FeedbackModal";
 import { useAuth } from "../../contexts/AuthContext";
@@ -26,6 +26,7 @@ function Answer({ text, query }) {
     selectedText: "",
   });
 
+  // RIGHTCLICK MENU
   const handleRightClick = useCallback(
     (e) => {
       // prevent default browser context menu
@@ -47,7 +48,7 @@ function Answer({ text, query }) {
       }
     },
     [rightClickMenu]
-  ); // Added rightClickMenu to dependency array for spreading
+  );
 
   // close context menu when clicking anywhere else
   useEffect(() => {
@@ -63,6 +64,7 @@ function Answer({ text, query }) {
     };
   }, [rightClickMenu]);
 
+  // FEEDBACK MODAL
   const handleOpenFeedbackModal = () => {
     setFeedbackModalData({
       Topic: currentTopic.topicId,
@@ -79,16 +81,7 @@ function Answer({ text, query }) {
     setFeedbackModalOpen(false);
   };
 
-  const showAlert = (message, severity) => {
-    setAlertMessage(message);
-    setAlertSeverity(severity);
-    setAlertOpen(true);
-  };
-
-  const closeAlert = () => {
-    setAlertOpen(false);
-  };
-
+  // LOOKUPS
   const handleGetLookups = async () => {
     // make addLookup request
     try {
@@ -123,26 +116,32 @@ function Answer({ text, query }) {
     }
   };
 
+  const showAlert = (message, severity) => {
+    setAlertMessage(message);
+    setAlertSeverity(severity);
+    setAlertOpen(true);
+  };
+
+  const closeAlert = () => {
+    setAlertOpen(false);
+  };
+
   return (
     <Box
-      sx={{ display: "flex", position: "relative" }}
       ref={answerContentRef}
       onContextMenu={handleRightClick}
       style={{
-        border: "1px solid #ddd",
-        padding: "20px",
         minHeight: "200px",
         userSelect: "text", // ensure text can be selected
-        cursor: "default",
       }}
     >
       <Box sx={{ flexGrow: 1, overflowY: "auto" }}>
-        {text.map((line) => {
+        {text.map((line, index) => {
           return (
-            <>
+            <Box key={index}>
               <Egg line={line} />
               <ReactMarkdown children={line} remarkPlugins={[remarkGfm]} />
-            </>
+            </Box>
           );
         })}
       </Box>
@@ -170,7 +169,6 @@ function Answer({ text, query }) {
         anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
       >
         <Alert
-          // variant="filled"
           onClose={closeAlert}
           severity={alertSeverity}
           sx={{ width: "100%" }}
