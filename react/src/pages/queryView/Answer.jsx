@@ -6,10 +6,13 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import RightClickMenu from "../../components/RightClickMenu";
 import { useTopic } from "../../contexts/TopicContext";
+import { FeedbackModal } from "./FeedbackModal";
 
 function Answer({ text }) {
   const { currentTopic } = useTopic();
   const answerContentRef = useRef(null);
+  const [feedbackModalOpen, setFeedbackModalOpen] = useState(false);
+  const [feedbackModalData, setFeedbackModalData] = useState({});
   const [rightClickMenu, setRightClickMenu] = useState({
     visible: false,
     x: 0,
@@ -63,11 +66,11 @@ function Answer({ text }) {
 
   const handleOpenFeedbackModal = (text) => {
     setTextForFeedback(text);
-    setIsFeedbackModalOpen(true);
+    setFeedbackModalOpen(true);
   };
 
   const closeFeedbackModal = () => {
-    setIsFeedbackModalOpen(false);
+    setFeedbackModalOpen(false);
     setTextForFeedback("");
   };
 
@@ -136,6 +139,11 @@ function Answer({ text }) {
           onGiveFeedback={handleOpenFeedbackModal}
         />
       )}
+      <FeedbackModal
+        open={feedbackModalOpen}
+        handleClose={closeFeedbackModal}
+        feedbackModalData={feedbackModalData}
+      />
     </Box>
   );
 }
