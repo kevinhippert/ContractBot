@@ -7,8 +7,7 @@ import remarkGfm from "remark-gfm";
 import RightClickMenu from "../../components/RightClickMenu";
 
 function Answer({ text }) {
-  console.log("Answer text: ", text);
-  const contentRef = useRef(null);
+  const answerContentRef = useRef(null);
   const [rightClickMenu, setRightClickMenu] = useState({
     visible: false,
     x: 0,
@@ -16,8 +15,7 @@ function Answer({ text }) {
     selectedText: "",
   });
 
-  // 1. Capture text selection and right-click
-  const handleRightClickMenu = useCallback(
+  const handleRightClick = useCallback(
     (e) => {
       console.log("right click happened");
       // Prevent default browser context menu
@@ -56,7 +54,7 @@ function Answer({ text }) {
   }, [rightClickMenu]);
 
   // 3. Handlers for context menu options
-  const handleAnalyzeText = (text) => {
+  const handleGetLookups = (text) => {
     console.log("Sending text for analysis:", text);
     // TODO: Implement your server-side API call here
     alert("Text sent for analysis (check console)!");
@@ -105,8 +103,8 @@ function Answer({ text }) {
   return (
     <Box
       sx={{ display: "flex", position: "relative" }}
-      ref={contentRef}
-      onContextMenu={handleRightClickMenu}
+      ref={answerContentRef}
+      onContextMenu={handleRightClick}
       style={{
         border: "1px solid #ddd",
         padding: "20px",
@@ -133,8 +131,8 @@ function Answer({ text }) {
           onClose={() =>
             setRightClickMenu({ ...rightClickMenu, visible: false })
           }
-          onAnalyze={handleAnalyzeText}
-          onFeedback={handleOpenFeedbackModal}
+          onGetLookups={handleGetLookups}
+          onGiveFeedback={handleOpenFeedbackModal}
         />
       )}
     </Box>

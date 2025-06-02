@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
+import { Dialog, List, MenuItem } from "@mui/material";
 import ReactDOM from "react-dom"; // For portals
 
 const RightClickMenu = ({
@@ -6,64 +7,53 @@ const RightClickMenu = ({
   y,
   selectedText,
   onClose,
-  onAnalyze,
-  onFeedback,
+  onGetLookups,
+  onGiveFeedback,
 }) => {
-  if (!selectedText) return null; // Don't show if no text is selected
+  const open = Boolean(selectedText && x !== null && y !== null); // Ensure coordinates are valid
 
-  return ReactDOM.createPortal(
-    <div
-      style={{
-        position: "absolute",
-        top: y,
-        left: x,
-        backgroundColor: "white",
-        border: "1px solid #ccc",
-        boxShadow: "2px 2px 5px rgba(0,0,0,0.2)",
-        borderRadius: "4px",
-        zIndex: 1000,
-        padding: "5px 0",
-      }}
-      onContextMenu={(e) => {
-        // Prevent browser's context menu on our custom menu
-        e.preventDefault();
-        onClose(); // Close if right-clicked on itself
+  // Helper to call action and then close the menu
+  const handleAction = (actionCallback) => {
+    actionCallback(selectedText);
+    onClose();
+  };
+
+  return (
+    <Dialog
+      open={open}
+      onClose={onClose}
+      slotProps={{
+        paper: {
+          sx: {
+            padding: "10px",
+            position: "absolute",
+            top: y,
+            left: x,
+            margin: 0,
+            boxShadow: "2px 2px 5px rgba(0,0,0,0.2)",
+            borderRadius: "4px",
+            zIndex: 1000,
+            minWidth: "150px",
+          },
+          // You can apply onContextMenu directly to the Paper component if you need to
+          // prevent the browser context menu *if* someone right-clicks *on* your menu items.
+          // However, onClose usually suffices for dismissing.
+          onContextMenu: (e) => {
+            e.preventDefault(); // Prevent browser context menu on our custom menu
+            onClose(); // Close if right-clicked on itself
+          },
+        },
       }}
     >
-      <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
-        <li
-          style={{ padding: "8px 15px", cursor: "pointer" }}
-          onMouseEnter={(e) =>
-            (e.currentTarget.style.backgroundColor = "#f0f0f0")
-          }
-          onMouseLeave={(e) =>
-            (e.currentTarget.style.backgroundColor = "white")
-          }
-          onClick={() => {
-            onAnalyze(selectedText);
-            onClose();
-          }}
-        >
-          Analyze Text
-        </li>
-        <li
-          style={{ padding: "8px 15px", cursor: "pointer" }}
-          onMouseEnter={(e) =>
-            (e.currentTarget.style.backgroundColor = "#f0f0f0")
-          }
-          onMouseLeave={(e) =>
-            (e.currentTarget.style.backgroundColor = "white")
-          }
-          onClick={() => {
-            onFeedback(selectedText);
-            onClose();
-          }}
-        >
+      <List sx={{ padding: 0 }}>
+        <MenuItem onClick={() => handleAction(onGetLookups)}>
+          Get reference documents
+        </MenuItem>
+        <MenuItem onClick={() => handleAction(onGiveFeedback)}>
           Give Feedback
-        </li>
-      </ul>
-    </div>,
-    document.body // Portal target
+        </MenuItem>
+      </List>
+    </Dialog>
   );
 };
 
