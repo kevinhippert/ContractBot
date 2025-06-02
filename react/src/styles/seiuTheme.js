@@ -5,6 +5,8 @@ const colors = {
   slateBlue: "#72A3D2",
   white: "#ffffff",
   yellow: "#dfc118",
+  lightPurple: "#c6a0f063",
+  lightBlack: "#000000cc",
 };
 
 const theme = createTheme({
@@ -14,8 +16,8 @@ const theme = createTheme({
       main: colors.seiuPurple,
     },
     secondary: {
-      main: colors.slateBlue,
-      contrastText: colors.white,
+      main: colors.lightPurple,
+      contrastText: colors.lightBlack,
     },
     contrast: {
       main: colors.yellow,
@@ -23,32 +25,5 @@ const theme = createTheme({
     },
   },
 });
-
-theme.typography.h1 = {
-  fontSize: "1.2rem",
-};
-
-theme.typography.h2 = {
-  fontSize: "1.1rem",
-};
-
-theme.typography.h3 = {
-  fontSize: "1.0rem",
-};
-
-theme.typography.h4 = {
-  fontSize: "0.9rem",
-};
-
-theme.typography.h5 = {
-  fontSize: "0.8rem",
-};
-
-theme.typography.h6 = {
-  fontSize: "1.1rem",
-  fontStyle: "italic",
-  fontWeight: "normal",
-  fontFamily: "Helvetica, Arial, sans-serif",
-};
 
 export default theme;

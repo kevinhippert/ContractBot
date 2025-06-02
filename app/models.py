@@ -1,3 +1,5 @@
+from typing import Literal
+
 from pydantic import BaseModel
 
 
@@ -65,6 +67,22 @@ class LookupMatches(BaseModel):
     Matches: list[str]
 
 
+class Recommendation(BaseModel):
+    Topic: str
+    OnBehalfOf: str
+    Query: str
+    Fragment: str
+    Comment: str
+    Type: Literal[
+        "Suggest Improvement",
+        "Promote Answer",
+        "Make Correction",
+        "Add Missing Info",
+        "Clarify Phrasing",
+        "Flag as Off Topic",
+    ]
+
+
 # This plays off the two meanings of "models".  Pydantic models are above,
 # Below we define a dict to use Ollama/LLM models
 MODELS = {
@@ -75,5 +93,8 @@ MODELS = {
     "deepseek-r1:7b": "deepseek-r1:7b",
     "gemma3:27b": "gemma3:27b",
     "deepseek-r1:32b": "deepseek-r1:32b",
-    "qwq": "qwq",
+    "qwq:32b": "qwq:32b",
+    "qwen3:32b": "qwen3:32b",
+    "llama3.3:70b": "llama3.3:70b",
+    "phi4:14b": "phi4:14b",
 }

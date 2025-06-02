@@ -12,7 +12,14 @@ function QuestionInput({ register, isQuerying }) {
   };
 
   return (
-    <Box sx={{ marginTop: "10px" }}>
+    <Box
+      sx={{
+        position: "fixed",
+        bottom: "15px",
+        width: "100%",
+        backgroundColor: "white",
+      }}
+    >
       <TextField
         sx={{ width: "70%" }}
         label="Ask your question"

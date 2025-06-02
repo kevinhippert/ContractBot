@@ -16,9 +16,26 @@ export const createTopicId = () => {
 };
 
 export const getTopicDisplayName = (id, name) => {
+  if (name?.includes(".....")) {
+    name = name.split(".....")[1];
+  }
   return name
     ? name.length > 100
       ? name.slice(0, 100) + "..."
       : name
     : `New Topic - ${id.slice(0, 3)}`;
+};
+
+export const formatQuery = (queryText) => {
+  const regex = /:\s*([A-Z\s]+)\n/g;
+
+  let categories = [];
+  if (queryText.includes(".....")) {
+    let result = queryText.split(".....");
+    queryText = result[1];
+    categories = Array.from(result[0].matchAll(regex), (match) =>
+      match[1].trim()
+    );
+  }
+  return { text: queryText, categories };
 };

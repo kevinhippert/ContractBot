@@ -1,16 +1,27 @@
+from datetime import datetime, timedelta
 from hashlib import sha1
 import sqlite3
+from pathlib import Path
 from typing import NewType
 
 
-from app.models import Answer, Lookup, LookupMatch, LookupTodo, Match, MODELS, QueryTodo
+from app.models import (
+    Answer,
+    Lookup,
+    LookupMatch,
+    LookupTodo,
+    Match,
+    MODELS,
+    QueryTodo,
+    Recommendation,
+)
 
 priority_queue: list[str] = []
 Timestamp = NewType("Timestamp", str)
 
 
 class QueryQueue:
-    def __init__(self, db_file: str = ".queue.db"):
+    def __init__(self, db_file=Path.home() / "persist" / "queue.db"):
         self.conn = sqlite3.connect(db_file)
         self.cursor = self.conn.cursor()
 
@@ -82,6 +93,23 @@ class QueryQueue:
         )
         self.conn.commit()
 
+        # Table for recommendations
+        self.cursor.execute(
+            """
+            CREATE TABLE IF NOT EXISTS recommendations (
+                Topic TEXT NOT NULL,
+                OnBehalfOf TEXT NOT NULL,
+                Query TEXT NOT NULL,
+                Fragment TEXT NOT NULL,
+                Comment TEXT NOT NULL,
+                Type TEXT NOT NULL,
+                Status TEXT NOT NULL DEFAULT 'Available',
+                Timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+            )
+            """
+        )
+        self.conn.commit()
+
     def __del__(self):
         self.conn.close()
 
@@ -107,7 +135,7 @@ class QueryQueue:
         return dict(self.cursor.fetchall())
 
     def add_query(
-        self, topic: str, user: str, query: str, model: str
+        self, topic: str, user: str, query: str, modifiers: dict, model: str
     ) -> tuple[int, str]:
         # Dereference alias names for Ollama models
         model = MODELS.get(model) or MODELS["default"]
@@ -119,12 +147,16 @@ class QueryQueue:
         if last_seq := self.cursor.fetchone():
             seq = last_seq[0] + 1
 
+        # Enhance the query with categories if provided
+        if categories := modifiers.get("Category"):
+            prefix = "\n".join(f"Category: {cat.upper()}" for cat in categories)
+            query = f"{prefix}\n.....\n{query}"
+
         self.cursor.execute(
-            "INSERT INTO queries (Topic, Seq, User, Query, Model) VALUES (?,?,?,?,?)",
+            "INSERT INTO queries (Topic, Seq, User, Query, Model) "
+            "VALUES (?,?,?,?,?) "
+            "RETURNING Timestamp",
             (topic, seq, user, query, model),
-        )
-        self.cursor.execute(
-            "SELECT Timestamp FROM queries WHERE Topic =? AND Seq =?", (topic, seq)
         )
         received = self.cursor.fetchone()[0]
         self.conn.commit()
@@ -195,9 +227,8 @@ class QueryQueue:
             "ORDER BY Seq",
             (topic,),
         )
-        result = self.cursor.fetchall()
+        result = list(map(list, self.cursor))  # mutable lists, not tuples
         for row in result:
-            row = list(row)
             row[2] = row[2] or ""  # If Answer is None, set it to empty string
             row[3] = row[3] or ""  # If Think is None, set it to empty string
 
@@ -231,6 +262,14 @@ class QueryQueue:
 
     def add_lookup(self, lookup: Lookup) -> tuple[str, Timestamp]:
         fingerprint = sha1(lookup.Fragment.encode()).hexdigest()
+        # This fingerprint might already exist
+        self.cursor.execute(
+            "SELECT Timestamp FROM lookups WHERE Fingerprint =?",
+            (fingerprint,),
+        )
+        if timestamp := self.cursor.fetchone():
+            return fingerprint, timestamp[0]
+
         self.cursor.execute(
             "INSERT INTO lookups (Topic, Seq, Fragment, Fingerprint, Count, Threshold) "
             "VALUES (?,?,?,?,?,?)"
@@ -363,5 +402,46 @@ class QueryQueue:
         self.cursor.executemany(
             "INSERT INTO lookup_matches (Fingerprint, Match) VALUES (?,?)",
             [(fingerprint, match) for match in matches],
+        )
+        self.conn.commit()
+
+    def recommend(self, rec: Recommendation) -> str:
+        self.cursor.execute(
+            "INSERT INTO recommendations "
+            "(Topic, OnBehalfOf, Query, Fragment, Comment, Type) "
+            "VALUES (?,?,?,?,?,?) "
+            "RETURNING Timestamp",
+            (rec.Topic, rec.OnBehalfOf, rec.Query, rec.Fragment, rec.Comment, rec.Type),
+        )
+        ts = self.cursor.fetchone()[0]
+        self.conn.commit()
+        return ts
+
+    def redact(self, days: int = 14) -> None:
+        """
+        Do not retain older data on frontend EC2 system.
+
+        Queries, answers, and RAG contents only retained for longer time on the
+        secured Inference Engine that has limited exposure to outside world, and
+        does not utilize 3rd party cloude services.
+
+        TODO: When and where should we actually call this method?
+        """
+        cutoff = datetime.now() - timedelta(days=days)
+        self.cursor.execute(
+            "DELETE FROM queries WHERE Timestamp <= ?",
+            (cutoff,),
+        )
+        self.cursor.execute(
+            "DELETE FROM lookups WHERE Timestamp <= ?",
+            (cutoff,),
+        )
+        self.cursor.execute(
+            "DELETE FROM lookup_matches WHERE Match IN (SELECT Match FROM lookups WHERE Timestamp <= ?)",
+            (cutoff,),
+        )
+        self.cursor.execute(
+            "DELETE FROM recommendations WHERE Timestamp <= ?",
+            (cutoff,),
         )
         self.conn.commit()
