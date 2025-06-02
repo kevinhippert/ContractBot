@@ -7,9 +7,11 @@ import remarkGfm from "remark-gfm";
 import RightClickMenu from "../../components/RightClickMenu";
 import { useTopic } from "../../contexts/TopicContext";
 import { FeedbackModal } from "./FeedbackModal";
+import { useAuth } from "../../contexts/AuthContext";
 
-function Answer({ text }) {
+function Answer({ text, query }) {
   const { currentTopic } = useTopic();
+  const { user } = useAuth();
   const answerContentRef = useRef(null);
   const [feedbackModalOpen, setFeedbackModalOpen] = useState(false);
   const [feedbackModalData, setFeedbackModalData] = useState({});
@@ -64,14 +66,20 @@ function Answer({ text }) {
     addLookup(text);
   };
 
-  const handleOpenFeedbackModal = (text) => {
-    setTextForFeedback(text);
+  const handleOpenFeedbackModal = () => {
+    setFeedbackModalData({
+      Topic: currentTopic.topicId,
+      OnBehalfOf: user.userName,
+      Query: query[0],
+      Fragment: rightClickMenu.selectedText,
+      Comment: "",
+      Type: "Suggest Improvement",
+    });
     setFeedbackModalOpen(true);
   };
 
   const closeFeedbackModal = () => {
     setFeedbackModalOpen(false);
-    setTextForFeedback("");
   };
 
   const Egg = ({ line }) => {
