@@ -1,10 +1,11 @@
 import React, { useState, useRef, useCallback, useEffect } from "react";
 import api from "../../api/api";
-import { Alert, Box, Button, Paper, Typography, Tooltip } from "@mui/material";
+import { Alert, Box, Snackbar } from "@mui/material";
 import { createAuthenticationParams } from "../../authentication/authentication";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import RightClickMenu from "../../components/RightClickMenu";
+import Egg from "../../components/Egg";
 import { useTopic } from "../../contexts/TopicContext";
 import { FeedbackModal } from "./FeedbackModal";
 import { useAuth } from "../../contexts/AuthContext";
@@ -15,6 +16,9 @@ function Answer({ text, query }) {
   const answerContentRef = useRef(null);
   const [feedbackModalOpen, setFeedbackModalOpen] = useState(false);
   const [feedbackModalData, setFeedbackModalData] = useState({});
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
+  const [alertSeverity, setAlertSeverity] = useState("info");
   const [rightClickMenu, setRightClickMenu] = useState({
     visible: false,
     x: 0,
@@ -24,8 +28,7 @@ function Answer({ text, query }) {
 
   const handleRightClick = useCallback(
     (e) => {
-      console.log("right click happened");
-      // Prevent default browser context menu
+      // prevent default browser context menu
       e.preventDefault();
 
       const selection = window.getSelection();
@@ -39,7 +42,7 @@ function Answer({ text, query }) {
           selectedText: text,
         });
       } else {
-        // If no text is selected, just close any active menu
+        // if no text is selected, close any active menu
         setRightClickMenu({ ...rightClickMenu, visible: false });
       }
     },
@@ -60,12 +63,6 @@ function Answer({ text, query }) {
     };
   }, [rightClickMenu]);
 
-  // 3. Handlers for context menu options
-  const handleGetLookups = (text) => {
-    console.log("Sending text for analysis:", text);
-    addLookup(text);
-  };
-
   const handleOpenFeedbackModal = () => {
     setFeedbackModalData({
       Topic: currentTopic.topicId,
@@ -82,17 +79,17 @@ function Answer({ text, query }) {
     setFeedbackModalOpen(false);
   };
 
-  const Egg = ({ line }) => {
-    return line.toLowerCase().includes("easter egg") && Math.random() < 0.1 ? (
-      <img
-        alt="Software is mysterious!"
-        src="/Ideas-are-illusions.jpg"
-        style={{ height: "14em", paddingLeft: "2em" }}
-      />
-    ) : null;
+  const showAlert = (message, severity) => {
+    setAlertMessage(message);
+    setAlertSeverity(severity);
+    setAlertOpen(true);
   };
 
-  const addLookup = async (fragment) => {
+  const closeAlert = () => {
+    setAlertOpen(false);
+  };
+
+  const handleGetLookups = async () => {
     // make addLookup request
     try {
       const authParams = await createAuthenticationParams();
@@ -100,15 +97,29 @@ function Answer({ text, query }) {
       const body = {
         Topic: currentTopic.topicId,
         Seq: currentTopic.seq,
-        Fragment: fragment,
+        Fragment: rightClickMenu.selectedText,
         Count: 5,
         Threshold: 1,
       };
       const res = await api.post(url, body);
-      // TODO put alert here
+      if (res.status === 200) {
+        showAlert(
+          "Request for document references was submitted successfully. Results will be shown in the Documents tab.",
+          "success"
+        );
+      } else {
+        showAlert(
+          "There was a problem submitting your request. Please try again later",
+          "error"
+        );
+      }
     } catch (error) {
       // handle error
       console.error("There was an error andn here it is: ", error);
+      showAlert(
+        "There was a problem submitting your request. Please try again later",
+        "error"
+      );
     }
   };
 
@@ -152,6 +163,21 @@ function Answer({ text, query }) {
         handleClose={closeFeedbackModal}
         feedbackModalData={feedbackModalData}
       />
+      <Snackbar
+        open={alertOpen}
+        autoHideDuration={6000}
+        onClose={closeAlert}
+        anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+      >
+        <Alert
+          // variant="filled"
+          onClose={closeAlert}
+          severity={alertSeverity}
+          sx={{ width: "100%" }}
+        >
+          {alertMessage}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 }
