@@ -69,7 +69,7 @@ function Answer({ text, query }) {
     setFeedbackModalData({
       Topic: currentTopic.topicId,
       OnBehalfOf: user.userName,
-      Query: query[0],
+      Query: query.text[0],
       Fragment: rightClickMenu.selectedText,
       Comment: "",
       Type: "Suggest Improvement",
@@ -89,7 +89,7 @@ function Answer({ text, query }) {
       const url = `/add-lookup?${authParams}`;
       const body = {
         Topic: currentTopic.topicId,
-        Seq: currentTopic.seq,
+        Seq: query.seq,
         Fragment: rightClickMenu.selectedText,
         Count: 5,
         Threshold: 1,

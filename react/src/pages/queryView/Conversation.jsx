@@ -63,7 +63,7 @@ function Conversation({ messages, errorMessage, isQuerying }) {
                   <Answer
                     key={index}
                     text={message.text}
-                    query={messages[index - 1].text}
+                    query={messages[index - 1]}
                   />
                 )
               )}
