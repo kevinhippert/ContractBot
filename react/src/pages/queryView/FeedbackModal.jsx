@@ -88,7 +88,6 @@ export function FeedbackModal({ open, handleClose, feedbackModalData }) {
     <>
       <Dialog
         sx={{ "& .MuiDialog-paper": { width: "80%", maxHeight: 575 } }}
-        // maxWidth="xs"
         open={open}
       >
         <DialogContent dividers>
