@@ -5,8 +5,10 @@ import { createAuthenticationParams } from "../../authentication/authentication"
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import RightClickMenu from "../../components/RightClickMenu";
+import { useTopic } from "../../contexts/TopicContext";
 
 function Answer({ text }) {
+  const { currentTopic } = useTopic();
   const answerContentRef = useRef(null);
   const [rightClickMenu, setRightClickMenu] = useState({
     visible: false,
@@ -39,7 +41,7 @@ function Answer({ text }) {
     [rightClickMenu]
   ); // Added rightClickMenu to dependency array for spreading
 
-  // 2. Close context menu when clicking anywhere else
+  // close context menu when clicking anywhere else
   useEffect(() => {
     const handleClickOutside = () => {
       if (rightClickMenu.visible) {
@@ -56,8 +58,7 @@ function Answer({ text }) {
   // 3. Handlers for context menu options
   const handleGetLookups = (text) => {
     console.log("Sending text for analysis:", text);
-    // TODO: Implement your server-side API call here
-    alert("Text sent for analysis (check console)!");
+    addLookup(text);
   };
 
   const handleOpenFeedbackModal = (text) => {
@@ -93,7 +94,7 @@ function Answer({ text }) {
         Threshold: 1,
       };
       const res = await api.post(url, body);
-      // we might do something with this response in the future
+      // TODO put alert here
     } catch (error) {
       // handle error
       console.error("There was an error andn here it is: ", error);
@@ -109,7 +110,7 @@ function Answer({ text }) {
         border: "1px solid #ddd",
         padding: "20px",
         minHeight: "200px",
-        userSelect: "text", // Ensure text can be selected
+        userSelect: "text", // ensure text can be selected
         cursor: "default",
       }}
     >
