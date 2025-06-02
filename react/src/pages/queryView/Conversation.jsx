@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Alert, Box, Button, Paper, Typography, Tooltip } from "@mui/material";
 import { useTopic } from "../../contexts/TopicContext";
 import LinearProgress from "@mui/material/LinearProgress";
 import Answer from "./Answer";
@@ -16,13 +15,9 @@ import { createAuthenticationParams } from "../../authentication/authentication"
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import api from "../../api/api";
-import { useTopic } from "../../contexts/TopicContext";
 import { useAuth } from "../../contexts/AuthContext";
-import FileDownloadIcon from "@mui/icons-material/FileDownload";
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import InsertCommentIcon from "@mui/icons-material/InsertComment";
 import PlaylistAddIcon from "@mui/icons-material/PlaylistAdd";
-import LinearProgress from "@mui/material/LinearProgress";
 import { FeedbackModal } from "./FeedbackModal";
 import { formatQuery } from "../../utils/utils";
 
@@ -66,26 +61,6 @@ function Conversation({ messages, errorMessage, isQuerying }) {
     ) : null;
   };
 
-  const addLookup = async (fragment, seq) => {
-    // make addLookup request
-    try {
-      const authParams = await createAuthenticationParams();
-      const url = `/add-lookup?${authParams}`;
-      const body = {
-        Topic: currentTopic.topicId,
-        Seq: seq,
-        Fragment: fragment,
-        Count: 5,
-        Threshold: 1,
-      };
-      const res = await api.post(url, body);
-      // we might do something with this response in the future
-    } catch (error) {
-      // handle error
-      console.error("There was an error andn here it is: ", error);
-    }
-  };
-
   const Question = ({ question }) => {
     const { text, categories } = formatQuery(question.text[0]);
     return (
@@ -117,55 +92,6 @@ function Conversation({ messages, errorMessage, isQuerying }) {
     );
   };
 
-  const Answer = ({ answer, query }) => {
-    let text = answer.text;
-    return (
-      <Box>
-        {text.map((line, index) => {
-          return (
-            <>
-              <Box key={index} sx={{ display: "flex" }}>
-                <Egg line={line} />
-                <ReactMarkdown children={line} remarkPlugins={[remarkGfm]} />
-                {line.length > 240 && (
-                  <>
-                    <Button
-                      sx={{
-                        minWidth: "auto",
-                      }}
-                      color="primary"
-                      onClick={() => addLookup(line, answer.seq)}
-                    >
-                      {/* TODO mark "already added" fragments */}
-                      <Tooltip
-                        title={`Add reference material for this answer to the Documents tab.`}
-                      >
-                        <PlaylistAddIcon />
-                      </Tooltip>
-                    </Button>
-                    <Button
-                      sx={{
-                        minWidth: "auto",
-                      }}
-                      color="primary"
-                      onClick={() =>
-                        handleFeedbackModalOpen(answer, line, query)
-                      }
-                    >
-                      <Tooltip title={`Give feedback on this response`}>
-                        <InsertCommentIcon />
-                      </Tooltip>
-                    </Button>
-                  </>
-                )}
-              </Box>
-            </>
-          );
-        })}
-      </Box>
-    );
-  };
-
   return (
     <>
       <Box
@@ -181,7 +107,10 @@ function Conversation({ messages, errorMessage, isQuerying }) {
                 message.type === "question" ? (
                   <Question question={message} />
                 ) : (
-                  <Answer answer={message} query={messages[index - 1].text} />
+                  <Answer
+                    text={message.text}
+                    query={messages[index - 1].text}
+                  />
                 )
               )}
             </Box>

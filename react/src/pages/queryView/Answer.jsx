@@ -2,14 +2,12 @@ import React, { useState, useRef, useCallback, useEffect } from "react";
 import api from "../../api/api";
 import { Alert, Box, Button, Paper, Typography, Tooltip } from "@mui/material";
 import { createAuthenticationParams } from "../../authentication/authentication";
-import FileDownloadIcon from "@mui/icons-material/FileDownload";
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
-import PlaylistAddIcon from "@mui/icons-material/PlaylistAdd";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import RightClickMenu from "../../components/RightClickMenu";
 
 function Answer({ text }) {
+  console.log("Answer text: ", text);
   const contentRef = useRef(null);
   const [rightClickMenu, setRightClickMenu] = useState({
     visible: false,
@@ -126,25 +124,6 @@ function Answer({ text }) {
             </>
           );
         })}
-        <Box>
-          <Button
-            sx={{
-              position: "absolute",
-              bottom: "0",
-              right: "0",
-              minWidth: "auto",
-            }}
-            color="primary"
-            onClick={() => addLookup(text.join())}
-          >
-            {/* TODO mark "already added" fragments */}
-            <Tooltip
-              title={`Add reference material for this answer to the Documents tab.`}
-            >
-              <PlaylistAddIcon />
-            </Tooltip>
-          </Button>
-        </Box>
       </Box>
       {rightClickMenu.visible && (
         <RightClickMenu
