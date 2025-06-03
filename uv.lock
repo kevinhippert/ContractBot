@@ -89,69 +89,6 @@ wheels = [
 ]
 
 [[package]]
-name = "bossbot"
-version = "0.1.0"
-source = { virtual = "." }
-dependencies = [
-    { name = "chromadb" },
-    { name = "click" },
-    { name = "fastapi" },
-    { name = "fastapi-utils" },
-    { name = "fortune-python" },
-    { name = "gunicorn" },
-    { name = "ipython" },
-    { name = "onnxruntime" },
-    { name = "pydantic" },
-    { name = "python-dotenv" },
-    { name = "pyyaml" },
-    { name = "requests" },
-    { name = "tqdm" },
-    { name = "uvicorn" },
-]
-
-[package.dev-dependencies]
-dev = [
-    { name = "faker" },
-    { name = "flake8" },
-    { name = "mypy" },
-    { name = "pre-commit" },
-    { name = "pytest" },
-    { name = "pytest-cov" },
-    { name = "pytest-dependency" },
-    { name = "seedir" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "chromadb" },
-    { name = "click" },
-    { name = "fastapi" },
-    { name = "fastapi-utils" },
-    { name = "fortune-python" },
-    { name = "gunicorn" },
-    { name = "ipython" },
-    { name = "onnxruntime" },
-    { name = "pydantic" },
-    { name = "python-dotenv" },
-    { name = "pyyaml" },
-    { name = "requests" },
-    { name = "tqdm" },
-    { name = "uvicorn" },
-]
-
-[package.metadata.requires-dev]
-dev = [
-    { name = "faker", specifier = ">=30.8.2" },
-    { name = "flake8", specifier = "==6.0.0" },
-    { name = "mypy", specifier = ">=1.13.0" },
-    { name = "pre-commit", specifier = ">=4.0.1" },
-    { name = "pytest", specifier = ">=8.3.3" },
-    { name = "pytest-cov", specifier = ">=6.0.0" },
-    { name = "pytest-dependency", specifier = ">=0.6.0" },
-    { name = "seedir", specifier = ">=0.5.0" },
-]
-
-[[package]]
 name = "build"
 version = "1.2.2.post1"
 source = { registry = "https://pypi.org/simple" }
@@ -269,6 +206,18 @@ wheels = [
 ]
 
 [[package]]
+name = "chromadb-ops"
+version = "0.1.4"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "typer", extra = ["all"] },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/b6/ed/6539ca636c65987391d8adae916718cb54bc8ef72d741ff20abf0ff48fa9/chromadb_ops-0.1.4.tar.gz", hash = "sha256:fec9a7f5bb8a81b101d73792a363bd875a889cc517d8d273062140c2252c286a", size = 33809 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/7b/c9/63e5d5eb2430ddeff3fd23577bb0367209b4dd37d7213b19b68b71988875/chromadb_ops-0.1.4-py3-none-any.whl", hash = "sha256:4776e52430bed609124d9768a2aa2dba67ee69844a3818ab53288e96b7c3312a", size = 37118 },
+]
+
+[[package]]
 name = "click"
 version = "8.1.8"
 source = { registry = "https://pypi.org/simple" }
@@ -299,6 +248,71 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/cc/c7/eed8f27100517e8c0e6b923d5f0845d0cb99763da6fdee00478f91db7325/coloredlogs-15.0.1.tar.gz", hash = "sha256:7c991aa71a4577af2f82600d8f8f3a89f936baeaf9b50a9c197da014e5bf16b0", size = 278520 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/a7/06/3d6badcf13db419e25b07041d9c7b4a2c331d3f4e7134445ec5df57714cd/coloredlogs-15.0.1-py2.py3-none-any.whl", hash = "sha256:612ee75c546f53e92e70049c9dbfcc18c935a2b9a53b66085ce9ef6a6e5c0934", size = 46018 },
+]
+
+[[package]]
+name = "contractbot"
+version = "0.5.0"
+source = { virtual = "." }
+dependencies = [
+    { name = "chromadb" },
+    { name = "chromadb-ops" },
+    { name = "click" },
+    { name = "fastapi" },
+    { name = "fastapi-utils" },
+    { name = "fortune-python" },
+    { name = "gunicorn" },
+    { name = "ipython" },
+    { name = "onnxruntime" },
+    { name = "pydantic" },
+    { name = "python-dotenv" },
+    { name = "pyyaml" },
+    { name = "requests" },
+    { name = "tqdm" },
+    { name = "uvicorn" },
+]
+
+[package.dev-dependencies]
+dev = [
+    { name = "faker" },
+    { name = "flake8" },
+    { name = "mypy" },
+    { name = "pre-commit" },
+    { name = "pytest" },
+    { name = "pytest-cov" },
+    { name = "pytest-dependency" },
+    { name = "seedir" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "chromadb" },
+    { name = "chromadb-ops" },
+    { name = "click" },
+    { name = "fastapi" },
+    { name = "fastapi-utils" },
+    { name = "fortune-python" },
+    { name = "gunicorn" },
+    { name = "ipython" },
+    { name = "onnxruntime" },
+    { name = "pydantic" },
+    { name = "python-dotenv" },
+    { name = "pyyaml" },
+    { name = "requests" },
+    { name = "tqdm" },
+    { name = "uvicorn" },
+]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "faker", specifier = ">=30.8.2" },
+    { name = "flake8", specifier = "==6.0.0" },
+    { name = "mypy", specifier = ">=1.13.0" },
+    { name = "pre-commit", specifier = ">=4.0.1" },
+    { name = "pytest", specifier = ">=8.3.3" },
+    { name = "pytest-cov", specifier = ">=6.0.0" },
+    { name = "pytest-dependency", specifier = ">=0.6.0" },
+    { name = "seedir", specifier = ">=0.5.0" },
 ]
 
 [[package]]
@@ -1586,17 +1600,22 @@ wheels = [
 
 [[package]]
 name = "typer"
-version = "0.15.2"
+version = "0.9.4"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "click" },
-    { name = "rich" },
-    { name = "shellingham" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/8b/6f/3991f0f1c7fcb2df31aef28e0594d8d54b05393a0e4e34c65e475c2a5d41/typer-0.15.2.tar.gz", hash = "sha256:ab2fab47533a813c49fe1f16b1a370fd5819099c00b119e0633df65f22144ba5", size = 100711 }
+sdist = { url = "https://files.pythonhosted.org/packages/e9/7d/b1e0399aa5e27071f0042784681d28417f3e526c61f62c8e3635ee5ad334/typer-0.9.4.tar.gz", hash = "sha256:f714c2d90afae3a7929fcd72a3abb08df305e1ff61719381384211c4070af57f", size = 276061 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/7f/fc/5b29fea8cee020515ca82cc68e3b8e1e34bb19a3535ad854cac9257b414c/typer-0.15.2-py3-none-any.whl", hash = "sha256:46a499c6107d645a9c13f7ee46c5d5096cae6f5fc57dd11eccbbb9ae3e44ddfc", size = 45061 },
+    { url = "https://files.pythonhosted.org/packages/62/39/82c9d3e10979851847361d922a373bdfef4091020da7f893acfaf07c0225/typer-0.9.4-py3-none-any.whl", hash = "sha256:aa6c4a4e2329d868b80ecbaf16f807f2b54e192209d7ac9dd42691d63f7a54eb", size = 45973 },
+]
+
+[package.optional-dependencies]
+all = [
+    { name = "colorama" },
+    { name = "rich" },
+    { name = "shellingham" },
 ]
 
 [[package]]
