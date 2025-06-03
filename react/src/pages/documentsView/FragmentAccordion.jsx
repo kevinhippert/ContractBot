@@ -119,7 +119,11 @@ function FragmentAccordion({ frags }) {
           </Box>
         </AccordionSummary>
         <AccordionDetails>
-          {documents && documents.map((text) => <Document text={text} />)}
+          {documents?.length > 0 ? (
+            documents.map((text) => <Document text={text} />)
+          ) : (
+            <Typography>No results for this text fragment.</Typography>
+          )}
         </AccordionDetails>
       </Accordion>
     </Box>

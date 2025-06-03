@@ -65,15 +65,21 @@ function DocumentsView() {
       <Typography variant="h6" sx={{ marginBottom: "20px" }}>
         Reference Documents
       </Typography>
-      {lookups.map((lookup) =>
-        Object.entries(lookup).map(([query, fragmentOjbect]) => (
-          <Box key={query}>
-            <Question query={query} />
-            {Object.values(fragmentOjbect).map((frags, index) => (
-              <FragmentAccordion frags={frags} key={index} />
-            ))}
-          </Box>
-        ))
+      {lookups.length > 0 ? (
+        lookups.map((lookup) =>
+          Object.entries(lookup).map(([query, fragmentOjbect]) => (
+            <Box key={query}>
+              <Question query={query} />
+              {Object.values(fragmentOjbect).map((frags, index) => (
+                <FragmentAccordion frags={frags} key={index} />
+              ))}
+            </Box>
+          ))
+        )
+      ) : (
+        <Typography>
+          No references have been requested on this topic.
+        </Typography>
       )}
     </Box>
   );
