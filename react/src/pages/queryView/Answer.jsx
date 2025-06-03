@@ -1,6 +1,6 @@
 import React, { useState, useRef, useCallback, useEffect } from "react";
 import api from "../../api/api";
-import { Alert, Box, Snackbar } from "@mui/material";
+import { Alert, Box, Snackbar, Tooltip } from "@mui/material";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import RightClickMenu from "../../components/RightClickMenu";
@@ -9,6 +9,8 @@ import { createAuthenticationParams } from "../../authentication/authentication"
 import { useTopic } from "../../contexts/TopicContext";
 import { FeedbackModal } from "./FeedbackModal";
 import { useAuth } from "../../contexts/AuthContext";
+import PlaylistAddIcon from "@mui/icons-material/PlaylistAdd";
+import InsertCommentIcon from "@mui/icons-material/InsertComment";
 
 function Answer({ text, query }) {
   const { currentTopic } = useTopic();
@@ -29,6 +31,11 @@ function Answer({ text, query }) {
   // RIGHTCLICK MENU
   const handleRightClick = useCallback(
     (e) => {
+      // preserve normal right-click behavior if feedback modal is open
+      if (feedbackModalOpen) {
+        return;
+      }
+
       // prevent default browser context menu
       e.preventDefault();
 
@@ -47,7 +54,7 @@ function Answer({ text, query }) {
         setRightClickMenu({ ...rightClickMenu, visible: false });
       }
     },
-    [rightClickMenu]
+    [rightClickMenu, feedbackModalOpen]
   );
 
   // close context menu when clicking anywhere else
@@ -65,12 +72,13 @@ function Answer({ text, query }) {
   }, [rightClickMenu]);
 
   // FEEDBACK MODAL
-  const handleOpenFeedbackModal = () => {
+  const handleOpenFeedbackModal = (fragment = null) => {
+    let feedbackText = fragment || rightClickMenu.selectedText;
     setFeedbackModalData({
       Topic: currentTopic.topicId,
       OnBehalfOf: user.userName,
       Query: query.text[0],
-      Fragment: rightClickMenu.selectedText,
+      Fragment: feedbackText,
       Comment: "",
       Type: "Suggest Improvement",
     });
@@ -82,15 +90,15 @@ function Answer({ text, query }) {
   };
 
   // LOOKUPS
-  const handleGetLookups = async () => {
-    // make addLookup request
+  const handleGetLookups = async (fragment = null) => {
+    let lookupText = fragment || rightClickMenu.selectedText;
     try {
       const authParams = await createAuthenticationParams();
       const url = `/add-lookup?${authParams}`;
       const body = {
         Topic: currentTopic.topicId,
         Seq: query.seq,
-        Fragment: rightClickMenu.selectedText,
+        Fragment: lookupText,
         Count: 5,
         Threshold: 1,
       };
@@ -141,6 +149,26 @@ function Answer({ text, query }) {
             <Box key={index}>
               <Egg line={line} />
               <ReactMarkdown children={line} remarkPlugins={[remarkGfm]} />
+              {line.length > 240 && (
+                <Box sx={{ display: "flex", justifyContent: "end" }}>
+                  <Tooltip
+                    title={`Add reference material for this answer to the Documents tab`}
+                  >
+                    <PlaylistAddIcon
+                      sx={{ cursor: "pointer" }}
+                      color="primary"
+                      onClick={() => handleGetLookups(line)}
+                    />
+                  </Tooltip>
+                  <Tooltip title={`Give feedback on this answer`}>
+                    <InsertCommentIcon
+                      color="primary"
+                      sx={{ marginLeft: "4px", cursor: "pointer" }}
+                      onClick={() => handleOpenFeedbackModal(line)}
+                    />
+                  </Tooltip>
+                </Box>
+              )}
             </Box>
           );
         })}
