@@ -146,11 +146,13 @@ function Answer({ text, query }) {
       <Box sx={{ flexGrow: 1, overflowY: "auto" }}>
         {text.map((line, index) => {
           return (
-            <Box key={index}>
+            <Box key={index} sx={{ display: "flex" }}>
               <Egg line={line} />
               <ReactMarkdown children={line} remarkPlugins={[remarkGfm]} />
               {line.length > 240 && (
-                <Box sx={{ display: "flex", justifyContent: "end" }}>
+                <Box
+                  sx={{ display: "flex", alignItems: "center", margin: "5px" }}
+                >
                   <Tooltip
                     title={`Add reference material for this answer to the Documents tab`}
                   >
