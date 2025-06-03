@@ -13,6 +13,7 @@ import {
   TextField,
   Snackbar,
   Alert,
+  Typography,
 } from "@mui/material";
 
 export function FeedbackModal({ open, handleClose, feedbackModalData }) {
@@ -91,6 +92,18 @@ export function FeedbackModal({ open, handleClose, feedbackModalData }) {
         open={open}
       >
         <DialogContent dividers>
+          <Typography
+            sx={{
+              color: "#575757",
+              padding: "12px",
+              borderRadius: "6px",
+              marginBottom: "7px",
+              border: "1px #00000008 solid",
+              fontFamily: "serif",
+            }}
+          >
+            {feedbackFormData.Fragment}
+          </Typography>
           <FormControl>
             <RadioGroup
               aria-labelledby="demo-radio-buttons-group-label"
