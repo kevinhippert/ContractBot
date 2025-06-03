@@ -105,15 +105,18 @@ function FragmentAccordion({ frags }) {
 
   return (
     <Box sx={{ marginBottom: "5px" }}>
-      <Accordion>
+      <Accordion sx={{ backgroundColor: "secondary.main" }}>
         <AccordionSummary
-          expandIcon={<ExpandMoreIcon />}
+          expandIcon={<ExpandMoreIcon sx={{ marginLeft: "15px" }} />}
           aria-controls="panel1-content"
           id="panel1-header"
         >
-          <Typography>
-            Reference fragment: <i>{frag}</i>
-          </Typography>
+          <Box>
+            <Typography>
+              <b>Reference fragment: </b>
+            </Typography>
+            <Typography sx={{ fontFamily: "serif" }}>{frag}</Typography>
+          </Box>
         </AccordionSummary>
         <AccordionDetails>
           {documents && documents.map((text) => <Document text={text} />)}

@@ -7,7 +7,7 @@ import { useTopic } from "../../contexts/TopicContext";
 import { Box, Paper, Typography, Divider } from "@mui/material/";
 import { formatQuery } from "../../utils/utils";
 import FragmentAccordion from "./FragmentAccordion";
-import Question from "../../components/Question";
+import Question from "./Question";
 
 function DocumentsView() {
   const [lookups, setLookups] = useState([]);
@@ -69,8 +69,8 @@ function DocumentsView() {
         Object.entries(lookup).map(([query, fragmentOjbect]) => (
           <Box key={query}>
             <Question query={query} />
-            {Object.values(fragmentOjbect).map((frags) => (
-              <FragmentAccordion frags={frags} />
+            {Object.values(fragmentOjbect).map((frags, index) => (
+              <FragmentAccordion frags={frags} key={index} />
             ))}
           </Box>
         ))
