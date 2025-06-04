@@ -19,13 +19,7 @@ function FragmentAccordion({ fragment, docs }) {
   const [documents, setDocuments] = useState([]);
 
   useEffect(() => {
-    console.log("the accordions are rendering");
-    console.log("frag: ", frag);
-    console.log("docs: ", docs);
-  }, []);
-
-  useEffect(() => {
-    setFrag(frag);
+    setFrag(fragment);
     setDocuments(docs);
   }, [fragment]);
 

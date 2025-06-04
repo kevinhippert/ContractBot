@@ -12,7 +12,7 @@ function Question({ query }) {
         borderRadius: "4px",
         display: "flex",
         justifyContent: "space-between",
-        marginTop: "10px",
+        marginTop: "15px",
       }}
     >
       <Typography>
