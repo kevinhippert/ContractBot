@@ -14,16 +14,20 @@ import {
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
-function FragmentAccordion({ frags }) {
+function FragmentAccordion({ fragment, docs }) {
   const [frag, setFrag] = useState("");
   const [documents, setDocuments] = useState([]);
 
   useEffect(() => {
-    if (frags) {
-      setFrag(Object.keys(frags)[0]);
-      setDocuments(frags[frag]);
-    }
-  }, [frags]);
+    console.log("the accordions are rendering");
+    console.log("frag: ", frag);
+    console.log("docs: ", docs);
+  }, []);
+
+  useEffect(() => {
+    setFrag(frag);
+    setDocuments(docs);
+  }, [fragment]);
 
   const Document = ({ text }) => {
     if (!text.includes(".....")) {

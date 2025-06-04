@@ -7,7 +7,7 @@ function Question({ query }) {
   return (
     <Box
       sx={{
-        padding: "6px 12px",
+        padding: "6px 0",
         color: "secondary.contrastText",
         borderRadius: "4px",
         display: "flex",

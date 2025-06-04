@@ -1,17 +1,23 @@
 import React, { useState, useEffect } from "react";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
 import api from "../../api/api";
 import { createAuthenticationParams } from "../../authentication/authentication";
 import { useTopic } from "../../contexts/TopicContext";
-import { Box, Paper, Typography, Divider } from "@mui/material/";
-import { formatQuery } from "../../utils/utils";
+import { Box, Typography } from "@mui/material/";
 import FragmentAccordion from "./FragmentAccordion";
 import Question from "./Question";
 
 function DocumentsView() {
   const [lookups, setLookups] = useState([]);
+  const [loadingLookups, setLoadingLookups] = useState(false);
   const { currentTopic } = useTopic();
+
+  // useEffect(() => {
+  //   console.log("am i rendering twice?");
+  // }, []);
+
+  // useEffect(() => {
+  //   console.log("lookups: ", lookups);
+  // }, [lookups]);
 
   useEffect(() => {
     getLookupDocuments();
@@ -23,7 +29,8 @@ function DocumentsView() {
       const url = `/get-lookups?${authParams}&Topic=${currentTopic.topicId}`;
       const res = await api.get(url);
       if (res.data) {
-        setLookups(transformLookupData(res.data.Lookups));
+        const transformed = transformLookupData(res.data.Lookups);
+        setLookups(transformed);
       } else {
         console.log("No data in response: ", res);
       }
@@ -39,8 +46,7 @@ function DocumentsView() {
 
     lookups.forEach((lookup) => {
       const query = lookup.Query;
-      const fragments = lookup.Fragments; // This is an array of fragment objects
-
+      const fragments = lookup.Fragments; // This is an array of fragment objects [{ "answerFragment": ["document1", "document2", "document3"] }]
       // If the query already exists in our aggregated object,
       // concatenate the new fragments to the existing ones.
       if (aggregatedQueries[query]) {
@@ -67,14 +73,24 @@ function DocumentsView() {
       </Typography>
       {lookups.length > 0 ? (
         lookups.map((lookup) =>
-          Object.entries(lookup).map(([query, fragmentOjbect]) => (
-            <Box key={query}>
-              <Question query={query} />
-              {Object.values(fragmentOjbect).map((frags, index) => (
-                <FragmentAccordion frags={frags} key={index} />
-              ))}
-            </Box>
-          ))
+          Object.entries(lookup).map(([query, fragmentArray]) => {
+            return (
+              <Box key={query}>
+                <Question query={query} />
+                {fragmentArray.map((fragmentObject) => {
+                  return Object.entries(fragmentObject).map(
+                    ([fragment, documents]) => (
+                      <FragmentAccordion
+                        key={fragment}
+                        fragment={fragment}
+                        docs={documents}
+                      />
+                    )
+                  );
+                })}
+              </Box>
+            );
+          })
         )
       ) : (
         <Typography>
@@ -86,3 +102,5 @@ function DocumentsView() {
 }
 
 export default DocumentsView;
+
+//  (<FragmentAccordion frags={frags} key={answerFrag} />);
