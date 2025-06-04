@@ -29,11 +29,12 @@ function FragmentAccordion({ fragment, docs }) {
         <Paper
           elevation={0}
           sx={{
-            backgroundColor: "#f4f4f4",
+            backgroundColor: "white",
             margin: "15px 0",
             display: "flex",
             width: "100%",
             borderRadius: "8px",
+            border: "1px solid #ddd",
           }}
         >
           <Box sx={{ padding: "10px 10px" }}>
@@ -120,7 +121,7 @@ function FragmentAccordion({ fragment, docs }) {
           {documents?.length > 0 ? (
             documents.map((text) => <Document text={text} />)
           ) : (
-            <Typography>No results for this text fragment.</Typography>
+            <Document text={"No results found for this fragment."} />
           )}
         </AccordionDetails>
       </Accordion>
