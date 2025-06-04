@@ -1,24 +1,13 @@
 import React, { useState, useEffect } from "react";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
 import api from "../../api/api";
 import { createAuthenticationParams } from "../../authentication/authentication";
 import { useTopic } from "../../contexts/TopicContext";
-import {
-  Box,
-  Paper,
-  Typography,
-  Divider,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableRow,
-} from "@mui/material/";
-import { formatQuery } from "../../utils/utils";
+import { Box, Typography } from "@mui/material/";
+import FragmentAccordion from "./FragmentAccordion";
+import Question from "./Question";
 
 function DocumentsView() {
-  const [lookups, setLookups] = useState([]);
+  const [lookups, setLookups] = useState(null);
   const { currentTopic } = useTopic();
 
   useEffect(() => {
@@ -31,166 +20,77 @@ function DocumentsView() {
       const url = `/get-lookups?${authParams}&Topic=${currentTopic.topicId}`;
       const res = await api.get(url);
       if (res.data) {
-        setLookups(res.data.Lookups);
+        const transformed = transformLookupData(res.data.Lookups);
+        setLookups(transformed);
       } else {
         console.log("No data in response: ", res);
+        setLookups([]);
       }
     } catch (error) {
       // handle error
       console.error("There was an error and here it is: ", error);
+      setLookups([]);
     }
   };
 
-  const Query = ({ queryText }) => {
-    let { text } = formatQuery(queryText);
-    return (
-      <Box
-        sx={{
-          margin: "4px 0",
-          display: "flex",
-          justifyContent: "space-between",
-        }}
-      >
-        <Typography>
-          <b>Query:</b> {text}
-          <br />
-          <b>Answer Fragment:</b>
-        </Typography>
-      </Box>
+  const transformLookupData = (lookups) => {
+    // temporary object to aggregate fragments by Query
+    const aggregatedQueries = {};
+
+    lookups.forEach((lookup) => {
+      const query = lookup.Query;
+      const fragments = lookup.Fragments; // This is an array of fragment objects [{ "answerFragment": ["document1", "document2", "document3"] }]
+      // If the query already exists in our aggregated object,
+      // concatenate the new fragments to the existing ones.
+      if (aggregatedQueries[query]) {
+        aggregatedQueries[query] = aggregatedQueries[query].concat(fragments);
+      } else {
+        // If the query is new, add it with its fragments array.
+        aggregatedQueries[query] = fragments;
+      }
+    });
+
+    // convert the aggregated object into the desired array of objects format
+    const newLookupsStructure = Object.entries(aggregatedQueries).map(
+      ([query, fragments]) => {
+        return { [query]: fragments };
+      }
     );
-  };
-
-  const Fragment = ({ text }) => {
-    return (
-      <>
-        <Box sx={{ margin: "0px 24px" }}>
-          <ReactMarkdown children={text} remarkPlugins={[remarkGfm]} />
-        </Box>
-      </>
-    );
-  };
-
-  const Document = ({ text }) => {
-    if (!text.includes(".....")) {
-      return (
-        <Paper
-          elevation={0}
-          sx={{
-            backgroundColor: "#f4f4f4",
-            margin: "15px 0",
-            display: "flex",
-            width: "100%",
-            borderRadius: "8px",
-          }}
-        >
-          <Box sx={{ padding: "10px 10px" }}>
-            <Typography>{text}</Typography>
-          </Box>
-        </Paper>
-      );
-    }
-
-    const result = text.split(".....");
-    const metaData = result[0].split("\n");
-    const docLines = result[1].split("\n");
-    const column1RowCount = metaData.length;
-    const firstColumnWidth = "25%";
-
-    return (
-      <Box sx={{ margin: "12px 0", boxShadow: "3px 2px 2px #dddddd" }}>
-        <TableContainer
-          component={Paper}
-          elevation={0}
-          sx={{
-            border: "1px solid #ddd",
-            borderRadius: "6px",
-            backgroundColor: "#f8f4fd",
-          }}
-        >
-          <Table
-            sx={{ minWidth: 400, tableLayout: "fixed" }}
-            aria-label="custom table with merged cell"
-          >
-            <TableBody>
-              {metaData.map((row, index) => (
-                <TableRow key={index}>
-                  {/* First Column Cells */}
-                  <TableCell
-                    component="th"
-                    scope="row"
-                    sx={{
-                      padding: "4px 9px",
-                      width: firstColumnWidth,
-                      wordBreak: "break-word",
-                    }}
-                  >
-                    {row}
-                  </TableCell>
-
-                  {/* Second Column ONE BIG CELL */}
-                  {index === 0 && (
-                    <TableCell
-                      rowSpan={column1RowCount}
-                      sx={{
-                        verticalAlign: "top",
-                        borderLeft: "1px solid #ddd",
-                      }}
-                    >
-                      {docLines.map((line, index) => (
-                        <Typography sx={{ fontFamily: "serif" }} key={index}>
-                          {line}
-                        </Typography>
-                      ))}
-                    </TableCell>
-                  )}
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </Box>
-    );
+    return newLookupsStructure;
   };
 
   return (
     <Box className="scrollable-content" sx={{ paddingBottom: "100px" }}>
-      <Typography variant="h6">Reference Documents</Typography>
-      <Divider sx={{ margin: "15px 0" }} />
-      {lookups.length === 0 ? (
-        <Typography>No documents to show</Typography>
-      ) : (
-        lookups.map((lookup, lookupIndex) => (
-          <Box key={`doc-${lookupIndex}`}>
-            <Query queryText={lookup.Query} />
-            {lookup.Fragments.map((fragmentObject, fragmentObjIndex) => (
-              <Box key={`fragment-obj-${lookupIndex}-${fragmentObjIndex}`}>
-                {Object.entries(fragmentObject).map(([frag, docs]) => (
-                  <Box
-                    key={`fragment-entry-${lookupIndex}-${fragmentObjIndex}-${frag}`}
-                  >
-                    <Fragment text={frag} />
-
-                    {docs.length > 0 ? (
-                      docs.map((doc, docIndex) => (
-                        <Box
-                          key={`fragment-value-${lookupIndex}-${fragmentObjIndex}-${frag}-${docIndex}`}
-                        >
-                          <Document text={doc} />
-                        </Box>
-                      ))
-                    ) : (
-                      <Document
-                        text={
-                          "No reference documents were found for this text fragment."
-                        }
+      <Typography variant="h6" sx={{ marginBottom: "20px" }}>
+        Reference Documents
+      </Typography>
+      {!lookups ? (
+        <Typography>Loading...</Typography>
+      ) : lookups.length > 0 ? (
+        lookups.map((lookup) =>
+          Object.entries(lookup).map(([query, fragmentArray]) => {
+            return (
+              <Box key={query}>
+                <Question query={query} />
+                {fragmentArray.map((fragmentObject) => {
+                  return Object.entries(fragmentObject).map(
+                    ([fragment, documents]) => (
+                      <FragmentAccordion
+                        key={fragment}
+                        fragment={fragment}
+                        docs={documents}
                       />
-                    )}
-                  </Box>
-                ))}
+                    )
+                  );
+                })}
               </Box>
-            ))}
-          </Box>
-        ))
+            );
+          })
+        )
+      ) : (
+        <Typography>
+          No references have been requested on this topic.
+        </Typography>
       )}
     </Box>
   );

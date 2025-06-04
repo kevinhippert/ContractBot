@@ -5,7 +5,7 @@ const colors = {
   slateBlue: "#72A3D2",
   white: "#ffffff",
   yellow: "#dfc118",
-  lightPurple: "#c6a0f063",
+  lightPurple: "#c6a0f01a",
   lightBlack: "#000000cc",
 };
 
