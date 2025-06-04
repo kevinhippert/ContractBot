@@ -7,17 +7,8 @@ import FragmentAccordion from "./FragmentAccordion";
 import Question from "./Question";
 
 function DocumentsView() {
-  const [lookups, setLookups] = useState([]);
-  const [loadingLookups, setLoadingLookups] = useState(false);
+  const [lookups, setLookups] = useState(null);
   const { currentTopic } = useTopic();
-
-  // useEffect(() => {
-  //   console.log("am i rendering twice?");
-  // }, []);
-
-  // useEffect(() => {
-  //   console.log("lookups: ", lookups);
-  // }, [lookups]);
 
   useEffect(() => {
     getLookupDocuments();
@@ -33,10 +24,12 @@ function DocumentsView() {
         setLookups(transformed);
       } else {
         console.log("No data in response: ", res);
+        setLookups([]);
       }
     } catch (error) {
       // handle error
       console.error("There was an error and here it is: ", error);
+      setLookups([]);
     }
   };
 
@@ -71,7 +64,9 @@ function DocumentsView() {
       <Typography variant="h6" sx={{ marginBottom: "20px" }}>
         Reference Documents
       </Typography>
-      {lookups.length > 0 ? (
+      {!lookups ? (
+        <Typography>Loading...</Typography>
+      ) : lookups.length > 0 ? (
         lookups.map((lookup) =>
           Object.entries(lookup).map(([query, fragmentArray]) => {
             return (
@@ -102,5 +97,3 @@ function DocumentsView() {
 }
 
 export default DocumentsView;
-
-//  (<FragmentAccordion frags={frags} key={answerFrag} />);
