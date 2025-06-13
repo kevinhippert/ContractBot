@@ -67,6 +67,20 @@ Otherwise, return a 200 with a body similar to:
 }
 ```
 
+### `DEL api/topic`
+
+Takes authentication, OnBehalfOf, and Topic query parameters:
+
+- User (e.g. `Frontend_1`)
+- Nonce
+- Hash
+- OnBehalfOf (e.g. `Calico_Seders`)
+- Topic (e.g. `DGQIn+5troxI`)
+
+If no topic with that identifier exists for the OnBehalfOf user, return a 404
+HTTP status. Otherwise, return a 200.
+
+
 ### `POST api/add-query`
 
 Takes authentication query parameters:
