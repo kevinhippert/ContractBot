@@ -11,7 +11,7 @@ from app.utils.queues import priority_queue, QueryQueue
 router = APIRouter()
 
 
-@router.get("/api/user-topics", tags=["query", "lookup"])
+@router.get("/api/user-topics", tags=["query", "topic"])
 async def user_topics(
     User: str, Nonce: str, Hash: str, OnBehalfOf: str
 ) -> JSONResponse:
@@ -31,6 +31,33 @@ async def user_topics(
     return JSONResponse(
         status_code=status.HTTP_200_OK, content=QueryQueue().get_user_topics(OnBehalfOf)
     )
+
+
+@router.delete("/api/topic", tags=["query", "topic"])
+async def delete_topic(
+    User: str, Nonce: str, Hash: str, OnBehalfOf: str, Topic: str
+) -> JSONResponse:
+    """
+    Delete a topic from the user's list of topics.
+    """
+    if not User.startswith("Frontend_"):
+        return JSONResponse(
+            status_code=status.HTTP_403_FORBIDDEN,
+            content={"detail": "Only Frontend users can access this endpoint"},
+        )
+    if not authenticate(User, Nonce, Hash):
+        return JSONResponse(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            content={"detail": "Authentication failed"},
+        )
+
+    permitted = QueryQueue().delete_topic(OnBehalfOf, Topic)
+    if not permitted:
+        return JSONResponse(
+            status_code=status.HTTP_403_FORBIDDEN,
+            content={"detail": "User does not have permission to delete this topic"},
+        )
+    return JSONResponse(status_code=status.HTTP_200_OK, content={"status": "OK"})
 
 
 @router.post("/api/add-query", tags=["query"])
@@ -129,7 +156,7 @@ async def get_query(
     )
 
 
-@router.get("/api/get-topic-thread", tags=["query"])
+@router.get("/api/get-topic-thread", tags=["query", "topic"])
 async def get_topic(
     User: str,
     Nonce: str,
