@@ -77,7 +77,7 @@ Takes authentication, OnBehalfOf, and Topic query parameters:
 - OnBehalfOf (e.g. `Calico_Seders`)
 - Topic (e.g. `DGQIn+5troxI`)
 
-If no topic with that identifier exists for the OnBehalfOf user, return a 404
+If no topic with that identifier exists for the OnBehalfOf user, return a 403
 HTTP status. Otherwise, return a 200.
 
 

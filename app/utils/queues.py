@@ -417,6 +417,22 @@ class QueryQueue:
         self.conn.commit()
         return ts
 
+    def delete_topic(self, user: str, topic: str) -> bool:
+        self.cursor.execute(
+            "SELECT Topic FROM queries WHERE User =? AND Topic =?",
+            (user, topic),
+        )
+        if not self.cursor.fetchone():
+            # There is no matching topic for this user
+            return False
+
+        self.cursor.execute(
+            "DELETE FROM queries WHERE User =? AND Topic =?",
+            (user, topic),
+        )
+        self.conn.commit()
+        return True
+
     def redact(self, days: int = 14) -> None:
         """
         Do not retain older data on frontend EC2 system.
