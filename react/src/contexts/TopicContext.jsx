@@ -56,7 +56,7 @@ export function TopicProvider({ children }) {
     setTopics((prevTopics) =>
       prevTopics.map((t) => ({
         ...t,
-        isCurrent: t.topicId === newCurrentTopic.topicId,
+        isCurrent: newCurrentTopic ? t.topicId === newCurrentTopic.topicId : false,
       }))
     );
   };
@@ -85,6 +85,25 @@ export function TopicProvider({ children }) {
     );
   };
 
+  // delete a topic
+  const deleteTopic = async (topicId) => {
+    try {
+      const authParams = await createAuthenticationParams();
+      const url = `/topic?${authParams}&OnBehalfOf=${user.userName}&Topic=${topicId}`;
+      const res = await api.delete(url)
+      if (res.status === 200) {
+        setTopics((prevTopics) => prevTopics.filter((t) => t.topicId !== topicId));
+        if (currentTopic?.topicId === topicId) {
+          setNewCurrentTopic(null);
+        } else {
+          console.log('Failed to delete topic:', res.status)
+        }
+      }
+    } catch (error) {
+      console.log("Its an error: ", error)
+    }
+  }
+
   const value = {
     setNewCurrentTopic,
     updateCurrentTopic,
@@ -92,6 +111,7 @@ export function TopicProvider({ children }) {
     updateTopicName,
     setTopics,
     currentTopic,
+    deleteTopic
   };
 
   return (

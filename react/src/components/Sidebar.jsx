@@ -8,12 +8,20 @@ import {
   ListItemText,
   Divider,
   Button,
+  IconButton,
 } from "@mui/material/";
 import AddIcon from "@mui/icons-material/Add";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
 
 export default function Sidebar({ view }) {
   // [{topicId: "abc123", topicName: "What is life?", isCurrent: true, seq: 2}, ...]
-  const { topics, setTopics, setNewCurrentTopic, currentTopic } = useTopic();
+  const { topics, setTopics, setNewCurrentTopic, currentTopic, deleteTopic } = useTopic();
+
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [menuTopic, setMenuTopic] = useState(null);
+  const open = Boolean(anchorEl);
 
   // create a new topic, add to the list of topics, set as current topic
   const handleNewTopicClick = () => {
@@ -25,6 +33,11 @@ export default function Sidebar({ view }) {
   // set as current topic
   const handleSelectTopic = async (topic) => {
     setNewCurrentTopic(topic);
+  };
+
+  // delete current topic
+  const handleDeleteTopic = (topicId) => {
+    deleteTopic(topicId)
   };
 
   return (
@@ -42,6 +55,19 @@ export default function Sidebar({ view }) {
               <ListItem
                 disablePadding
                 key={topic.topicId}
+                secondaryAction={
+                  <IconButton
+                    edge="end"
+                    aria-label="more options"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setAnchorEl(e.currentTarget);
+                      setMenuTopic(topic);
+                    }}
+                  >
+                    <MoreVertIcon />
+                  </IconButton>
+                }
                 onClick={(e) => handleSelectTopic(topic)}
               >
                 <ListItemButton
@@ -81,6 +107,25 @@ export default function Sidebar({ view }) {
           new topic
         </Button>
       )}
+      <Menu
+        anchorEl={anchorEl}
+        open={open}
+        onClose={() => {
+          setAnchorEl(null);
+          setMenuTopic(null);
+        }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <MenuItem
+          onClick={() => {
+            handleDeleteTopic(menuTopic.topicId);
+            setAnchorEl(null);
+            setMenuTopic(null);
+          }}
+        >
+          Delete
+        </MenuItem>
+      </Menu>
     </Box>
   );
 }
