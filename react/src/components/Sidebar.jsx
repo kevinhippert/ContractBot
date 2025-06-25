@@ -19,8 +19,8 @@ export default function Sidebar({ view }) {
   // [{topicId: "abc123", topicName: "What is life?", isCurrent: true, seq: 2}, ...]
   const { topics, setTopics, setNewCurrentTopic, currentTopic, deleteTopic } = useTopic();
 
-  const [anchorEl, setAnchorEl] = useState(null);
-  const [menuTopic, setMenuTopic] = useState(null);
+  const [anchorEl, setAnchorEl] = useState(null); // menu anchor
+  const [menuTopic, setMenuTopic] = useState(null); // specific topic that's being manipulated
   const open = Boolean(anchorEl);
 
   // create a new topic, add to the list of topics, set as current topic

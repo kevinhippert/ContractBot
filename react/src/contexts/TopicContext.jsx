@@ -100,7 +100,16 @@ export function TopicProvider({ children }) {
         }
       }
     } catch (error) {
-      console.log("Its an error: ", error)
+      const status = error?.request.status
+      if (status === 403) {
+        console.log('Topic not created on backend, removing on frontend only')
+        setTopics((prevTopics) => prevTopics.filter((t) => t.topicId !== topicId));
+        if (currentTopic?.topicId === topicId) {
+          setNewCurrentTopic(null);
+        }
+      } else {
+        console.log("Its an error: ", error)
+      }
     }
   }
 
