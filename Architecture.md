@@ -1,6 +1,6 @@
 # Architecture
 
-The BossBot frontend will provide a friendly interface for users to make
+The ContractBot frontend will provide a friendly interface for users to make
 queries to the inference engine.[^1] The inference engine(s) itself will be
 externally hosted on a machine more capable of running an LLM than is the small
 instance hosting the frontend.
@@ -306,7 +306,7 @@ The purpose of this route is for a user to _recommend_ a section of text as
 particularly useful, and hence that it should be used in future RAG fragment
 matching.
 
-Multiple kinds texts can be recommended, and negative recommendations are
+Multiple kinds of texts can be recommended, and negative recommendations are
 permitted as well.  Either paragraphs from existing answers or answers
 composed by users themselves can be incorporated into future model answers.  A
 body should resemble:
