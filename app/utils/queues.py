@@ -51,6 +51,38 @@ class QueryQueue:
             "CREATE INDEX IF NOT EXISTS idx_queries_user ON queries(User)"
         )
 
+        # Table for topic nicknames
+        self.cursor.execute(
+            """
+            CREATE TABLE IF NOT EXISTS nicknames (
+                Topic TEXT NOT NULL,
+                Nickname TEXT NOT NULL
+            )
+            """
+        )
+        self.cursor.execute(
+            "CREATE UNIQUE INDEX IF NOT EXISTS "
+            "idx_nicknames_topic ON topic_nicknames(Topic)"
+        )
+
+        # Table for lookup todos, and an index
+        # One-to-many relationship between lookup and todos
+        self.cursor.execute(
+            """
+            CREATE TABLE IF NOT EXISTS lookup_todos (
+                Fingerprint TEXT NOT NULL,  -- Specifically non-unique lookup hash
+                Todo TEXT NOT NULL
+            )
+            """
+        )
+        self.cursor.execute(
+            "CREATE INDEX IF NOT EXISTS "
+            "idx_lookup_todos_fingerprint ON lookup_todos(Fingerprint)"
+        )
+
+        # Table for answer todos, and an index
+        # One-to-many relationship between answer and todo
+
         # Table for lookups, and some indices
         self.cursor.execute(
             """
@@ -126,11 +158,9 @@ class QueryQueue:
         # Since `topics` is generated internally, no SQL injection vulnerability.
         topic_list = ",".join(f"'{topic}'" for topic in topics)
         self.cursor.execute(
-            "SELECT Topic, Query "
-            "FROM queries "
+            "SELECT Topic, Nickname "
+            "FROM nicknames "
             f"WHERE Topic IN ({topic_list}) "
-            "AND Seq = 1 "
-            "ORDER BY Timestamp DESC",
         )
         return dict(self.cursor.fetchall())
 
@@ -146,6 +176,12 @@ class QueryQueue:
         seq = 1  # Start from 1 if new topic
         if last_seq := self.cursor.fetchone():
             seq = last_seq[0] + 1
+        else:
+            # Create an initial topic nickname based the first query
+            self.cursor.execute(
+                "INSERT INTO nicknames (Topic, Nickname) VALUES (?,?)",
+                (topic, query),
+            )
 
         # Enhance the query with categories if provided
         if categories := modifiers.get("Category"):
@@ -159,6 +195,7 @@ class QueryQueue:
             (topic, seq, user, query, model),
         )
         received = self.cursor.fetchone()[0]
+
         self.conn.commit()
         return seq, received
 
