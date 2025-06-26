@@ -62,7 +62,7 @@ class QueryQueue:
         )
         self.cursor.execute(
             "CREATE UNIQUE INDEX IF NOT EXISTS "
-            "idx_nicknames_topic ON topic_nicknames(Topic)"
+            "idx_nicknames_topic ON nicknames(Topic)"
         )
 
         # Table for lookup todos, and an index
