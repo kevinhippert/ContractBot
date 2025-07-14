@@ -80,6 +80,21 @@ Takes authentication, OnBehalfOf, and Topic query parameters:
 If no topic with that identifier exists for the OnBehalfOf user, return a 403
 HTTP status. Otherwise, return a 200.
 
+### `PUT api/rename-topic`
+
+Rename the given topic to a description specified by a user.
+
+Takes authentication, OnBehalfOf, and Topic query parameters:
+
+- User (e.g. `Frontend_1`)
+- Nonce
+- Hash
+- OnBehalfOf (e.g. `Calico_Seders`)
+- Topic (e.g. `DGQIn+5troxI`)
+- Description (e.g. `Conversation about the meaning of life`)
+
+If no topic with that identifier exists for the OnBehalfOf user, return a 403
+HTTP status. Otherwise, return a 200.
 
 ### `POST api/add-query`
 
