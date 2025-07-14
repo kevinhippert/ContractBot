@@ -11,7 +11,7 @@ from app.utils.queues import priority_queue, QueryQueue
 router = APIRouter()
 
 
-@router.get("/api/user-topics", tags=["query", "topic"])
+@router.get("/api/user-topics", tags=["topic"])
 async def user_topics(
     User: str, Nonce: str, Hash: str, OnBehalfOf: str
 ) -> JSONResponse:
@@ -33,7 +33,7 @@ async def user_topics(
     )
 
 
-@router.delete("/api/topic", tags=["query", "topic"])
+@router.delete("/api/topic", tags=["topic"])
 async def delete_topic(
     User: str, Nonce: str, Hash: str, OnBehalfOf: str, Topic: str
 ) -> JSONResponse:
@@ -56,6 +56,38 @@ async def delete_topic(
         return JSONResponse(
             status_code=status.HTTP_403_FORBIDDEN,
             content={"detail": "User does not have permission to delete this topic"},
+        )
+    return JSONResponse(status_code=status.HTTP_200_OK, content={"status": "OK"})
+
+
+@router.put("/api/rename-topic", tags=["topic"])
+async def rename_topic(
+    User: str,
+    Nonce: str,
+    Hash: str,
+    OnBehalfOf: str,
+    Topic: str,
+    Description: str,
+) -> JSONResponse:
+    """
+    Rename a topic for the user.
+    """
+    if not User.startswith("Frontend_"):
+        return JSONResponse(
+            status_code=status.HTTP_403_FORBIDDEN,
+            content={"detail": "Only Frontend users can access this endpoint"},
+        )
+    if not authenticate(User, Nonce, Hash):
+        return JSONResponse(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            content={"detail": "Authentication failed"},
+        )
+
+    permitted = QueryQueue().rename_topic(OnBehalfOf, Topic, Description)
+    if not permitted:
+        return JSONResponse(
+            status_code=status.HTTP_403_FORBIDDEN,
+            content={"detail": "User does not have permission to rename this topic"},
         )
     return JSONResponse(status_code=status.HTTP_200_OK, content={"status": "OK"})
 
