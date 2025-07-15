@@ -17,11 +17,14 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 
 export default function Sidebar({ view }) {
   // [{topicId: "abc123", topicName: "What is life?", isCurrent: true, seq: 2}, ...]
-  const { topics, setTopics, setNewCurrentTopic, currentTopic, deleteTopic } = useTopic();
+  const { topics, setTopics, setNewCurrentTopic, currentTopic, deleteTopic, renameTopic } = useTopic();
 
   const [anchorEl, setAnchorEl] = useState(null); // menu anchor
   const [menuTopic, setMenuTopic] = useState(null); // specific topic that's being manipulated
   const open = Boolean(anchorEl);
+
+  const [editingTopicId, setEditingTopicId] = useState(null);
+  const [editedTopicName, setEditedTopicName] = useState("");
 
   // create a new topic, add to the list of topics, set as current topic
   const handleNewTopicClick = () => {
@@ -39,6 +42,20 @@ export default function Sidebar({ view }) {
   const handleDeleteTopic = (topicId) => {
     deleteTopic(topicId)
   };
+
+  // rename current topic
+  const handleRenameTopic = (topic) => {
+    setEditingTopicId(topic.topicId);
+    setEditedTopicName(topic.topicName);
+    setAnchorEl(null);
+    setMenuTopic(null);
+  };
+
+  // submit rename
+  const handleSubmitRename = async (topicId) => {
+    await renameTopic(topicId, editedTopicName);
+    setEditingTopicId(null)
+  }
 
   return (
     <Box
@@ -90,7 +107,20 @@ export default function Sidebar({ view }) {
                     },
                   }}
                 >
-                  <ListItemText primary={topic.topicName} />
+                  <ListItemText primary={
+                    editingTopicId === topic.topicId ? (
+                      <input
+                        autoFocus
+                        value={editedTopicName}
+                        onChange={(e) => setEditedTopicName(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            handleSubmitRename(topic.topicId)
+                          }
+                        }}
+                        onBlur={() => handleSubmitRename(topic.topicId)}
+                      />
+                    ) : (topic.topicName)} />
                 </ListItemButton>
               </ListItem>
             ))}
@@ -116,6 +146,15 @@ export default function Sidebar({ view }) {
         }}
         onClick={(e) => e.stopPropagation()}
       >
+        <MenuItem
+          onClick={() => {
+            handleRenameTopic(menuTopic);
+            setAnchorEl(null);
+            setMenuTopic(null);
+          }}
+        >
+          Rename
+        </MenuItem>
         <MenuItem
           onClick={() => {
             handleDeleteTopic(menuTopic.topicId);
