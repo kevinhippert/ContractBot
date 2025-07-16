@@ -23,8 +23,8 @@ export default function Sidebar({ view }) {
   const [menuTopic, setMenuTopic] = useState(null); // specific topic that's being manipulated
   const open = Boolean(anchorEl);
 
-  const [editingTopicId, setEditingTopicId] = useState(null);
-  const [editedTopicName, setEditedTopicName] = useState("");
+  const [editingTopicId, setEditingTopicId] = useState(null); // id of topic being renamed
+  const [editedTopicName, setEditedTopicName] = useState(""); // new name of topic
 
   // create a new topic, add to the list of topics, set as current topic
   const handleNewTopicClick = () => {
@@ -47,8 +47,6 @@ export default function Sidebar({ view }) {
   const handleRenameTopic = (topic) => {
     setEditingTopicId(topic.topicId);
     setEditedTopicName(topic.topicName);
-    setAnchorEl(null);
-    setMenuTopic(null);
   };
 
   // submit rename
