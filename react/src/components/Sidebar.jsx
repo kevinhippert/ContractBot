@@ -110,6 +110,7 @@ export default function Sidebar({ view }) {
                   <ListItemText primary={
                     editingTopicId === topic.topicId ? (
                       <input
+                        id={`rename-${topic.topicId}`}
                         autoFocus
                         value={editedTopicName}
                         onChange={(e) => setEditedTopicName(e.target.value)}
@@ -118,7 +119,6 @@ export default function Sidebar({ view }) {
                             handleSubmitRename(topic.topicId)
                           }
                         }}
-                        onBlur={() => handleSubmitRename(topic.topicId)}
                       />
                     ) : (topic.topicName)} />
                 </ListItemButton>
