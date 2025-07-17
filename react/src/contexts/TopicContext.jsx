@@ -76,10 +76,11 @@ export function TopicProvider({ children }) {
 
   const updateTopicName = (topicId, newTopicName) => {
     // TODO this can be part of updateCurrentTopic ?
+    const displayName = getTopicDisplayName(topicId, newTopicName);
     setTopics((prevTopics) =>
       prevTopics.map((topic) =>
         topic.topicId === topicId
-          ? { ...topic, topicName: getTopicDisplayName(topicId, newTopicName) }
+          ? { ...topic, topicName: displayName }
           : topic
       )
     );
@@ -113,6 +114,22 @@ export function TopicProvider({ children }) {
     }
   }
 
+  // rename a topic
+  const renameTopic = async (topicId, editedTopicName) => {
+    try {
+      const authParams = await createAuthenticationParams();
+      const url = `/rename-topic?${authParams}&OnBehalfOf=${user.userName}&Topic=${topicId}&Description=${encodeURIComponent(editedTopicName)}`;
+      const res = await api.put(url)
+      if (res.status === 200) {
+        updateTopicName(topicId, editedTopicName);
+      } else {
+        console.log('Failed to rename:', res.status);
+      }
+    } catch (error) {
+      console.log('Rename error:', error)
+    }
+  }
+
   const value = {
     setNewCurrentTopic,
     updateCurrentTopic,
@@ -120,7 +137,8 @@ export function TopicProvider({ children }) {
     updateTopicName,
     setTopics,
     currentTopic,
-    deleteTopic
+    deleteTopic,
+    renameTopic
   };
 
   return (
