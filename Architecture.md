@@ -163,7 +163,8 @@ If there is an available answer:
   "Topic": "DGQIn+5troxI",
   "Seq": 4,
   "Answer": ["First paragraph", "Second paragraph"],
-  "Think": ["Thinking about foo", "Thinking about bar"]
+  "Think": ["Thinking about foo", "Thinking about bar"],
+  "Model": "deepseek-r1:32b"
 }
 ```
 

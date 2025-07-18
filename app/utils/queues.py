@@ -239,26 +239,27 @@ class QueryQueue:
 
     def find_answer(self, topic: str, seq: int) -> Answer | None:
         self.cursor.execute(
-            "SELECT Query, Answer, Think "
+            "SELECT Query, Answer, Think, Model "
             "FROM queries "
             "WHERE Topic =? AND Seq =? AND Status = 'Done'",
             (topic, seq),
         )
         result = self.cursor.fetchone()
         if result is not None:
-            query, answer, think = result
+            query, answer, think, model = result
             return Answer(
                 Query=query,
                 Topic=topic,
                 Seq=seq,
                 Answer=answer.split("§"),
                 Think=think.split("§"),
+                Model=model,
             )
         return None
 
     def find_answers(self, topic: str) -> list[Answer]:
         self.cursor.execute(
-            "SELECT Query, Seq, Answer, Think "
+            "SELECT Query, Seq, Answer, Think, Model "
             "FROM queries "
             "WHERE Topic =? "
             "ORDER BY Seq",
@@ -276,6 +277,7 @@ class QueryQueue:
                 Seq=row[1],
                 Answer=row[2].split("§"),
                 Think=row[3].split("§"),
+                Model=row[4],
             )
             for row in result
         ]
