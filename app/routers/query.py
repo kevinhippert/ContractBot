@@ -178,6 +178,7 @@ async def get_query(
                     "Seq": answer.Seq,
                     "Answer": answer.Answer,
                     "Think": answer.Think,
+                    "Model": answer.Model,
                 },
             )
         sleep(1)

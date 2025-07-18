@@ -23,6 +23,7 @@ class Answer(BaseModel):
     Seq: int
     Answer: list[str] | None
     Think: list[str] | None
+    Model: str = "default"
 
 
 class QueryTodo(BaseModel):
