@@ -229,6 +229,7 @@ async def get_topic(
                 "Seq": query.Seq,
                 "Answer": query.Answer,
                 "Think": query.Think,
+                "Model": query.Model,
             }
             for query in queries
         ],
