@@ -64,6 +64,7 @@ function Conversation({ messages, errorMessage, isQuerying }) {
                     key={index}
                     text={message.text}
                     query={messages[index - 1]}
+                    model={message.model}
                   />
                 )
               )}

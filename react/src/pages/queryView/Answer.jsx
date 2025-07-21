@@ -12,7 +12,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import PlaylistAddIcon from "@mui/icons-material/PlaylistAdd";
 import InsertCommentIcon from "@mui/icons-material/InsertComment";
 
-function Answer({ text, query }) {
+function Answer({ text, query, model }) {
   const { currentTopic } = useTopic();
   const { user } = useAuth();
   const answerContentRef = useRef(null);
@@ -146,29 +146,36 @@ function Answer({ text, query }) {
       <Box sx={{ flexGrow: 1, overflowY: "auto" }}>
         {text.map((line, index) => {
           return (
-            <Box key={index} sx={{ display: "flex" }}>
-              <Egg line={line} />
-              <ReactMarkdown children={line} remarkPlugins={[remarkGfm]} />
-              {line.length > 240 && (
-                <Box
-                  sx={{ display: "flex", alignItems: "center", margin: "5px" }}
-                >
-                  <Tooltip
-                    title={`Add reference material for this answer to the Documents tab`}
+            <Box key={index} sx={{ display: "flex", flexDirection: "column" }}>
+              <Box sx={{ display: "flex" }}>
+                <Egg line={line} />
+                <ReactMarkdown children={line} remarkPlugins={[remarkGfm]} />
+                {line.length > 240 && (
+                  <Box
+                    sx={{ display: "flex", alignItems: "center", margin: "5px" }}
                   >
-                    <PlaylistAddIcon
-                      sx={{ cursor: "pointer" }}
-                      color="primary"
-                      onClick={() => handleGetLookups(line)}
-                    />
-                  </Tooltip>
-                  <Tooltip title={`Give feedback on this answer`}>
-                    <InsertCommentIcon
-                      color="primary"
-                      sx={{ marginLeft: "4px", cursor: "pointer" }}
-                      onClick={() => handleOpenFeedbackModal(line)}
-                    />
-                  </Tooltip>
+                    <Tooltip
+                      title={`Add reference material for this answer to the Documents tab`}
+                    >
+                      <PlaylistAddIcon
+                        sx={{ cursor: "pointer" }}
+                        color="primary"
+                        onClick={() => handleGetLookups(line)}
+                      />
+                    </Tooltip>
+                    <Tooltip title={`Give feedback on this answer`}>
+                      <InsertCommentIcon
+                        color="primary"
+                        sx={{ marginLeft: "4px", cursor: "pointer" }}
+                        onClick={() => handleOpenFeedbackModal(line)}
+                      />
+                    </Tooltip>
+                  </Box>
+                )}
+              </Box>
+              {index === text.length - 1 && model && (
+                <Box sx={{ fontSize: "12px", color: "#666", marginTop: "4px" }}>
+                  Model: {model}
                 </Box>
               )}
             </Box>
