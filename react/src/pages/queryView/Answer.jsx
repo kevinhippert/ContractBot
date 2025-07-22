@@ -174,7 +174,7 @@ function Answer({ text, query, model }) {
                 )}
               </Box>
               {index === text.length - 1 && model && (
-                <Box sx={{ fontSize: "12px", color: "#666", marginTop: "4px" }}>
+                <Box sx={{ fontSize: "12px", color: "#666", marginTop: "2px", marginBottom: "8px" }}>
                   Model: {model}
                 </Box>
               )}
