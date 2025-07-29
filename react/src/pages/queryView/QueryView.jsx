@@ -119,6 +119,7 @@ function QueryView() {
               seq: response.data.Seq,
               topic: response.data.Topic,
               text: response.data.Answer,
+              model: response.data.Model,
             },
           ]);
           setIsQuerying({ isQuerying: false, message: null });
@@ -179,6 +180,7 @@ function QueryView() {
         seq: message.Seq,
         topic: message.Topic,
         text: message.Answer,
+        model: message.Model,
       };
       messages.push(question);
       messages.push(answer);
