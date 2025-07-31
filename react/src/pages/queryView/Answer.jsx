@@ -147,6 +147,11 @@ function Answer({ text, query, model }) {
         {text.map((line, index) => {
           return (
             <Box key={index} sx={{ display: "flex", flexDirection: "column" }}>
+              {index === 0 && model && (
+                <Box sx={{ fontSize: "12px", color: "#666", marginTop: "12px" }}>
+                  Model: {model}
+                </Box>
+              )}
               <Box sx={{ display: "flex" }}>
                 <Egg line={line} />
                 <ReactMarkdown children={line} remarkPlugins={[remarkGfm]} />
@@ -173,11 +178,6 @@ function Answer({ text, query, model }) {
                   </Box>
                 )}
               </Box>
-              {index === text.length - 1 && model && (
-                <Box sx={{ fontSize: "12px", color: "#666", marginTop: "2px", marginBottom: "8px" }}>
-                  Model: {model}
-                </Box>
-              )}
             </Box>
           );
         })}
