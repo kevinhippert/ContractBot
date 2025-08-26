@@ -1,6 +1,8 @@
 #!/bin/bash
 # NOTE: This script should only be run on an Inference Engine.
 
+export PYTHONPATH=$PWD
+
 # Check that ollama is present on system
 if command -v ollama; then
     echo "Ollama is available"
@@ -35,7 +37,7 @@ fi
 # Archive the answer database and old logs
 mkdir -p $HOME/archive
 cp -v $HOME/.answers.db $HOME/archive/answers-$(date +"%Y-%m-%d-%H-%M-%S").db
-mv -v $HOME/log/* $HOME/archive/
+mv -v $HOME/log/inference* $HOME/archive/
 
 # Setup the log file
 mkdir -p $HOME/log

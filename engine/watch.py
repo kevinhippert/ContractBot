@@ -8,6 +8,7 @@ import requests
 from app.models import LookupMatches, LookupTodo
 from engine.answers import ask, search_fragments
 
+baseURL = "https://hcmniabot.org/api"
 
 def give_answer(
     engine: str,
@@ -22,7 +23,7 @@ def give_answer(
     hash = sha256(f"{engine} {nonce} {token}".encode()).hexdigest()
     think, answer, seq, _seconds = ask(query, topic, user, model)
     response = requests.post(
-        "https://api.bossbot.org/api/give-new-answer",
+        f"{baseURL}/give-new-answer",
         params={"User": engine, "Nonce": nonce, "Hash": hash},
         json={
             "Query": query,
@@ -44,18 +45,24 @@ def give_answer(
 
 
 def poll_queries(engine: str, token: str) -> None:
+    print("Will this go to the log file watch/poll_queries")
+    
+    print(f"Full get-get-queries url: {baseURL}/get-new-queries")
     nonce = make_nonce(16)
     hash = sha256(f"{engine} {nonce} {token}".encode()).hexdigest()
     response = requests.get(
-        "http://api.bossbot.org/api/get-new-queries",
+        f"{baseURL}/get-new-queries",
         params={"User": engine, "Nonce": nonce, "Hash": hash},
     )
+    print(f"response.text: {response.text}")
     now = datetime.now().isoformat(timespec="seconds")
     if response.status_code == 401:
         print(f"{now} Authentication failed", file=stderr, flush=True)
 
     elif response.status_code == 200:
+        
         data = response.json()
+        
         if data["Topic"] is not None:
             print(f"{now} {data}", file=stderr, flush=True)
             topic = data["Topic"]
@@ -68,7 +75,7 @@ def poll_lookups(engine: str, token: str) -> None:
     nonce = make_nonce(16)
     hash = sha256(f"{engine} {nonce} {token}".encode()).hexdigest()
     response = requests.get(
-        "https://api.bossbot.org/api/get-new-lookup",
+       f"{baseURL}/get-new-lookup",
         params={"User": engine, "Nonce": nonce, "Hash": hash},
     )
     now = datetime.now().isoformat(timespec="seconds")
@@ -80,7 +87,10 @@ def poll_lookups(engine: str, token: str) -> None:
         pass
 
     elif response.status_code == 200:
-        _fragment = response.json()
+        _fragment = None
+
+        fragment = response.json()
+
         fragment = LookupTodo(
             Fingerprint=_fragment["Fingerprint"],
             Fragment=_fragment["Fragment"],
@@ -102,7 +112,7 @@ def poll_lookups(engine: str, token: str) -> None:
         nonce = make_nonce(16)
         hash = sha256(f"{engine} {nonce} {token}".encode()).hexdigest()
         response = requests.post(
-            "https://api.bossbot.org/api/give-new-matches",
+            f"{baseURL}/give-new-matches",
             params={"User": engine, "Nonce": nonce, "Hash": hash},
             json=lookup_matches.model_dump(),
         )

@@ -6,6 +6,7 @@ chroma/
 .queue.db
 .answers.db
 temp/
+documents.cfg
 
 # Compiled Python files
 __pycache__/
@@ -85,3 +86,4 @@ lerna-debug.log*
 *.sln
 *.sw?
 Session.vim
+credentials
