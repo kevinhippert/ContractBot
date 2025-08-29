@@ -7,6 +7,7 @@ chroma/
 .answers.db
 temp/
 documents.cfg
+master_documents.cfg
 
 # Compiled Python files
 __pycache__/

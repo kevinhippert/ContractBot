@@ -8,6 +8,10 @@ import requests
 from app.models import LookupMatches, LookupTodo
 from engine.answers import ask, search_fragments
 
+import logging
+logger = logging.getLogger(__name__)
+logging.basicConfig(filename='print.log', encoding='utf-8')
+
 baseURL = "https://hcmniabot.org/api"
 
 def give_answer(
