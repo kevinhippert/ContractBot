@@ -6,6 +6,7 @@ chroma/
 .queue.db
 .answers.db
 temp/
+documents.cfg
 
 # Compiled Python files
 __pycache__/
