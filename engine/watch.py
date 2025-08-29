@@ -49,16 +49,13 @@ def give_answer(
 
 
 def poll_queries(engine: str, token: str) -> None:
-    print("Will this go to the log file watch/poll_queries")
-    
-    print(f"Full get-get-queries url: {baseURL}/get-new-queries")
+
     nonce = make_nonce(16)
     hash = sha256(f"{engine} {nonce} {token}".encode()).hexdigest()
     response = requests.get(
         f"{baseURL}/get-new-queries",
         params={"User": engine, "Nonce": nonce, "Hash": hash},
     )
-    print(f"response.text: {response.text}")
     now = datetime.now().isoformat(timespec="seconds")
     if response.status_code == 401:
         print(f"{now} Authentication failed", file=stderr, flush=True)
@@ -82,6 +79,7 @@ def poll_lookups(engine: str, token: str) -> None:
        f"{baseURL}/get-new-lookup",
         params={"User": engine, "Nonce": nonce, "Hash": hash},
     )
+
     now = datetime.now().isoformat(timespec="seconds")
     if response.status_code == 401:
         print(f"{now} Authentication failed", file=stderr, flush=True)
@@ -96,10 +94,10 @@ def poll_lookups(engine: str, token: str) -> None:
         fragment = response.json()
 
         fragment = LookupTodo(
-            Fingerprint=_fragment["Fingerprint"],
-            Fragment=_fragment["Fragment"],
-            Count=_fragment["Count"],
-            Threshold=_fragment["Threshold"],
+            Fingerprint=fragment["Fingerprint"],
+            Fragment=fragment["Fragment"],
+            Count=fragment["Count"],
+            Threshold=fragment["Threshold"],
         )
         results = search_fragments(
             fragment.Fragment, fragment.Count, fragment.Threshold
