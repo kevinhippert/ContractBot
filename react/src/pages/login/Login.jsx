@@ -56,7 +56,7 @@ export default function Login() {
         }}
       >
         <Typography variant="h5" sx={{ marginBottom: "25px" }}>
-          Meet ContractBot, an AI chatbot to aid SEIU negotiators
+          Meet HCMNIAbot, an AI chatbot for SEIU HealthCare MN & IA
         </Typography>
         <Box>
           {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
