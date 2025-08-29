@@ -44,7 +44,7 @@ export default function NavBar() {
             flexGrow: 1,
           }}
         >
-          ContractBot
+          HCMNIAbot
         </Typography>
         {user.isAuthenticated && (
           <Button color="inherit" onClick={handleLogOutClick}>

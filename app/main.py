@@ -4,11 +4,14 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.routers import infer, login, query
 
 app = FastAPI()
-app.include_router(infer.router)
-app.include_router(login.router)
-app.include_router(query.router)
 
-origins = ["https://bosbot.org", "http://localhost:3000", "http://127.0.0.1:3000", "*"]
+origins = [ "https://hcmniabot.org",
+            "https://localhost",
+            "http://localhost",
+            "http://localhost:3000",
+            "http://127.0.0.1:3000",
+            "*" ]
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -17,3 +20,7 @@ app.add_middleware(
     allow_headers=["*"],
     expose_headers=["x-access-token"],
 )
+
+app.include_router(infer.router)
+app.include_router(login.router)
+app.include_router(query.router)
