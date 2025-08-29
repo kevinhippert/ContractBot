@@ -8,6 +8,7 @@ import requests
 from app.models import LookupMatches, LookupTodo
 from engine.answers import ask, search_fragments
 
+baseURL = "https://hcmniabot.org/api"
 
 def give_answer(
     engine: str,
@@ -22,7 +23,7 @@ def give_answer(
     hash = sha256(f"{engine} {nonce} {token}".encode()).hexdigest()
     think, answer, seq, _seconds = ask(query, topic, user, model)
     response = requests.post(
-        "https://api.bossbot.org/api/give-new-answer",
+        f"{baseURL}/api/give-new-answer",
         params={"User": engine, "Nonce": nonce, "Hash": hash},
         json={
             "Query": query,
@@ -47,7 +48,7 @@ def poll_queries(engine: str, token: str) -> None:
     nonce = make_nonce(16)
     hash = sha256(f"{engine} {nonce} {token}".encode()).hexdigest()
     response = requests.get(
-        "http://api.bossbot.org/api/get-new-queries",
+        f"{baseURL}/api/get-new-queries",
         params={"User": engine, "Nonce": nonce, "Hash": hash},
     )
     now = datetime.now().isoformat(timespec="seconds")
@@ -68,7 +69,7 @@ def poll_lookups(engine: str, token: str) -> None:
     nonce = make_nonce(16)
     hash = sha256(f"{engine} {nonce} {token}".encode()).hexdigest()
     response = requests.get(
-        "https://api.bossbot.org/api/get-new-lookup",
+        f"{baseURL}/api/get-new-lookup",
         params={"User": engine, "Nonce": nonce, "Hash": hash},
     )
     now = datetime.now().isoformat(timespec="seconds")
@@ -102,7 +103,7 @@ def poll_lookups(engine: str, token: str) -> None:
         nonce = make_nonce(16)
         hash = sha256(f"{engine} {nonce} {token}".encode()).hexdigest()
         response = requests.post(
-            "https://api.bossbot.org/api/give-new-matches",
+            f"{baseURL}/api/give-new-matches",
             params={"User": engine, "Nonce": nonce, "Hash": hash},
             json=lookup_matches.model_dump(),
         )
