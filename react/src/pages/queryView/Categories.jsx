@@ -1,87 +1,89 @@
 import React from "react";
 import {
   Box,
-  Select,
-  MenuItem,
+  TextField,        // CHANGED: Replaced Select with TextField for Autocomplete
   Chip,
-  OutlinedInput,
-  InputLabel,
   FormControl,
+  Autocomplete,     // ADDED: New component
   Checkbox,
-  ListItemText,
 } from "@mui/material";
+import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';  // ADDED: New import
+import CheckBoxIcon from '@mui/icons-material/CheckBox';                          // ADDED: New import
 import { Controller } from "react-hook-form";
 
 function Categories({ control }) {
   const categories = [
     "BENEFITS",
     "BUILDING SERVICES",
-    "CONTRACT LANGUAGE",
-    "EDUCATION",
-    "GRIEVANCES",
-    "HEALTHCARE",
-    "IMMIGRATION",
-    "PRIVATE",
-    "PTO",
-    "PUBLIC",
-    "WAGES",
+    "CERENITY_CARE_CENTER_CBA_2025-2026",
+    "RIVERWAY_CLINICS_2022-2025",
   ];
+
+  const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;      // ADDED
+  const checkedIcon = <CheckBoxIcon fontSize="small" />;           // ADDED
 
   return (
     <Box sx={{ width: "100%", margin: "10px 0" }}>
       <FormControl sx={{ width: "100%" }}>
-        <InputLabel id="categories-label">Categories</InputLabel>
         <Controller
           name="categories"
           control={control}
           defaultValue={[]}
           render={({ field: { onChange, value }, fieldState: { error } }) => (
-            <Select
-              labelId="categories-label" // Link label to select
-              id="categories-select"
+            <Autocomplete                                       // CHANGED: Select → Autocomplete
               multiple
-              value={value || []} // value is always an array, even if undefined initially
-              onChange={(event) => {
-                onChange(event.target.value); // pass the updated array directly to react-hook-form's onChange
+              id="categories-autocomplete"                     // CHANGED: New ID
+              options={categories}                             // ADDED: Explicit options prop
+              disableCloseOnSelect                             // ADDED: New prop
+              value={value || []}
+              onChange={(event, newValue) => {                 // CHANGED: Different event signature
+                onChange(newValue);                            // SIMPLIFIED: Direct value passing
               }}
-              input={
-                <OutlinedInput id="select-multiple-chip" label="Categories" />
+              renderInput={(params) => (                       // ADDED: Replaces input prop
+                <TextField
+                  {...params}
+                  label="Categories"                           // MOVED: From InputLabel
+                  error={!!error}
+                  helperText={error?.message}                  // ADDED: Error display
+                  placeholder="Type to search or select..."    // ADDED: New feature
+                />
+              )}
+              renderTags={(selected, getTagProps) =>          // CHANGED: Replaces renderValue
+                selected.map((option, index) => (
+                  <Chip
+                    variant="outlined"
+                    label={option}
+                    {...getTagProps({ index })}
+                    key={option}
+                    color="primary"
+                    onDelete={() => {                         // SIMPLIFIED: No event handling needed
+                      const newValue = value.filter((val) => val !== option);
+                      onChange(newValue);
+                    }}
+                  />
+                ))
               }
-              renderValue={(
-                selected // CHIPS
-              ) => (
-                <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
-                  {selected.map((chipValue) => (
-                    <Chip
-                      variant="outlined"
-                      key={chipValue}
-                      label={chipValue}
-                      onDelete={(event) => {
-                        // remove Chip by clicking the X
-                        event.stopPropagation();
-                        onChange(value.filter((val) => val !== chipValue));
-                      }}
-                      onMouseDown={(event) => {
-                        event.stopPropagation(); // keep dropdown from opening when clicking Chip
-                      }}
-                      color="primary"
-                    />
-                  ))}
-                </Box>
+              renderOption={(props, option, { selected }) => (  // ADDED: Replaces MenuItem mapping
+                <li {...props}>                                
+                  <Checkbox
+                    icon={icon}                                // ADDED: Custom icons
+                    checkedIcon={checkedIcon}
+                    style={{ marginRight: 8 }}
+                    checked={selected}                         // CHANGED: Simplified check
+                  />
+                  {option}                                     
+                </li>
               )}
-              error={!!error}
-            >
-              {categories.map(
-                (
-                  category // dropdown menu
-                ) => (
-                  <MenuItem key={category} value={category}>
-                    <Checkbox checked={value && value.includes(category)} />
-                    <ListItemText primary={category} />
-                  </MenuItem>
-                )
-              )}
-            </Select>
+              filterOptions={(options, { inputValue }) => {    // ADDED: Search functionality
+                const filtered = options.filter((option) =>
+                  option.toLowerCase().includes(inputValue.toLowerCase())
+                );
+                return filtered;
+              }}
+              freeSolo={false}                                 // ADDED: New prop
+              clearOnBlur={true}                               // ADDED: New prop
+              isOptionEqualToValue={(option, value) => option === value}  // ADDED: New prop
+            />
           )}
         />
       </FormControl>
