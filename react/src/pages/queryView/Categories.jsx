@@ -1,14 +1,10 @@
 import React from "react";
 import {
   Box,
-  TextField,        // CHANGED: Replaced Select with TextField for Autocomplete
-  Chip,
+  TextField,
   FormControl,
-  Autocomplete,     // ADDED: New component
-  Checkbox,
-} from "@mui/material";
-import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';  // ADDED: New import
-import CheckBoxIcon from '@mui/icons-material/CheckBox';                          // ADDED: New import
+  Autocomplete,
+} from "@mui/material";  // REMOVED: Chip import
 import { Controller } from "react-hook-form";
 
 function Categories({ control }) {
@@ -18,71 +14,40 @@ function Categories({ control }) {
     "CERENITY_CARE_CENTER_CBA_2025-2026",
     "RIVERWAY_CLINICS_2022-2025",
   ];
-
-  const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;      // ADDED
-  const checkedIcon = <CheckBoxIcon fontSize="small" />;           // ADDED
-
   return (
     <Box sx={{ width: "100%", margin: "10px 0" }}>
       <FormControl sx={{ width: "100%" }}>
         <Controller
-          name="categories"
+          name="category"  // CHANGED: Singular name (important!)
           control={control}
-          defaultValue={[]}
+          defaultValue=""  // CHANGED: Empty string instead of array
           render={({ field: { onChange, value }, fieldState: { error } }) => (
-            <Autocomplete                                       // CHANGED: Select → Autocomplete
-              multiple
-              id="categories-autocomplete"                     // CHANGED: New ID
-              options={categories}                             // ADDED: Explicit options prop
-              disableCloseOnSelect                             // ADDED: New prop
-              value={value || []}
-              onChange={(event, newValue) => {                 // CHANGED: Different event signature
-                onChange(newValue);                            // SIMPLIFIED: Direct value passing
+            <Autocomplete
+              // NO multiple prop!
+              id="category-autocomplete"
+              options={categories}
+              value={value || ""}  // CHANGED: String value, with fallback to empty string
+              onChange={(event, newValue) => {
+                onChange(newValue || "");  // CHANGED: Ensure it's a string
               }}
-              renderInput={(params) => (                       // ADDED: Replaces input prop
+              renderInput={(params) => (
                 <TextField
                   {...params}
-                  label="Categories"                           // MOVED: From InputLabel
+                  label="Category"  // CHANGED: Singular label
                   error={!!error}
-                  helperText={error?.message}                  // ADDED: Error display
-                  placeholder="Type to search or select..."    // ADDED: New feature
+                  helperText={error?.message}
+                  placeholder="Select a category..."
                 />
               )}
-              renderTags={(selected, getTagProps) =>          // CHANGED: Replaces renderValue
-                selected.map((option, index) => (
-                  <Chip
-                    variant="outlined"
-                    label={option}
-                    {...getTagProps({ index })}
-                    key={option}
-                    color="primary"
-                    onDelete={() => {                         // SIMPLIFIED: No event handling needed
-                      const newValue = value.filter((val) => val !== option);
-                      onChange(newValue);
-                    }}
-                  />
-                ))
-              }
-              renderOption={(props, option, { selected }) => (  // ADDED: Replaces MenuItem mapping
-                <li {...props}>                                
-                  <Checkbox
-                    icon={icon}                                // ADDED: Custom icons
-                    checkedIcon={checkedIcon}
-                    style={{ marginRight: 8 }}
-                    checked={selected}                         // CHANGED: Simplified check
-                  />
-                  {option}                                     
-                </li>
-              )}
-              filterOptions={(options, { inputValue }) => {    // ADDED: Search functionality
+              // NO renderTags prop!
+              // NO disableCloseOnSelect prop!
+              filterOptions={(options, { inputValue }) => {
                 const filtered = options.filter((option) =>
                   option.toLowerCase().includes(inputValue.toLowerCase())
                 );
                 return filtered;
               }}
-              freeSolo={false}                                 // ADDED: New prop
-              clearOnBlur={true}                               // ADDED: New prop
-              isOptionEqualToValue={(option, value) => option === value}  // ADDED: New prop
+              isOptionEqualToValue={(option, value) => option === value}
             />
           )}
         />

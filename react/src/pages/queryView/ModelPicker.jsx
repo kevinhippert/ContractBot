@@ -19,12 +19,12 @@ export default function ModelPicker({ register, watch }) {
       name: "deepseek-r1:32b",
       description:
         "Recommended | High quality answers, balanced | ~40s for response",
-      value: "default",
+      value: "quality",
     },
     {
       name: "gemma3:27b",
       description: "Fast | Good quality loquacious answers | ~30s for response",
-      value: "faster",
+      value: "default",
     },
     {
       name: "deepseek-r1:7b",
