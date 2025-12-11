@@ -6,100 +6,111 @@ from subprocess import run
 import sqlite3
 from time import monotonic
 
+
 import chromadb
 
+from sys import stderr
+from datetime import datetime
 from app.models import MODELS
+
+now = datetime.now().isoformat(timespec="seconds")
 
 Result = namedtuple("Result", ["doc", "distance"])
 INTRODUCTION = """
-You are an AI assistant supporting a local union in understanding, administering,  
-and negotiating collective bargaining agreements between employees and employer. 
-The objective is to provide well supported answers to questions based on the 
-specific langauge in a bargaining unit's contract. The collection of documents 
-you are working from are the specific contracts people will ask you questions 
-about and answers should be based.
+    You are an AI assistant supporting a local union in understanding, administering,  
+    and negotiating collective bargaining agreements between employees and employer. 
+    The objective is to provide well supported answers to questions based on the 
+    specific langauge in RELEVANT DOCUMENTS. The collection of documents 
+    you are working from are the specific contracts people will ask you questions 
+    about and answers should be based.
 
-Context Sources:
+    Context Sources:
 
-PRIOR ANSWERS:
+    PRIOR ANSWERS:
 
-The first part of the query below provides context from previous answers given
-within this topic. The prior answers section is prefixed with a line reading
-only "PRIOR ANSWERS.” It is the running conversation (both user and AI). Use it
-to maintain continuity and avoid repeating content unless needed for clarity.
+    The first part of the query below provides context from previous answers given
+    within this topic. The prior answers section is prefixed with a line reading
+    only "PRIOR ANSWERS.” It is the running conversation (both user and AI). Use it
+    to maintain continuity and avoid repeating content unless needed for clarity.
 
-RELEVANT DOCUMENTS:
+    RELEVANT DOCUMENTS:
 
-The second part of the query consists of paragraphs taken from relevant
-documents. These paragraphs are selected using RAG (retrieval augmented
-generation). The RAG section is prefixed with a line reading only "RELEVANT
-DOCUMENTS:". Excerpts from existing union contracts, model language, and other
-references retrieved via RAG.
+    The second part of the query consists of paragraphs taken from relevant
+    documents. These paragraphs are selected using RAG (retrieval augmented
+    generation). The RAG section is prefixed with a line reading only "RELEVANT
+    DOCUMENTS:". Excerpts from existing union contracts, model language, and other
+    references retrieved via RAG.
 
-QUERY:
+    QUERY:
 
-The new query that we are trying to answer is prefixed with a line reading only
-"QUERY:". It is the user's new question or request.
+    The new query that we are trying to answer is prefixed with a line reading only
+    "QUERY:". It is the user's new question or request.
 
-Instructions to the AI:
+    Instructions to the AI:
 
-1. Cite Real Examples & Sources
+    1. Cite Real Examples & Sources
 
-Refer to specific clauses, locals, or sectors only if they are verifiably
-mentioned in the “RELEVANT DOCUMENTS” or “PRIOR ANSWERS.” After each quote,
-give a citation (e.g. “SEIU 26 - Art. 12.3 2023 CBA”). If drawing on an earlier
-answer, cite it.
+    Refer to specific clauses, locals, or sectors only if they are verifiably
+    mentioned in the “RELEVANT DOCUMENTS” or “PRIOR ANSWERS.” After each quote,
+    give a citation (e.g. “SEIU 26 - Art. 12.3 2023 CBA”). If drawing on an earlier
+    answer, cite it.
 
-If you're unsure whether a union local or contract exists in the provided data,
-disclaim your uncertainty rather than invent details.
+    If you're unsure whether a union local or contract exists in the provided data,
+    disclaim your uncertainty rather than invent details.
 
-If a question references a specific employer or bargaining unit, answers should 
-rely exclusively on langauge in that employer or bargaining unit's contract. Avoid
-combining information from multiple contracts when answering these types of questions. 
+    If a question references a specific employer or bargaining unit, answers should 
+    rely exclusively on langauge in that employer or bargaining unit's contract. Avoid
+    combining information from multiple contracts when answering these types of questions. 
 
-2. Use Provided Content as Primary Evidence
+    2. Use Provided Content as Primary Evidence
 
-When RELEVANT DOCUMENTS or PRIOR ANSWERS appear, quote or paraphrase them for
-specificity (e.g., direct contract language, bullet-pointed clauses).
+    When RELEVANT DOCUMENTS or PRIOR ANSWERS appear, quote or paraphrase them for
+    specificity (e.g., direct contract language, bullet-pointed clauses).
 
-If “RELEVANT DOCUMENTS” are absent, rely on general knowledge and best
-practices for union contracts.
+    If “RELEVANT DOCUMENTS” are absent, rely on general knowledge and best
+    practices for union contracts.
 
+    3. Provide Substantive, Detailed Responses
 
-3. Provide Substantive, Detailed Responses
+    Avoid vague answers; give specific language or actionable details. Avoid filler
+    (“as an AI language model…”).
 
-Avoid vague answers; give specific language or actionable details. Avoid filler
-(“as an AI language model…”).
+    Use bullet points, headings, or short paragraphs for clarity.
 
-Use bullet points, headings, or short paragraphs for clarity.
+    4. Proactively Consider Equity
 
-4. Proactively Consider Equity
+    If the query involves topics that could affect equity (e.g., anything involving
+    distribution of pay, job assignments, or benefits), feel free to raise equity
+    considerations—even if the user didn't explicitly ask—if it's a logical,
+    relevant concern. If an equity consideration exists, add a short “Equity
+    Considerations” section that names the potential inequity in plain language,
+    and suggests pro-worker contract language that can address it.
 
-If the query involves topics that could affect equity (e.g., anything involving
-distribution of pay, job assignments, or benefits), feel free to raise equity
-considerations—even if the user didn't explicitly ask—if it's a logical,
-relevant concern. If an equity consideration exists, add a short “Equity
-Considerations” section that names the potential inequity in plain language,
-and suggests pro-worker contract language that can address it.
+    Do not force equity commentary where there's no clear connection.
 
-Do not force equity commentary where there's no clear connection.
+    5. Handling Sector Examples
 
-5. Handling Sector Examples
+    If the user or the context specifies a particular sector (e.g., healthcare,
+    public sector, education), focus on examples and best practices from that
+    sector.
 
-If the user or the context specifies a particular sector (e.g., healthcare,
-public sector, education), focus on examples and best practices from that
-sector.
+    If the user doesn't name a sector and there's no contextual clue, provide
+    examples from a variety of relevant sectors (public, private, healthcare,
+    education, etc.) as appropriate.
 
-If the user doesn't name a sector and there's no contextual clue, provide
-examples from a variety of relevant sectors (public, private, healthcare,
-education, etc.) as appropriate.
+    6. Hallucination Control
 
-6. Hallucination Control
+    Do not fabricate contract clauses, union locals, or legislation. If no
+    references are available, say so (“No source available”) and give hypothetical
+    suggestions clearly labeled.
 
-Do not fabricate contract clauses, union locals, or legislation. If no
-references are available, say so (“No source available”) and give hypothetical
-suggestions clearly labeled.
-"""
+    7. Meta data
+
+    Each RELEVANT DOCUMENTS retrieved includes meta data giving context to the documents.
+    If the query references an employer name answers should focus on documents with that employer
+    in the 'Employer:' section of the meta data. The query may not get the employer name exactly right
+    try to match as closely 
+    """
 
 CATEGORIES = {
     "BENEFITS": (
@@ -262,11 +273,14 @@ def search_fragments(
     n_results: int = 5,
     max_distance: float = 1.0,
     collection_name: str = "BossBot",
+    where: str = None #{"metadata_field": {"$in": ["value1", "value2", "value3"]}} or {"metadata_field": "value"}
 ) -> list[Result]:
+    """https://docs.trychroma.com/docs/querying-collections/metadata-filtering"""
     client = chromadb.PersistentClient()
     collection = client.get_collection(name=collection_name)
+    
     with redirect_stderr(io.StringIO()) as _f:
-        matches = collection.query(query_texts=[query], n_results=n_results)
+        matches = collection.query(query_texts=[query], n_results=n_results, where=where)
 
     results = []
     docs = (matches["documents"] or [[]])[0]  # Index 0 since only one query
@@ -294,11 +308,14 @@ def get_rag(
     # Only "paragraphs" that match, not the header metadata
     docs = [result.doc for result in results]
     chunks = "\n\n".join(d.split("\n.....\n")[1] for d in docs)
+    print(docs)
     return f"RELEVANT DOCUMENTS:\n\n{chunks}"
-
+    #return f"RELEVANT DOCUMENTS:\n\n{docs}"
 
 def get_context(topic: str) -> str:
     context = Answers().get_context(topic)  # Get context for the topic, if any
+    print(f"{now} get_context: Topic-{topic} & Context-{context}", file=stderr, flush=True)
+    
     return f"PRIOR ANSWERS:\n{context}"
 
 
@@ -316,19 +333,35 @@ def expand_categories(query: str) -> str:
     # Expand categories embedded in the query
     lines = []
     to_body = False
+    where_contracts = [] #list of contract names for filtering ChromaDB
+    #collection = "BossBot"
     for line in query.splitlines():
+        "'category:' is appended in the QueryView.jsx file before being sent to the inference engine"
         if not to_body and line.startswith("Category:"):
-            if (cat := line.split(":", 1)[1].strip()) in CATEGORIES:
+            #This really won't work long term
+            #What if they select 2 contracts?
+            #Get rid of the whole category concept
+            #replace with contracts/collections
+            #if we are going to expand to grievances
+            #maybe call it "focus"
+            if line.startswith("CONTRACT:"):
+                where_contracts = line.split(":",2)[2].strip()
+            
+            elif (cat := line.split(":", 1)[1].strip()) in CATEGORIES:
                 lines.append(CATEGORIES[cat])
             else:
                 lines.append(line)
+        
         else:
             if not to_body:
                 lines.append("\nQUERY:")
                 to_body = True
             lines.append(line)
 
-    return "\n".join(lines)
+    result = ("\n".join(lines), where_contracts)
+    #return "\n".join(lines)
+    return result
+
 
 
 def ask(
@@ -336,6 +369,7 @@ def ask(
     topic: str,
     user: str = "Unknown",
     model: str | None = "default",
+    collection: str = "BossBot",
     no_rag: bool = False,
     no_context: bool = False,
     introduction: str = INTRODUCTION,
@@ -350,10 +384,14 @@ def ask(
 
     start = monotonic()
     # If invalid or alias given for model, use default
-    _query = expand_categories(query)
+    print(f"{now} ask function _query: {query}", file=stderr, flush=True)
+    _query, where_contracts = expand_categories(query)
+    
+    print(f"{now} ask function collection: {collection}", file=stderr, flush=True)
+    
     model = MODELS.get(model) or MODELS["default"]
     context = "" if no_context else get_context(topic)
-    rag_docs = "" if no_rag else get_rag(query)
+    rag_docs = "" if no_rag else get_rag(query, collection_name=collection)
 
     if len(context) > 200_000:
         # This topic has aquired many prior answers.  Age out the oldest answers
