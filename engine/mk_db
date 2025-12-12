@@ -18,7 +18,6 @@ from tqdm import tqdm
 BATCH_SIZE = 100
 CONTEXT_SETTINGS = dict(help_option_names=["-h", "-?", "--help"])
 
-
 def collection_info(client):
     for c in client.list_collections():
         collection_obj = client.get_collection(c)
@@ -136,6 +135,7 @@ def add_document(
     default="BossBot",
     help="Name of collection to create (default 'BossBot')",
 )
+
 @click.option(
     "-l",
     "--list-collections",
@@ -145,7 +145,7 @@ def add_document(
 @click.option(
     "--delete-collection",
     is_flag=True,
-    help="Delete a collection (requires confirmation)",
+    help="Delete a collection (requires confirmation) Include '-c' flag with collection name",
 )
 @click.option(
     "--cosine",
@@ -210,7 +210,7 @@ def main(
         print(f"Run {Path(__file__).name} --help for options")
         return -1
     else:
-        files = Path(filelist).read_text().splitlines()
+        files = Path( ).read_text().splitlines()
         try:
             if cosine:
                 print("WARNING: cosine is not supported by default embedding")
@@ -234,6 +234,7 @@ def main(
                     "cosine/inner product metric argument ignored"
                 )
             collection_obj = client.get_collection(name=collection)
+
 
         i = 0
         for document in files:
