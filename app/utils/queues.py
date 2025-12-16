@@ -185,7 +185,8 @@ class QueryQueue:
 
         # Enhance the query with categories if provided
         if categories := modifiers.get("Category"):
-            prefix = "\n".join(f"Category: {cat.upper()}" for cat in categories)
+            #prefix = "\n".join(f"Category: {cat.upper()}" for cat in categories)
+            prefix = "\n".join(f"Category: {cat.strip()}" for cat in categories)
             query = f"{prefix}\n.....\n{query}"
 
         self.cursor.execute(
